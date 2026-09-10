@@ -1,7 +1,17 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+}
+
+// Same release-signing wiring as :app — keystore.properties is written by
+// CI when the KEYSTORE_* secrets are present. Without it the license-manager
+// APK ships UNSIGNED, which the Android package installer refuses to install.
+val keystoreProps = Properties().apply {
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -23,9 +33,25 @@ android {
         resourceConfigurations += listOf("en", "fa")
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystoreProps.isNotEmpty()) {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = if (keystoreProps.isNotEmpty()) {
+                signingConfigs.getByName("release")
+            } else {
+                null
+            }
         }
     }
     compileOptions {

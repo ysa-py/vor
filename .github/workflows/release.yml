@@ -55,24 +55,36 @@ jobs:
           json.dump(cfg, open('app/google-services.json', 'w'), indent=2)
           PY
           fi
-      - name: Release keystore
+      - name: Release keystore (REQUIRED — unsigned APKs cannot be installed)
         working-directory: android
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
         run: |
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > release.jks
-            cat > keystore.properties <<EOF
+          # Android's package installer (and even `adb install`) REFUSES
+          # unsigned APKs — an unsigned release is a broken deliverable.
+          # This is a hard gate, not a notice: fail loudly if the secrets
+          # are missing instead of shipping APKs nobody can install.
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::KEYSTORE_BASE64 secret is not set — release APKs would be UNSIGNED and un-installable. Set KEYSTORE_BASE64/KEYSTORE_PASSWORD/KEYSTORE_ALIAS secrets."
+            exit 1
+          fi
+          if [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEYSTORE_ALIAS" ]; then
+            echo "::error::KEYSTORE_PASSWORD/KEYSTORE_ALIAS secrets missing"
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > release.jks
+          # The decoded keystore must be a readable JKS/PKCS12 store — fail
+          # here rather than deep inside Gradle's signing task.
+          keytool -list -keystore release.jks \
+            -storepass "$KEYSTORE_PASSWORD" -alias "$KEYSTORE_ALIAS" >/dev/null
+          cat > keystore.properties <<EOF
           storeFile=release.jks
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEYSTORE_ALIAS
           keyPassword=$KEYSTORE_PASSWORD
           EOF
-          else
-            echo "::notice::KEYSTORE_BASE64 not set — building UNSIGNED release APK (install via adb install; set the secret to sign)"
-          fi
       - name: Build, test, lint
         working-directory: android
         run: |
@@ -89,7 +101,7 @@ jobs:
           mkdir -p release-assets
           VER="${{ steps.version.outputs.version }}"
           # AGP splits put EVERY apk in outputs/apk/release/ (single dir) named
-          # app-<abi>-release[-unsigned].apk; unsigned when no KEYSTORE secret.
+          # app-<abi>-release.apk (signed now that the keystore gate is mandatory).
           staged=0
           for f in app/build/outputs/apk/release/app-*-release*.apk; do
             [ -f "$f" ] || continue
@@ -108,8 +120,58 @@ jobs:
             echo "::error::no Android APKs staged — check assembleRelease outputs"
             exit 1
           fi
+          # A leftover *-unsigned* file means the signing config silently
+          # failed to apply — that must never reach the release.
+          if ls app/build/outputs/apk/release/*-unsigned*.apk >/dev/null 2>&1 \
+             || ls license-manager/build/outputs/apk/release/*-unsigned*.apk >/dev/null 2>&1; then
+            echo "::error::unsigned APK produced despite keystore being set — signingConfig is not wired (check keystore.properties)"
+            ls -la app/build/outputs/apk/release/ license-manager/build/outputs/apk/release/
+            exit 1
+          fi
           echo "staged $staged APKs"
           (cd release-assets && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Verify APK signatures (apksigner, cert must match the release keystore)
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+        run: |
+          # Microscope-level gate, added after a real-world defect: v1.0.0
+          # shipped unsigned APKs that Android's package installer refused
+          # to install. Now every staged APK must (a) verify with apksigner
+          # AND (b) be signed by the SAME certificate as the release keystore.
+          set -euo pipefail
+          APKSIGNER="$(ls "$ANDROID_HOME"/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1 || true)"
+          if [ -z "$APKSIGNER" ]; then
+            yes | sdkmanager "build-tools;35.0.0" >/dev/null 2>&1 || true
+            APKSIGNER="$(ls "$ANDROID_HOME"/build-tools/*/apksigner 2>/dev/null | sort -V | tail -1 || true)"
+          fi
+          if [ -z "$APKSIGNER" ]; then
+            echo "::error::apksigner not found in ANDROID_HOME build-tools"
+            exit 1
+          fi
+          echo "using apksigner: $APKSIGNER"
+          # Expected certificate SHA-256 fingerprint, straight from the keystore.
+          EXPECTED="$(keytool -list -keystore release.jks -storepass "$KEYSTORE_PASSWORD" \
+            -alias "$KEYSTORE_ALIAS" | sed -n 's/.*SHA-256[^:]*: *//p' | tr -d ' :' | tr 'A-F' 'a-f')"
+          echo "expected cert SHA-256: $EXPECTED"
+          [ -n "$EXPECTED" ] || { echo "::error::could not extract keystore cert fingerprint"; exit 1; }
+          fail=0
+          for apk in release-assets/*.apk; do
+            if ! "$APKSIGNER" verify --print-certs "$apk" > /tmp/verify.out 2>/tmp/verify.err; then
+              echo "::error::$(basename "$apk") does NOT verify: $(cat /tmp/verify.err)"
+              fail=1; continue
+            fi
+            GOT="$(sed -n 's/.*SHA-256 digest: *//p' /tmp/verify.out | head -1 | tr -d ' :' | tr 'A-F' 'a-f')"
+            if [ "$GOT" != "$EXPECTED" ]; then
+              echo "::error::$(basename "$apk") signed by the WRONG certificate (got $GOT, expected $EXPECTED)"
+              fail=1
+            else
+              echo "OK: $(basename "$apk") verified — cert matches the release keystore"
+            fi
+          done
+          [ "$fail" -eq 0 ] || exit 1
+          echo "ALL $(ls release-assets/*.apk | wc -l) APKs are signed by the Vor release certificate"
       - uses: actions/upload-artifact@v7
         with:
           name: release-android
@@ -420,7 +482,7 @@ jobs:
 
             | Platform | Artifact | Notes |
             |---|---|---|
-            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | Signed when the KEYSTORE_BASE64/PASSWORD/ALIAS secrets are set, otherwise unsigned release APKs (install via `adb install`); license gate on first launch |
+            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | **Signed** (v2/v3 schemes) with the Vor release certificate — install directly from the download; the CI publish gate runs `apksigner verify` + certificate-fingerprint match on every APK; license gate on first launch |
             | Windows | `Vor-desktop.exe` (+ WinDivert files) | Portable single binary; default engine = Go desync; pattern (wrong-seq) engine selectable |
             | Linux | `vor-desktop` + `.deb` + AppDir archive | |
             | OpenWrt | `vor_1.0.0_<arch>.ipk` matrix | Universal package — one source, every target |
