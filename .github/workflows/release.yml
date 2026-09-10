@@ -23,8 +23,8 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: android-actions/setup-android@v4
+      - uses: gradle/actions/setup-gradle@v5
       # (setup-gradle has no working-directory input; the Gradle cache
       # auto-discovers the android/ project root)
       - name: Derive version from tag
@@ -84,7 +84,7 @@ jobs:
           cp license-manager/build/outputs/apk/release/license-manager-release.apk \
              "release-assets/Vor-v${{ steps.version.outputs.version }}-license-manager-release.apk" || true
           (cd release-assets && sha256sum *.apk > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: release-android
           path: android/release-assets/*
@@ -95,7 +95,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.25"
           cache-dependency-path: desktop/go.sum
@@ -116,7 +116,7 @@ jobs:
           Copy-Item "repo" release-assets/repo -Recurse -ErrorAction SilentlyContinue
           $sha = Get-FileHash release-assets/Vor-desktop.exe -Algorithm SHA256
           "$($sha.Hash.ToLower())  Vor-desktop.exe" | Out-File release-assets/SHA256SUMS.txt -Append
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: release-windows
           path: desktop/release-assets/*
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.25"
           cache-dependency-path: desktop/go.sum
@@ -178,7 +178,7 @@ jobs:
       - name: Checksums
         working-directory: desktop
         run: (cd release-assets && sha256sum * > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: release-linux
           path: desktop/release-assets/*
@@ -196,7 +196,7 @@ jobs:
           - { goos: linux, goarch: arm64, name: "arm64" }
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.25"
           cache-dependency-path: dns-tunnel/go.sum
@@ -214,7 +214,7 @@ jobs:
             -o "masterdnsvpn-server-${{ matrix.name }}" ./cmd/server
           go build -trimpath -ldflags "-s -w -X masterdnsvpn-go/internal/version.BuildVersion=${{ github.ref_name }}" \
             -o "masterdnsvpn-client-${{ matrix.name }}" ./cmd/client
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: release-dns-${{ matrix.name }}
           path: |
@@ -276,7 +276,7 @@ jobs:
             exit 1
           fi
           (cd release-assets && sha256sum *.ipk > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: release-openwrt-${{ matrix.arch }}
           path: release-assets/*
@@ -302,7 +302,7 @@ jobs:
           mkdir -p build/Payload && cp -R "$APP" build/Payload/
           (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
           shasum -a 256 build/Vor-iOS-unsigned.ipa > build/SHA256SUMS.txt
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: release-ios
           path: |
@@ -316,7 +316,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           path: all-artifacts
       - name: Flatten artifacts
@@ -342,7 +342,7 @@ jobs:
             exit 1
           fi
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: "Vor ${{ github.ref_name }}"
           body: |

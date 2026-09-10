@@ -56,8 +56,8 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: android-actions/setup-android@v4
+      - uses: gradle/actions/setup-gradle@v5
       # (setup-gradle has no working-directory input; the Gradle cache
       # auto-discovers the android/ project root)
       # Firebase telemetry is optional: write a placeholder config when no
@@ -89,7 +89,7 @@ jobs:
       - name: Debug APKs (proof of buildability)
         working-directory: android
         run: ./gradlew :app:assembleDebug
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: android-debug-apks
           path: |
@@ -108,7 +108,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.25"
           cache-dependency-path: desktop/go.sum
@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.25"
           cache-dependency-path: dns-tunnel/go.sum
@@ -240,7 +240,7 @@ jobs:
           rm -rf build/Payload build/Vor-iOS-unsigned.ipa
           mkdir -p build/Payload && cp -R "$APP" build/Payload/
           (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: vor-ios-unsigned-ipa
           path: ios/build/Vor-iOS-unsigned.ipa
