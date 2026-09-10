@@ -50,7 +50,7 @@ endef
 define Build/Compile
 	$(TARGET_CC) $(TARGET_CFLAGS) $(TARGET_LDFLAGS) \
 		-DVOR_OPENWRT=1 \
-		$(PKG_BUILD_DIR)/src/vor_main.c \
+		$(PKG_BUILD_DIR)/vor_main.c \
 		-o $(PKG_BUILD_DIR)/vor
 endef
 
@@ -74,4 +74,6 @@ exit 0
 endef
 
 $(eval $(call BuildPackage,vor))
-$(eval $(call BuildPackage,luci-app-vor))
+# luci-app-vor is a SEPARATE package (src/luci-app-vor/Makefile, built via
+# the luci feed) — it is copied to package/luci-app-vor by CI, not eval'd
+# here (a dangling BuildPackage eval without a define breaks the SDK scan).

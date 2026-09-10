@@ -18,15 +18,15 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          working-directory: android
+      # (setup-gradle has no working-directory input; the Gradle cache
+      # auto-discovers the android/ project root)
       - name: Derive version from tag
         id: version
         run: |
@@ -84,7 +84,7 @@ jobs:
           cp license-manager/build/outputs/apk/release/license-manager-release.apk \
              "release-assets/Vor-v${{ steps.version.outputs.version }}-license-manager-release.apk" || true
           (cd release-assets && sha256sum *.apk > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: release-android
           path: android/release-assets/*
@@ -94,10 +94,11 @@ jobs:
     name: Windows exe (portable + installer)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25"
+          cache-dependency-path: desktop/go.sum
       - name: Test + build
         working-directory: desktop
         run: |
@@ -115,7 +116,7 @@ jobs:
           Copy-Item "repo" release-assets/repo -Recurse -ErrorAction SilentlyContinue
           $sha = Get-FileHash release-assets/Vor-desktop.exe -Algorithm SHA256
           "$($sha.Hash.ToLower())  Vor-desktop.exe" | Out-File release-assets/SHA256SUMS.txt -Append
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: release-windows
           path: desktop/release-assets/*
@@ -125,10 +126,11 @@ jobs:
     name: Linux binary + deb + AppImage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25"
+          cache-dependency-path: desktop/go.sum
       - name: Test + build
         working-directory: desktop
         run: |
@@ -176,7 +178,7 @@ jobs:
       - name: Checksums
         working-directory: desktop
         run: (cd release-assets && sha256sum * > SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: release-linux
           path: desktop/release-assets/*
@@ -193,10 +195,11 @@ jobs:
           - { goos: linux, goarch: "arm", name: "armv7" }
           - { goos: linux, goarch: arm64, name: "arm64" }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25"
+          cache-dependency-path: dns-tunnel/go.sum
       - name: Test + build server + client
         working-directory: dns-tunnel
         env:
@@ -211,7 +214,7 @@ jobs:
             -o "masterdnsvpn-server-${{ matrix.name }}" ./cmd/server
           go build -trimpath -ldflags "-s -w -X masterdnsvpn-go/internal/version.BuildVersion=${{ github.ref_name }}" \
             -o "masterdnsvpn-client-${{ matrix.name }}" ./cmd/client
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: release-dns-${{ matrix.name }}
           path: |
@@ -226,78 +229,54 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # The universal package: one source, every target arch. The SDK
-          # matrix mirrors the OpenWrt release targets that cover real
-          # router hardware.
-          - { sdk: "mipsel_24kc",   arch: "mipsel_24kc" }
-          - { sdk: "mips_24kc",     arch: "mips_24kc" }
-          - { sdk: "aarch64_cortex-a53", arch: "aarch64_cortex-a53" }
-          - { sdk: "arm_cortex-a7_neon-vfpv4", arch: "arm_cortex-a7_neon-vfpv4" }
-          - { sdk: "x86_64",        arch: "x86_64" }
+          # The universal package: one source, every target arch. Every matrix
+          # entry maps to its REAL OpenWrt 24.10.0 SDK (filenames verified on
+          # downloads.openwrt.org), so each .ipk is cross-compiled by the
+          # target toolchain — never a native binary mislabeled as another
+          # architecture. The job fails loudly if the SDK or build breaks.
+          - { arch: "mipsel_24kc",              target: "ramips/mt7621",   sdk: "openwrt-sdk-24.10.0-ramips-mt7621_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { arch: "mips_24kc",                target: "ath79/generic",   sdk: "openwrt-sdk-24.10.0-ath79-generic_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { arch: "aarch64_cortex-a53",       target: "mvebu/cortexa53", sdk: "openwrt-sdk-24.10.0-mvebu-cortexa53_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
+          - { arch: "arm_cortex-a7_neon-vfpv4", target: "sunxi/cortexa7",  sdk: "openwrt-sdk-24.10.0-sunxi-cortexa7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst" }
+          - { arch: "x86_64",                   target: "x86/64",          sdk: "openwrt-sdk-24.10.0-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
     steps:
-      - uses: actions/checkout@v4
-      - name: Download OpenWrt SDK
+      - uses: actions/checkout@v5
+      - name: Install SDK build dependencies
+        run: sudo apt-get update && sudo apt-get install -y gawk libncurses-dev zstd
+      - name: Download the target SDK
         run: |
-          curl -sL "https://downloads.openwrt.org/releases/24.10.0/targets/${SDK_URL_PATH}/openwrt-sdk-${{ matrix.sdk }}_24.10.0.Linux-x86_64.tar.xz" -o sdk.tar.xz || true
-          # target path mapping differs per arch; fall back to generic
-          ls -la sdk.tar.xz || true
-        env:
-          SDK_URL_PATH: "ramips/mt7621"
-        continue-on-error: false
-      - name: Build .ipk in SDK
+          set -euo pipefail
+          curl -fL --retry 3 --retry-delay 5 \
+            "https://downloads.openwrt.org/releases/24.10.0/targets/${{ matrix.target }}/${{ matrix.sdk }}" \
+            -o sdk.tar.zst
+          test -s sdk.tar.zst
+      - name: Cross-compile vor + luci-app-vor inside the SDK
         run: |
-          # Extract SDK, copy package, build
-          mkdir -p sdk
-          tar -xf sdk.tar.xz -C sdk --strip-components=1 2>/dev/null || true
-          if [ ! -d sdk/package ]; then
-            echo "::warning::SDK download path for ${{ matrix.sdk }} failed; building portable binary instead (the .ipk package structure is validated by the CI job and the planner tests)."
-            # Portable build of the same daemon via the generic musl path is
-            # handled below; keep matrix green but honest.
-          fi
-        continue-on-error: false
-      - name: Portable arch binary (fallback universal path)
+          set -euo pipefail
+          mkdir sdk
+          tar -I zstd -xf sdk.tar.zst -C sdk --strip-components=1
+          cp -R openwrt/vor sdk/package/vor
+          rm -rf sdk/package/vor/src/luci-app-vor
+          cp -R openwrt/vor/src/luci-app-vor sdk/package/luci-app-vor
+          cd sdk
+          ./scripts/feeds update luci
+          make defconfig
+          make package/vor/compile -j"$(nproc)" || make package/vor/compile V=s
+          make package/luci-app-vor/compile -j"$(nproc)" || make package/luci-app-vor/compile V=s
+          echo '--- produced ipks ---'
+          find bin -name '*.ipk' -print
+      - name: Stage artifacts
         run: |
+          set -euo pipefail
           mkdir -p release-assets
-          # The daemon is portable POSIX C: compile against musl when
-          # available, otherwise glibc static.
-          CC="musl-gcc" || CC="gcc"
-          $CC -Wall -Wextra -Werror -O2 -static -o "release-assets/vor-${{ matrix.arch }}" openwrt/vor/src/vor_main.c -lpthread 2>/dev/null \
-            || gcc -Wall -Wextra -Werror -O2 -static -o "release-assets/vor-${{ matrix.arch }}" openwrt/vor/src/vor_main.c -lpthread
-      - name: Build .ipk directly (universal format)
-        run: |
-          # Build the .ipk package (ar archive: debian-binary + control.tar.gz + data.tar.gz)
-          # using the natively-compiled binary for the matrix arch when the
-          # SDK path is unavailable. The format is identical for every arch —
-          # the "universal" package property comes from the source building
-          # under any target toolchain (validated in the SDK when provided).
-          mkdir -p ipk-control ipk-data/usr/bin ipk-data/etc/config ipk-data/etc/init.d ipk-data/lib/netifd/proto
-          cp release-assets/vor-${{ matrix.arch }} ipk-data/usr/bin/vor
-          cp openwrt/vor/files/etc/config/vor ipk-data/etc/config/vor
-          cp openwrt/vor/files/etc/init.d/vor ipk-data/etc/init.d/vor
-          cp openwrt/vor/files/lib/netifd/proto/vor.sh ipk-data/lib/netifd/proto/vor.sh
-          chmod +x ipk-data/etc/init.d/vor ipk-data/lib/netifd/proto/vor.sh ipk-data/usr/bin/vor
-          SIZE=$(du -sk ipk-data | cut -f1)
-          cat > ipk-control/control <<EOF
-          Package: vor
-          Version: 1.0.0
-          Depends: libc
-          Provides: vor
-          Source: package/vor
-          SourceName: vor
-          SourceDateEpoch: $(date +%s)
-          License: GPL-3.0
-          Section: net
-          Architecture: ${{ matrix.arch }}
-          Installed-Size: ${SIZE}
-          Description: Vor DPI-evasion router engine (loopback SNI-fragmentation relay)
-          EOF
-          (cd ipk-control && tar czf ../control.tar.gz control)
-          (cd ipk-data && tar czf ../data.tar.gz .)
-          echo "2.0" > debian-binary
-          ar rc "release-assets/vor_1.0.0_${{ matrix.arch }}.ipk" debian-binary control.tar.gz data.tar.gz
-          rm -f control.tar.gz data.tar.gz
-          (cd release-assets && sha256sum "vor_1.0.0_${{ matrix.arch }}.ipk" >> SHA256SUMS.txt)
-      - uses: actions/upload-artifact@v4
+          find sdk/bin -name 'vor_*.ipk' -exec cp {} release-assets/ \;
+          find sdk/bin -name 'luci-app-vor*.ipk' -exec cp {} release-assets/ \;
+          if [ -z "$(ls release-assets/*.ipk 2>/dev/null)" ]; then
+            echo "::error::SDK produced no .ipk for ${{ matrix.arch }}"
+            exit 1
+          fi
+          (cd release-assets && sha256sum *.ipk > SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v5
         with:
           name: release-openwrt-${{ matrix.arch }}
           path: release-assets/*
@@ -307,7 +286,7 @@ jobs:
     name: iOS unsigned .ipa (TrollStore)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: brew install xcodegen
       - name: Generate project + build ipa
         working-directory: ios
@@ -323,7 +302,7 @@ jobs:
           mkdir -p build/Payload && cp -R "$APP" build/Payload/
           (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
           shasum -a 256 build/Vor-iOS-unsigned.ipa > build/SHA256SUMS.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: release-ios
           path: |
@@ -336,8 +315,8 @@ jobs:
     needs: [android, desktop-windows, desktop-linux, dns-tunnel-server, openwrt, ios]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v5
         with:
           path: all-artifacts
       - name: Flatten artifacts

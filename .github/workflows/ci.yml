@@ -21,7 +21,7 @@ jobs:
     name: vor-core (Rust, shared library)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -40,8 +40,8 @@ jobs:
     name: license reference (Python)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install "cryptography>=41"
@@ -51,15 +51,15 @@ jobs:
     name: Android (app + License Manager)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
       - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          working-directory: android
+      # (setup-gradle has no working-directory input; the Gradle cache
+      # auto-discovers the android/ project root)
       # Firebase telemetry is optional: write a placeholder config when no
       # real project is configured (pseudonymous-maintainer-friendly).
       - name: google-services.json
@@ -89,7 +89,7 @@ jobs:
       - name: Debug APKs (proof of buildability)
         working-directory: android
         run: ./gradlew :app:assembleDebug
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: android-debug-apks
           path: |
@@ -107,10 +107,11 @@ jobs:
           - { os: windows-latest, goos: windows, goarch: "amd64" }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25"
+          cache-dependency-path: desktop/go.sum
       - name: Vet + build + test
         working-directory: desktop
         run: |
@@ -132,10 +133,11 @@ jobs:
     name: MasterDnsVPN engine (Go)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25"
+          cache-dependency-path: dns-tunnel/go.sum
       - name: Vet + build + test
         working-directory: dns-tunnel
         run: |
@@ -147,7 +149,7 @@ jobs:
     name: OpenWrt universal package (C)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Planner conformance + daemon build (strict)
         working-directory: openwrt/vor/src
         run: |
@@ -220,7 +222,7 @@ jobs:
     name: iOS (TrollStore target)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install xcodegen
         run: brew install xcodegen
       - name: Generate Xcode project
@@ -238,7 +240,7 @@ jobs:
           rm -rf build/Payload build/Vor-iOS-unsigned.ipa
           mkdir -p build/Payload && cp -R "$APP" build/Payload/
           (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: vor-ios-unsigned-ipa
           path: ios/build/Vor-iOS-unsigned.ipa
