@@ -1,0 +1,15 @@
+# Vor router engine configuration (UCI)
+# The daemon applies ClientHello fragmentation strategies on the loopback
+# relay 127.0.0.1:listen_port and forwards to edge_ip:edge_port.
+
+config vor 'vor'
+	option enabled '1'
+	option listen_port '40443'
+	option edge_ip '104.18.1.1'
+	option edge_port '443'
+	# Strategies: sni_split | record_split | tls_record_frag | full5 |
+	#   full10 | full20 | multi64 | half | raw | sni_boundary |
+	#   tls_sni_records | random_split
+	option strategy 'sni_split'
+	option fragment_delay_ms '5'
+	option max_sessions '64'

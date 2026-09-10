@@ -1,0 +1,54 @@
+# UnifiedShield UCI Configuration
+#
+# DNS: Alibaba/Tencent CDN primary (Cloudflare BLOCKED in Iran)
+# Split tunnel: Iranian IPs excluded for local service access
+# DPI threshold: Auto-switch core when score > 0.72
+
+config unifiedshield 'default'
+    option enabled '0'
+    option core 'xray'
+    option auto_core_switch '1'
+
+    # Server configuration
+    option server 'example.com'
+    option server_port '443'
+    option password 'changeme'
+
+    # Network
+    option tun_name 'us0'
+    option mtu '1380'
+    option ip_address '172.19.0.1'
+    option ip_prefix '24'
+
+    # DNS (Chinese CDN - Cloudflare blocked in Iran)
+    option dns_server '223.5.5.5'
+    option dns_server_backup '119.29.29.29'
+
+    # Security
+    option kill_switch '1'
+    option split_tunnel '1'
+    option dpi_threshold '0.72'
+    option obfuscation_level '1'
+
+    # Iranian IP ranges to exclude from VPN (split tunnel)
+    # These allow direct access to banking and government services
+    list excluded_ip '78.38.0.0/16'
+    list excluded_ip '78.39.0.0/16'
+    list excluded_ip '217.218.0.0/15'
+    list excluded_ip '5.106.0.0/16'
+    list excluded_ip '5.107.0.0/16'
+    list excluded_ip '94.182.0.0/15'
+    list excluded_ip '2.146.0.0/15'
+    list excluded_ip '31.56.0.0/14'
+    list excluded_ip '151.233.0.0/16'
+    list excluded_ip '5.200.200.0/24'
+    list excluded_ip '46.36.0.0/17'
+    list excluded_ip '91.92.0.0/14'
+    list excluded_ip '185.143.232.0/22'
+    list excluded_ip '62.60.128.0/17'
+    list excluded_ip '80.191.0.0/16'
+    list excluded_ip '81.12.0.0/17'
+
+    # OTA updates
+    option auto_update '1'
+    option update_interval '6'
