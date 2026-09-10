@@ -1,0 +1,657 @@
+package com.v2rayez.app.ui.screens.browser
+
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.view.ViewGroup
+import android.webkit.CookieManager
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Toast
+import androidx.webkit.ProxyConfig
+import androidx.webkit.ProxyController
+import androidx.webkit.WebViewFeature
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.v2rayez.app.R
+import com.v2rayez.app.ui.components.CardSurface
+import com.v2rayez.app.ui.components.HSpacer
+import com.v2rayez.app.ui.components.V2FilterChip
+import com.v2rayez.app.ui.components.VSpacer
+import com.v2rayez.app.ui.theme.Connected
+import com.v2rayez.app.ui.theme.ErrorRed
+import com.v2rayez.app.ui.theme.V2RayEzTheme
+import com.v2rayez.app.ui.theme.Warning
+import com.v2rayez.app.ui.viewmodel.BrowserViewModel
+import java.util.concurrent.Executor
+
+private data class BrowserPreset(val labelRes: Int, val url: String)
+
+private val BROWSER_PRESETS = listOf(
+    BrowserPreset(R.string.browser_preset_google, "https://www.google.com"),
+    BrowserPreset(R.string.browser_preset_youtube, "https://www.youtube.com"),
+    BrowserPreset(R.string.browser_preset_x, "https://x.com"),
+    BrowserPreset(R.string.browser_preset_cloudflare, "https://1.1.1.1")
+)
+
+private const val HOME_URL = "https://www.google.com"
+private const val DESKTOP_UA =
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+@Composable
+fun BrowserScreen(
+    onOpenMitmSetup: () -> Unit = {},
+    viewModel: BrowserViewModel = hiltViewModel()
+) {
+    BrowserContent(onOpenMitmSetup = onOpenMitmSetup, viewModel = viewModel)
+}
+
+@Composable
+internal fun BrowserContent(
+    onOpenMitmSetup: () -> Unit,
+    viewModel: BrowserViewModel
+) {
+    val context = LocalContext.current
+    val ready by viewModel.ready.collectAsState()
+    val mitmReady by viewModel.mitmReady.collectAsState()
+    val proxyRunning by viewModel.proxyRunning.collectAsState()
+    val webViewProxyActive by viewModel.webViewProxyActive.collectAsState()
+    val deviceTunnelRunning by viewModel.deviceTunnelRunning.collectAsState()
+    val lastError by viewModel.lastError.collectAsState()
+    val httpPort by viewModel.httpPort.collectAsState()
+    val proxyApiSupported = viewModel.proxyApiSupported
+
+    var urlText by rememberSaveable { mutableStateOf(HOME_URL) }
+    var pendingUrl by rememberSaveable { mutableStateOf(HOME_URL) }
+    var canGoBack by remember { mutableStateOf(false) }
+    var canGoForward by remember { mutableStateOf(false) }
+    var progress by remember { mutableFloatStateOf(0f) }
+    var menuOpen by remember { mutableStateOf(false) }
+    var desktopMode by rememberSaveable { mutableStateOf(false) }
+    var loadError by remember { mutableStateOf<String?>(null) }
+    var recentUrls by rememberSaveable { mutableStateOf(listOf(HOME_URL)) }
+    val webViewHolder = remember { mutableStateOf<WebView?>(null) }
+    // True once ProxyController.setProxyOverride has fired its completion callback, meaning the
+    // MITM HTTP proxy is actually wired for this WebView process. Media-heavy sites (YouTube)
+    // must not navigate before this flips or the first CONNECTs bypass the MITM http-in.
+    var proxyApplied by remember { mutableStateOf(false) }
+    var proxyOverrideGeneration by remember { mutableStateOf(0) }
+
+    LaunchedEffect(mitmReady) {
+        if (mitmReady) viewModel.ensureBrowserTunnel()
+    }
+
+    fun reloadIfProxyReady() {
+        if (shouldDeferInitialLoad(proxyApiSupported, webViewProxyActive, proxyApplied)) return
+        webViewHolder.value?.reload()
+    }
+
+    fun rememberRecent(url: String) {
+        if (!isAllowedWebViewScheme(Uri.parse(url).scheme)) return
+        recentUrls = (listOf(url) + recentUrls.filterNot { it == url }).take(8)
+    }
+
+    fun navigate(target: String) {
+        val normalized = normalizeBrowserInput(target)
+        if (!isAllowedWebViewScheme(Uri.parse(normalized).scheme) && !normalized.startsWith("about:")) {
+            loadError = context.getString(R.string.browser_error_scheme)
+            return
+        }
+        urlText = normalized
+        pendingUrl = normalized
+        loadError = null
+        rememberRecent(normalized)
+        // If the MITM proxy is expected but its override hasn't applied yet, defer the load —
+        // the setProxyOverride callback below will pick up the pending URL once routing is live.
+        if (shouldDeferInitialLoad(proxyApiSupported, webViewProxyActive, proxyApplied)) return
+        webViewHolder.value?.loadUrl(normalized)
+    }
+
+    fun openExternal() {
+        val url = webViewHolder.value?.url ?: urlText
+        runCatching {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }.onFailure {
+            Toast.makeText(context, context.getString(R.string.browser_external_failed), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Apply / clear WebView proxy override when MITM standalone proxy OR VPN tunnel is up.
+    // App UID is excluded from TUN; without this override, WebView bypasses domain-front/VPN.
+    LaunchedEffect(webViewProxyActive, httpPort, proxyApiSupported) {
+        if (!proxyApiSupported || !WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)) {
+            proxyApplied = false
+            return@LaunchedEffect
+        }
+        val gen = ++proxyOverrideGeneration
+        val mainExecutor = java.util.concurrent.Executor { r ->
+            android.os.Handler(android.os.Looper.getMainLooper()).post(r)
+        }
+        runCatching {
+            if (webViewProxyActive) {
+                proxyApplied = false
+                val config = ProxyConfig.Builder()
+                    .addProxyRule("127.0.0.1:$httpPort")
+                    .addDirect("<-loopback>")
+                    .build()
+                ProxyController.getInstance().setProxyOverride(config, mainExecutor) {
+                    if (gen != proxyOverrideGeneration) return@setProxyOverride
+                    proxyApplied = true
+                    webViewHolder.value?.let { wv ->
+                        if (wv.url.isNullOrBlank() || wv.url != pendingUrl) {
+                            wv.loadUrl(pendingUrl)
+                        } else {
+                            wv.reload()
+                        }
+                    }
+                }
+            } else {
+                ProxyController.getInstance().clearProxyOverride(mainExecutor) {
+                    if (gen != proxyOverrideGeneration) return@clearProxyOverride
+                    proxyApplied = false
+                }
+            }
+        }.onFailure {
+            proxyApplied = false
+            if (webViewProxyActive) webViewHolder.value?.loadUrl(pendingUrl)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)) {
+                runCatching {
+                    ProxyController.getInstance().clearProxyOverride({ r -> r.run() }) {}
+                }
+            }
+            webViewHolder.value?.apply {
+                stopLoading()
+                destroy()
+            }
+            webViewHolder.value = null
+        }
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            val wv = webViewHolder.value ?: return@LifecycleEventObserver
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> wv.onPause()
+                Lifecycle.Event.ON_RESUME -> wv.onResume()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(desktopMode) {
+        webViewHolder.value?.settings?.userAgentString =
+            if (desktopMode) DESKTOP_UA else WebSettings.getDefaultUserAgent(context)
+        reloadIfProxyReady()
+    }
+
+    val isHome = pendingUrl == HOME_URL
+    val statusColor = when {
+        !proxyApiSupported && webViewProxyActive -> Warning
+        ready -> Connected
+        !lastError.isNullOrBlank() -> ErrorRed
+        else -> Warning
+    }
+    val statusMessage = when {
+        !proxyApiSupported && webViewProxyActive -> stringResource(R.string.browser_proxy_api_gate)
+        deviceTunnelRunning -> stringResource(R.string.browser_vpn_active_status)
+        ready -> stringResource(R.string.browser_active_status)
+        !mitmReady -> stringResource(R.string.browser_banner_title)
+        !lastError.isNullOrBlank() -> lastError.orEmpty()
+        else -> stringResource(R.string.browser_proxy_inactive)
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
+        // The outer app Scaffold (V2RayApp) already pads for the bottom nav bar / status bar
+        // around this whole screen — consuming those insets a second time here would push the
+        // WebView up and shrink it further, so this inner Scaffold only lays out address bar +
+        // WebView within the space it was already given.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Locale-independent status marker for device-lab adb/Maestro flows (the
+                    // visible copy is the trilingual EN/FA/RU statusMessage above).
+                    .semantics {
+                        contentDescription = "browser_status:" + when {
+                            !proxyApiSupported -> "api_unsupported"
+                            ready -> "active"
+                            !mitmReady -> "banner"
+                            else -> "inactive"
+                        }
+                    }
+            ) {
+                // Chrome-like omnibox row (no V2TopBar / fat Go).
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { webViewHolder.value?.takeIf { canGoBack }?.goBack() }, enabled = canGoBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.browser_back_cd))
+                    }
+                    IconButton(onClick = { webViewHolder.value?.takeIf { canGoForward }?.goForward() }, enabled = canGoForward) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(R.string.browser_forward_cd))
+                    }
+                    OutlinedTextField(
+                        value = urlText,
+                        onValueChange = { urlText = it },
+                        singleLine = true,
+                        placeholder = { Text(stringResource(R.string.browser_url_placeholder)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
+                        keyboardActions = KeyboardActions(onGo = { navigate(urlText) }),
+                        leadingIcon = {
+                            // Compact proxy-status dot replaces what used to be its own
+                            // always-visible text row; tap for detail or to open MITM setup.
+                            Icon(
+                                Icons.Filled.Shield,
+                                contentDescription = statusMessage,
+                                tint = statusColor,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable {
+                                        if (!mitmReady) {
+                                            onOpenMitmSetup()
+                                        } else {
+                                            Toast.makeText(context, statusMessage, Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 2.dp),
+                        textStyle = MaterialTheme.typography.bodySmall
+                    )
+                    IconButton(onClick = { reloadIfProxyReady() }) {
+                        Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.browser_reload_cd))
+                    }
+                    Box {
+                        IconButton(onClick = { menuOpen = true }) {
+                            Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.browser_menu_cd))
+                        }
+                        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.browser_menu_share)) },
+                                onClick = {
+                                    menuOpen = false
+                                    val url = webViewHolder.value?.url ?: urlText
+                                    context.startActivity(
+                                        Intent.createChooser(
+                                            Intent(Intent.ACTION_SEND).apply {
+                                                type = "text/plain"
+                                                putExtra(Intent.EXTRA_TEXT, url)
+                                            },
+                                            null
+                                        )
+                                    )
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.browser_menu_copy)) },
+                                onClick = {
+                                    menuOpen = false
+                                    val url = webViewHolder.value?.url ?: urlText
+                                    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    cm.setPrimaryClip(ClipData.newPlainText("url", url))
+                                    Toast.makeText(context, context.getString(R.string.browser_copied), Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.browser_menu_desktop)) },
+                                onClick = {
+                                    menuOpen = false
+                                    desktopMode = !desktopMode
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.browser_menu_open_external)) },
+                                onClick = {
+                                    menuOpen = false
+                                    openExternal()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.browser_menu_mitm)) },
+                                onClick = {
+                                    menuOpen = false
+                                    onOpenMitmSetup()
+                                }
+                            )
+                            // Recent history lives in the overflow menu instead of a persistent
+                            // chip row, so browsing a real page doesn't stack a whole extra row
+                            // of chips on top of the address bar.
+                            val history = recentUrls.filterNot { it == HOME_URL }.take(5)
+                            if (history.isNotEmpty()) {
+                                HorizontalDivider()
+                                history.forEach { recent ->
+                                    val host = Uri.parse(recent).host ?: recent.take(28)
+                                    DropdownMenuItem(
+                                        text = { Text(host, maxLines = 1) },
+                                        onClick = {
+                                            menuOpen = false
+                                            navigate(recent)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (progress in 0.01f..0.99f) {
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(2.dp)
+                    )
+                }
+
+                // At most one compact line below the address bar — never a status row AND a
+                // banner AND chips stacked together, which is what made the chrome feel broken.
+                when {
+                    !proxyApiSupported -> {
+                        Text(
+                            statusMessage,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Warning,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
+                    !mitmReady -> {
+                        Box(Modifier.padding(horizontal = 12.dp, vertical = 4.dp)) {
+                            MitmBanner(onOpenMitmSetup)
+                        }
+                    }
+                    !lastError.isNullOrBlank() -> {
+                        Text(
+                            lastError.orEmpty(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = ErrorRed,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                        )
+                    }
+                    else -> Unit
+                }
+
+                // Quick-access shortcuts only make sense on the home/start page — once the user
+                // has navigated somewhere, the chrome stays down to just the address bar so it
+                // doesn't fight the loaded page's own UI (e.g. YouTube's bottom nav) for space.
+                if (isHome) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        BROWSER_PRESETS.forEach { preset ->
+                            V2FilterChip(
+                                stringResource(preset.labelRes),
+                                selected = false,
+                                onClick = { navigate(preset.url) }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { ctx ->
+                    WebView(ctx).apply {
+                        layoutParams = ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                        // Mobile sites (e.g. m.youtube.com) ship a responsive viewport meta tag —
+                        // honor it and fit content to the WebView's actual width so the page
+                        // renders at mobile scale instead of a shrunken desktop layout that fights
+                        // our own chrome for space (the "double url bar" look).
+                        settings.useWideViewPort = true
+                        settings.loadWithOverviewMode = true
+                        settings.textZoom = 100
+                        // Align with BpbPanelScreen hardening (SEC-06) — this Browser never needs
+                        // local file:// or content:// access, only http(s) navigation.
+                        settings.allowFileAccess = false
+                        settings.allowContentAccess = false
+                        // This Browser exists to verify MITM + user-CA playback (YouTube). YouTube's
+                        // player calls video.play() programmatically after the watch page loads, so a
+                        // gesture requirement leaves the player stuck on a spinner. Allow autoplay so
+                        // the MITM media path (googlevideo segments) can be validated end-to-end.
+                        settings.mediaPlaybackRequiresUserGesture = false
+                        CookieManager.getInstance().setAcceptCookie(true)
+                        webViewClient = object : WebViewClient() {
+                            override fun shouldOverrideUrlLoading(
+                                view: WebView?,
+                                request: android.webkit.WebResourceRequest?
+                            ): Boolean = !isAllowedWebViewScheme(request?.url?.scheme)
+
+                            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                                loadError = null
+                                if (!url.isNullOrBlank()) urlText = url
+                            }
+
+                            override fun onPageFinished(view: WebView?, url: String?) {
+                                canGoBack = view?.canGoBack() == true
+                                canGoForward = view?.canGoForward() == true
+                                if (!url.isNullOrBlank()) {
+                                    urlText = url
+                                    rememberRecent(url)
+                                }
+                            }
+
+                            override fun onReceivedError(
+                                view: WebView?,
+                                request: android.webkit.WebResourceRequest?,
+                                error: android.webkit.WebResourceError?
+                            ) {
+                                if (request?.isForMainFrame != true) return
+                                loadError = error?.description?.toString()
+                                    ?: context.getString(R.string.browser_error_generic)
+                            }
+                        }
+                        webChromeClient = object : WebChromeClient() {
+                            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                                progress = newProgress / 100f
+                            }
+                        }
+                        webViewHolder.value = this
+                        // Defer the first navigation while a MITM proxy override is still being
+                        // applied; the setProxyOverride callback loads pendingUrl once routing is
+                        // live. In every other case (no proxy / API<30 / override already applied)
+                        // load immediately so the Browser isn't blank.
+                        if (!shouldDeferInitialLoad(proxyApiSupported, webViewProxyActive, proxyApplied)) {
+                            loadUrl(pendingUrl)
+                        }
+                    }
+                },
+                update = { _ ->
+                    // navigation handled via navigate(); avoid reload loops
+                }
+            )
+            if (!loadError.isNullOrBlank()) {
+                CardSurface(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            stringResource(R.string.browser_error_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = ErrorRed
+                        )
+                        Text(
+                            loadError.orEmpty(),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton(onClick = { navigate(pendingUrl) }) {
+                                Text(stringResource(R.string.browser_error_retry))
+                            }
+                            TextButton(onClick = { openExternal() }) {
+                                Text(stringResource(R.string.browser_menu_open_external))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MitmBanner(onOpenMitmSetup: () -> Unit) {
+    CardSurface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.Shield, contentDescription = null, tint = Warning, modifier = Modifier.size(18.dp))
+                HSpacer(8)
+                Text(
+                    stringResource(R.string.browser_banner_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            VSpacer(4)
+            Text(
+                stringResource(R.string.browser_banner_body),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            TextButton(onClick = onOpenMitmSetup) {
+                Text(stringResource(R.string.browser_banner_cta))
+            }
+        }
+    }
+}
+
+/**
+ * Whether the WebView's next navigation must wait for [ProxyController.setProxyOverride] to
+ * finish before loading. Deferral only applies when a MITM proxy is running on a proxy-capable
+ * API (30+) and the override callback hasn't confirmed yet — loading YouTube/media before that
+ * point would issue CONNECTs that miss the MITM `http-in` and fail TLS/spin forever.
+ *
+ * Pure function so the sequencing rule is unit-testable without a WebView.
+ */
+internal fun shouldDeferInitialLoad(
+    proxyApiSupported: Boolean,
+    proxyRunning: Boolean,
+    proxyApplied: Boolean
+): Boolean = proxyApiSupported && proxyRunning && !proxyApplied
+
+/**
+ * Browser navigation allowlist: only `http`/`https` are safe destinations for this
+ * general-purpose WebView (SEC-06). Blocks `file://`, `content://`, `intent://`,
+ * `javascript:`, and other schemes a hostile/redirected page could pivot into once loaded.
+ */
+internal fun isAllowedWebViewScheme(scheme: String?): Boolean =
+    scheme.equals("http", ignoreCase = true) || scheme.equals("https", ignoreCase = true)
+
+internal fun normalizeBrowserInput(raw: String): String {
+    val trimmed = raw.trim()
+    if (trimmed.isEmpty()) return HOME_URL
+    if (trimmed.contains("://") || trimmed.startsWith("about:")) return trimmed
+    if (trimmed.contains('.') && !trimmed.contains(' ')) {
+        return "https://$trimmed"
+    }
+    return "https://www.google.com/search?q=${Uri.encode(trimmed)}"
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun BrowserScreenPreview() {
+    V2RayEzTheme {
+        BrowserContent(onOpenMitmSetup = {}, viewModel = BrowserViewModel())
+    }
+}
