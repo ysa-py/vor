@@ -35,8 +35,8 @@ pub const KNOWN_ENGINES: &[&str] = &[
     "tor",
     "psiphon",
     "mitm-fronting",
-    "ssh-chain",   // SSH tunneling: plain / TLS / WebSocket / HTTP-CONNECT
-                   // wraps, payload injection, cipher selection
+    "ssh-chain", // SSH tunneling: plain / TLS / WebSocket / HTTP-CONNECT
+    // wraps, payload injection, cipher selection
     "naive-https", // padded HTTPS CONNECT tunnel (NaiveProxy-style)
 ];
 
