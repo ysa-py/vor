@@ -110,7 +110,8 @@ jobs:
           mkdir -p out
           printf '%s\n' "${{ steps.issue.outputs.token }}" > "out/vor-license.txt"
           ID="${{ inputs.license_id }}"
-          [ -z "$ID" ] && ID="manual"
+          if [ -z "$ID" ]; then ID="manual"; fi
+          echo "license id: $ID"
 
       - uses: actions/upload-artifact@v4
         with:
