@@ -880,7 +880,8 @@
     <string name="vpn_notif_starting_server">Starting %1$s…</string>
     <string name="vpn_notif_connected">Connected</string>
     <string name="vpn_notif_disconnect">Disconnect</string>
-    <string name="vpn_error_no_server">No server selected</string>
+        <string name="vpn_error_license_expired">License expired — connect your new license to continue</string>
+<string name="vpn_error_no_server">No server selected</string>
     <string name="vpn_error_tun">Failed to create TUN interface</string>
     <string name="vpn_error_tor">Tor failed to start</string>
     <string name="vpn_error_fronting">Domain fronting failed: %1$s</string>

@@ -512,7 +512,28 @@ jobs:
             | OpenWrt | `vor_1.0.1_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
 
-            ## Android permission footprint (v1.0.1 hardening)
+            ## v1.0.2 — activation crash fix + automatic expiry enforcement
+
+            - **Fixed the license-activation crash** reported on a real device: the
+              activation path is now crash-proof by construction — every possible
+              failure (device-specific or otherwise) degrades to a clean error state
+              instead of killing the app. The full activation path (paste a REAL
+              production token -> tap "Check / Activate License" -> unlock -> first
+              launch of the main UI) is now covered by automated end-to-end tests that
+              run the real Activity, the real Hilt graph and the Persian/RTL locale.
+            - **Automatic expiry revocation**: the license verdict is re-verified at
+              every app launch, every return to foreground, and before EVERY VPN
+              connection attempt — purely offline against the signed expiry claim vs.
+              the device clock. An expired license re-locks the app and blocks the
+              tunnel with no manual step and no network call.
+            - **Vor License Manager 1.0.2**: stores MULTIPLE licenses with live
+              valid/expired/invalid status, expiry shown in local time and a
+              countdown for licenses nearing expiry; QR-code import (from an image —
+              no permissions needed) and QR export to hand a license to another
+              device without transmitting text; copy-token and clear-all. All fully
+              offline.
+
+            ## Android permission footprint (v1.0.1 hardening, unchanged in v1.0.2)
 
             This release removes every permission signal that made Google Play Protect's
             unknown-app scanner flag earlier builds as risky:

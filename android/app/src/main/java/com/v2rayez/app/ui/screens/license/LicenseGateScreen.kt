@@ -84,6 +84,13 @@ class LicenseGateViewModel @Inject constructor(
                     LicenseStatus.EXPIRED -> _error.value = "expired"
                     LicenseStatus.INVALID -> _error.value = "invalid"
                 }
+            } catch (t: Throwable) {
+                // 2026-09 crash hardening (device report: tapping "Check / Activate
+                // License" with a well-formed token crashed the app). This scope
+                // has no CoroutineExceptionHandler, so ANY escaped throwable used
+                // to kill the process. Now every failure — device-specific or
+                // otherwise — degrades to the standard invalid-token UI.
+                _error.value = "invalid"
             } finally {
                 _busy.value = false
             }

@@ -11,6 +11,7 @@ import com.vor.license.LicenseResult
 import com.vor.license.LicenseStatus
 import com.vor.license.LicenseVerifier
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -64,21 +65,32 @@ class LicenseRepository @Inject constructor(
         val payload: com.vor.license.LicensePayload? = null,
     )
 
-    /** Flow of the current gate state (null token -> locked). */
-    val gateState: Flow<GateState> = context.licenseDataStore.data.map { preferences ->
-        val token = preferences[KEY_TOKEN]
-        if (token.isNullOrBlank()) {
-            GateState(hydrated = true)
-        } else {
-            val result = verifyBlocking(token, System.currentTimeMillis() / 1000)
-            GateState(
-                hydrated = true,
-                status = result.status,
-                token = token,
-                payload = result.payload,
-            )
+    /**
+     * Flow of the current gate state (null token -> locked).
+     *
+     * 2026-09 crash hardening: the verification used to run bare inside [map] — any
+     * error escaping it (storage failure, an unexpected throw on one device) would
+     * kill the eager [androidx.lifecycle.ViewModel.viewModelScope] collector and
+     * take the whole process down. The flow is now guarded with [catch] and falls
+     * back to a locked-but-hydrated state, so the WORST possible failure mode is a
+     * re-locked gate — never a crash.
+     */
+    val gateState: Flow<GateState> = context.licenseDataStore.data
+        .map { preferences ->
+            val token = preferences[KEY_TOKEN]
+            if (token.isNullOrBlank()) {
+                GateState(hydrated = true)
+            } else {
+                val result = verifyBlocking(token, System.currentTimeMillis() / 1000)
+                GateState(
+                    hydrated = true,
+                    status = result.status,
+                    token = token,
+                    payload = result.payload,
+                )
+            }
         }
-    }
+        .catch { emit(GateState(hydrated = true)) }
 
     /** Current token (blocking — used by launch-time checks only). */
     private fun currentToken(): String? = runBlocking {
@@ -92,15 +104,24 @@ class LicenseRepository @Inject constructor(
     private fun verifyBlocking(token: String, nowEpochSeconds: Long): LicenseResult =
         LicenseVerifier.verify(activePublicKey, token, nowEpochSeconds)
 
-    /** Activate a token: verifies first, persists only when valid (or
-     * expired-with-valid-signature so the UI can show the expiry). */
+    /**
+     * Activate a token: verifies first, persists only when valid (or
+     * expired-with-valid-signature so the UI can show the expiry).
+     *
+     * 2026-09 crash hardening: the DataStore write is failure-tolerant — a storage
+     * error must surface as "not activated", never as a process crash.
+     */
     suspend fun activate(token: String): LicenseResult {
-        val result = verify(token)
+        val result = runCatching { verify(token) }.getOrElse {
+            return LicenseResult(LicenseStatus.INVALID, null)
+        }
         if (result.status != LicenseStatus.INVALID) {
-            context.licenseDataStore.edit { preferences ->
-                preferences[KEY_TOKEN] = token.trim()
-                preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
-            }
+            runCatching {
+                context.licenseDataStore.edit { preferences ->
+                    preferences[KEY_TOKEN] = token.trim()
+                    preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
+                }
+            }.onFailure { android.util.Log.w("LicenseRepository", "persist failed", it) }
         }
         return result
     }
@@ -120,11 +141,35 @@ class LicenseRepository @Inject constructor(
      */
     suspend fun recheck(): Boolean {
         val token = currentToken() ?: return false
-        val result = verify(token)
-        context.licenseDataStore.edit { preferences ->
-            preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
+        val result = runCatching { verify(token) }
+            .getOrElse { return false }
+        runCatching {
+            context.licenseDataStore.edit { preferences ->
+                preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
+            }
         }
         return result.status == LicenseStatus.VALID
+    }
+
+    /**
+     * Re-verify against the current device clock (launch / app-to-foreground /
+     * pre-connect). Touches DataStore so [gateState] re-emits with a fresh
+     * verdict — the gate re-locks by itself the moment a license expires,
+     * purely from the signed expiry claim vs. clock, no network involved.
+     */
+    suspend fun refresh() {
+        runCatching {
+            context.licenseDataStore.edit { preferences ->
+                preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
+            }
+        }
+    }
+
+    /** Synchronous validity probe for connect-time gating (offline, fast). */
+    fun isValidNow(): Boolean {
+        val token = currentToken() ?: return false
+        return runCatching { verify(token).status == LicenseStatus.VALID }
+            .getOrDefault(false)
     }
 }
 

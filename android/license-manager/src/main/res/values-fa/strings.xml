@@ -11,4 +11,19 @@
     <string name="detail_issued">تاریخ صدور</string>
     <string name="detail_expires">تاریخ انقضا</string>
     <string name="detail_tier">سطح</string>
+    <string name="import_qr">درون‌ریزی از تصویر QR</string>
+    <string name="stored_count">%1$d لایسنس ذخیره‌شده</string>
+    <string name="clear_all">حذف همه</string>
+    <string name="clear_all_confirm_title">همهٔ لایسنس‌های ذخیره‌شده حذف شوند؟</string>
+    <string name="clear_all_confirm_body">این کار همهٔ توکن‌های ذخیره‌شده را از این دستگاه پاک می‌کند. لایسنس‌ها باطل نمی‌شوند — هر زمان دوباره جای‌گذاری کنید.</string>
+    <string name="detail_expires_local">انقضا (زمان محلی)</string>
+    <string name="countdown_left">%1$s باقی‌مانده</string>
+    <string name="countdown_soon">در %1$s منقضی می‌شود</string>
+    <string name="copy_token">کپی توکن</string>
+    <string name="show_qr">نمایش QR</string>
+    <string name="delete">حذف</string>
+    <string name="qr_export_title">QR لایسنس</string>
+    <string name="qr_export_hint">این کد را با دوربین دستگاه دیگر اسکن کنید تا لایسنس درون‌ریزی شود — بدون انتقال متن.</string>
+    <string name="qr_error">رندر کد QR ممکن نشد.</string>
+    <string name="close">بستن</string>
 </resources>

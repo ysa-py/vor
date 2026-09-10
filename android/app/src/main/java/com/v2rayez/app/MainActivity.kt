@@ -37,12 +37,14 @@ import com.v2rayez.app.ui.screens.onboarding.WelcomeWizardScreen
 import com.v2rayez.app.ui.theme.V2RayEzTheme
 import com.v2rayez.app.ui.viewmodel.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var vpnController: VpnController
+    @Inject lateinit var licenseRepository: com.v2rayez.app.data.license.LicenseRepository
 
     private var pendingVpnAction: (() -> Unit)? = null
 
@@ -109,6 +111,7 @@ class MainActivity : ComponentActivity() {
             AppRoot(
                 vpnPermission = vpnPermission,
                 initialRoute = initialRoute,
+                licenseRepository = licenseRepository,
                 onLocaleChanged = { recreate() }
             )
         }
@@ -148,12 +151,29 @@ class MainActivity : ComponentActivity() {
 private fun AppRoot(
     vpnPermission: VpnPermissionRequester,
     initialRoute: MutableState<String?>,
+    licenseRepository: com.v2rayez.app.data.license.LicenseRepository,
     onLocaleChanged: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val settings by settingsViewModel.state.collectAsState()
     val hydrated by settingsViewModel.hydrated.collectAsState()
     val context = LocalContext.current
+
+    // License expiry re-verification on every app-to-foreground transition: refresh()
+    // touches the license DataStore, which re-emits gateState with a verdict against
+    // the CURRENT clock — the gate re-locks by itself the moment the signed expiry
+    // claim passes, with no network call and no manual action.
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val licenseScope = androidx.compose.runtime.rememberCoroutineScope()
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                licenseScope.launch { runCatching { licenseRepository.refresh() } }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     // Dismissed for this session only (reappears next launch unless "do not show again").
     val promoShownThisSession = remember { mutableStateOf(false) }

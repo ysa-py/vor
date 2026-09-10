@@ -222,6 +222,7 @@ class V2RayVpnService : VpnService() {
 
     @Inject lateinit var core: V2RayCore
     @Inject lateinit var processCore: ProcessProxyCore
+    @Inject lateinit var licenseRepository: com.v2rayez.app.data.license.LicenseRepository
     @Inject lateinit var binaryManager: CoreBinaryManager
     @Inject lateinit var hevTunBridge: HevTunBridge
     @Inject lateinit var byedpi: ByeDpiEngine
@@ -295,6 +296,20 @@ class V2RayVpnService : VpnService() {
             }
             else -> {
                 // ACTION_CONNECT or always-on start (null intent) -> connect requested/last server.
+
+                // LICENSE GATE (expiry auto-revocation, 2026-09): every tunnel attempt —
+                // from the UI, the toggle, boot restore, widgets, the QS tile, or Android's
+                // always-on VPN restart — is re-verified against the embedded public key and
+                // the CURRENT device clock, entirely offline. An expired/invalid license
+                // blocks the connection here with no manual step and no network call; the
+                // gate UI re-locks on the next launch/foreground via gateState.
+                if (!runCatching { runBlocking { licenseRepository.recheck() } }.getOrDefault(false)) {
+                    Log.w(TAG, "VPN connect refused: license not valid (expired or invalid)")
+                    stateHolder.setError(getString(R.string.vpn_error_license_expired))
+                    stopTunnel()
+                    return START_NOT_STICKY
+                }
+
                 val serverId = intent?.getStringExtra(EXTRA_SERVER_ID)
                 val state = stateHolder.connectionState.value
                 val connectingId = state.server?.id ?: activeServer?.id

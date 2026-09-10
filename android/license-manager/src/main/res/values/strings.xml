@@ -11,4 +11,19 @@
     <string name="detail_issued">Issued</string>
     <string name="detail_expires">Expires</string>
     <string name="detail_tier">Tier</string>
+    <string name="import_qr">Import QR image</string>
+    <string name="stored_count">%1$d stored licenses</string>
+    <string name="clear_all">Clear all</string>
+    <string name="clear_all_confirm_title">Delete all stored licenses?</string>
+    <string name="clear_all_confirm_body">This removes every stored token from this device. Licenses are not revoked — paste them again anytime.</string>
+    <string name="detail_expires_local">Expires (local time)</string>
+    <string name="countdown_left">%1$s left</string>
+    <string name="countdown_soon">Expires in %1$s</string>
+    <string name="copy_token">Copy token</string>
+    <string name="show_qr">Show QR</string>
+    <string name="delete">Delete</string>
+    <string name="qr_export_title">License QR</string>
+    <string name="qr_export_hint">Scan this code with the other device\'s camera to import the license — no text transfer needed.</string>
+    <string name="qr_error">Could not render the QR code.</string>
+    <string name="close">Close</string>
 </resources>

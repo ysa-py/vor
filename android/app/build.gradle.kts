@@ -26,8 +26,8 @@ android {
         applicationId = "com.vor.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 3
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -151,6 +151,8 @@ android {
             // No Robolectric in this project — let android.util.Log etc. return defaults
             // instead of throwing, so plain-JVM tests can exercise code that logs.
             isReturnDefaultValues = true
+            // Robolectric tests (license-gate UI repro) need real resources/manifest.
+            isIncludeAndroidResources = true
         }
     }
     androidResources {
@@ -270,6 +272,12 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.bouncycastle.bcpkix)
     testImplementation(libs.bouncycastle.bcprov)
+    // License-gate UI repro + regression (Robolectric + Compose test rule).
+    testImplementation(libs.robolectric.lib)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.androidx.ui.test.manifest)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.ext.junit)

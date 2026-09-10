@@ -844,7 +844,8 @@
     <string name="vpn_notif_starting_server">شروع %1$s…</string>
     <string name="vpn_notif_connected">متصل</string>
     <string name="vpn_notif_disconnect">قطع اتصال</string>
-    <string name="vpn_error_no_server">سروری انتخاب نشده</string>
+        <string name="vpn_error_license_expired">لایسنس منقضی شده است — برای ادامه، لایسنس جدید خود را فعال کنید</string>
+<string name="vpn_error_no_server">سروری انتخاب نشده</string>
     <string name="vpn_error_tun">ایجاد رابط TUN ناموفق بود</string>
     <string name="vpn_error_tor">راه‌اندازی Tor ناموفق بود</string>
     <string name="vpn_error_fronting">دامنه‌فرانتینگ ناموفق: %1$s</string>

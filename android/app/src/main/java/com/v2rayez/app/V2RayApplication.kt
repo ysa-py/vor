@@ -169,6 +169,12 @@ class V2RayApplication : Application(), Configuration.Provider {
      * Best-effort last-gasp logger: records the fatal exception to the in-app log stream before
      * delegating to the platform default handler, so crashes are visible in the Logs screen and
      * exported reports instead of vanishing.
+     *
+     * 2026-09 hardening (device crash report): the old handler evaluated
+     * `sanitizedForCrashlytics(throwable)` OUTSIDE any runCatching when chaining to the
+     * previous handler — a throw there would itself kill the process and replace the real
+     * crash with an opaque one. The handler is now non-throwing end-to-end and always
+     * chains the ORIGINAL throwable (sanitized best-effort) so the real cause survives.
      */
     private fun installCrashLogger() {
         val previous = Thread.getDefaultUncaughtExceptionHandler()
@@ -187,9 +193,14 @@ class V2RayApplication : Application(), Configuration.Provider {
                 Log.e("V2RayApplication", "Uncaught exception on ${thread.name}", throwable)
                 firebaseTelemetry.recordFatal(throwable)
             }
-            // Crashlytics' default handler is usually `previous` — never hand it a raw
-            // throwable (hosts/URIs in messages would bypass our scrub boundary).
-            previous?.uncaughtException(thread, sanitizedForCrashlytics(throwable))
+            // Never hand the platform a throwable produced by our OWN sanitization —
+            // if scrubbing fails for any reason, chain the original untouched.
+            val toReport = runCatching { sanitizedForCrashlytics(throwable) }.getOrDefault(throwable)
+            if (toReport !is Throwable) {
+                previous?.uncaughtException(thread, throwable)
+            } else {
+                previous?.uncaughtException(thread, toReport)
+            }
         }
     }
 }

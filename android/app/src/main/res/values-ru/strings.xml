@@ -878,7 +878,8 @@
     <string name="vpn_notif_starting_server">Запуск %1$s…</string>
     <string name="vpn_notif_connected">Подключено</string>
     <string name="vpn_notif_disconnect">Отключить</string>
-    <string name="vpn_error_no_server">Сервер не выбран</string>
+        <string name="vpn_error_license_expired">Лицензия истекла — активируйте новую лицензию, чтобы продолжить</string>
+<string name="vpn_error_no_server">Сервер не выбран</string>
     <string name="vpn_error_tun">Не удалось создать TUN-интерфейс</string>
     <string name="vpn_error_tor">Не удалось запустить Tor</string>
     <string name="vpn_error_fronting">Domain fronting не удался: %1$s</string>
