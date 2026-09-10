@@ -57,6 +57,8 @@ type Server struct {
 // New returns a Server with a fresh log bus.
 func New() *Server {
 	s := &Server{bus: logbus.New(), desyncDefaults: desync.DefaultConfig()}
+	initLicenseState()
+	RegisterEngines(defaultAvailableEngines())
 	s.xrayRunner = xray.NewRunner(s.bus.Log)
 	s.singboxRunner = singbox.NewRunner(s.bus.Log)
 	s.t2s = tun2socks.NewRunner(s.bus.Log)
@@ -86,6 +88,14 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("/favicon.ico", s.handleFavicon)
 	mux.HandleFunc("/favicon.png", s.handleFavicon)
 	mux.HandleFunc("/api/events", s.handleEvents)
+	mux.HandleFunc("/api/license/status", s.jsonPOST(s.handleLicenseStatus))
+	mux.HandleFunc("/api/home/telemetry", s.jsonPOST(s.handleHomeTelemetry))
+	mux.HandleFunc("/api/license/activate", s.jsonPOST(s.handleLicenseActivate))
+	mux.HandleFunc("/api/license/clear", s.jsonPOST(s.handleLicenseClear))
+	mux.HandleFunc("/api/engine/list", s.jsonPOST(s.handleEngineList))
+	mux.HandleFunc("/api/engine/select", s.jsonPOST(s.handleEngineSelect))
+	mux.HandleFunc("/api/engine/decide", s.jsonPOST(s.handleEngineDecide))
+	mux.HandleFunc("/api/engine/observe", s.jsonPOST(s.handleEngineObserve))
 	mux.HandleFunc("/api/uri/parse", s.jsonPOST(s.handleParseURI))
 	mux.HandleFunc("/api/sni/scan", s.jsonPOST(s.handleSNIScan))
 	mux.HandleFunc("/api/sni/relay-test", s.jsonPOST(s.handleRelayTest))

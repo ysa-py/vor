@@ -441,6 +441,170 @@
 </style>
 </head>
 <body>
+<!-- ======================= Vor: license gate + Home view + engine selector ======================= -->
+<div id="vorGate" style="display:none;position:fixed;inset:0;z-index:9999;background:#0b0f1a;color:#e8eaf2;display:flex;align-items:center;justify-content:center;direction:ltr">
+  <div style="max-width:560px;width:92%;padding:28px;background:#141a2a;border:1px solid #26304a;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5)">
+    <div style="font-size:22px;font-weight:700;margin-bottom:6px">Activate Vor</div>
+    <div style="font-size:13px;color:#9aa3b8;margin-bottom:18px">Paste the license token you received. Verification happens offline on this device — no internet connection is used.</div>
+    <div id="vorGateErr" style="display:none;font-size:13px;color:#ffb4ab;background:#2a1417;border-radius:8px;padding:8px 12px;margin-bottom:12px"></div>
+    <textarea id="vorGateToken" placeholder="VOR1.eyJ2IjoxLCJpZCI6…" rows="4" style="width:100%;background:#0b0f1a;border:1px solid #26304a;border-radius:8px;color:#e8eaf2;padding:10px;font-family:monospace;font-size:12px;box-sizing:border-box"></textarea>
+    <button id="vorGateActivate" style="margin-top:14px;width:100%;padding:12px;border:none;border-radius:8px;background:#8b5cf6;color:#fff;font-size:15px;font-weight:600;cursor:pointer">Check / Activate License</button>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  function api(path, body){
+    return fetch(path, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body||{})}).then(function(r){return r.json()});
+  }
+  var gate = document.getElementById("vorGate");
+  function refreshGate(){
+    api("/api/license/status").then(function(st){
+      if (st && st.armed){
+        gate.style.display = "flex";
+        if (st.payload && st.status === "EXPIRED"){
+          var err = document.getElementById("vorGateErr");
+          err.style.display = "block";
+          err.textContent = "This license expired on " + st.payload.expires_at + ". Obtain a new token to unlock Vor again.";
+        }
+      } else {
+        gate.style.display = "none";
+        buildHome();
+      }
+    }).catch(function(){ gate.style.display = "none"; });
+  }
+  document.getElementById("vorGateActivate").addEventListener("click", function(){
+    var token = document.getElementById("vorGateToken").value.trim();
+    var err = document.getElementById("vorGateErr");
+    err.style.display = "none";
+    if (!token) return;
+    api("/api/license/activate", {token: token}).then(function(res){
+      if (res && res.status === "VALID"){ refreshGate(); }
+      else {
+        err.style.display = "block";
+        err.textContent = res && res.status === "EXPIRED" ? "This license has expired." : "Invalid token. Check that you copied the whole token.";
+      }
+    });
+  });
+  refreshGate();
+  setInterval(refreshGate, 60 * 60 * 1000); // hourly offline re-check → expiry re-locks
+
+  // ---------------- Home view (Aethon-style orb + telemetry) + engine selector ----------------
+  var homeBuilt = false;
+  function buildHome(){
+    if (homeBuilt) return; homeBuilt = true;
+    var style = document.createElement("style");
+    style.textContent = [
+      ".vor-home{padding:18px 16px 26px;max-width:760px;margin:0 auto}",
+      ".vor-orb{width:132px;height:132px;border-radius:50%;margin:14px auto 6px;position:relative;cursor:pointer;transition:box-shadow .3s,background .3s;background:radial-gradient(circle at 35% 30%,#3b3054,#191d2e 70%);border:2px solid #2c3652;box-shadow:0 0 0 0 rgba(139,92,246,.0)}",
+      ".vor-orb.on{background:radial-gradient(circle at 35% 30%,#4b74e3,#1b2a4a 70%);border-color:#4b74e3;box-shadow:0 0 34px rgba(75,116,227,.45);animation:vorBreath 3.4s ease-in-out infinite}",
+      ".vor-orb.err{border-color:#e35d5d;background:radial-gradient(circle at 35% 30%,#7a2f36,#241418 70%)}",
+      "@keyframes vorBreath{0%,100%{box-shadow:0 0 22px rgba(75,116,227,.35)}50%{box-shadow:0 0 44px rgba(75,116,227,.6)}}",
+      "@media (prefers-reduced-motion: reduce){.vor-orb.on{animation:none}}",
+      ".vor-orb-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#cfd6e6;letter-spacing:.5px}",
+      ".vor-pill{display:flex;align-items:center;gap:7px;justify-content:center;margin:10px 0 18px;font-size:13px;color:#9aa3b8}",
+      ".vor-dot{width:8px;height:8px;border-radius:50%;background:#5c6478}.vor-dot.on{background:#5ce68f}.vor-dot.err{background:#ff6b5e}",
+      ".vor-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}",
+      ".vor-card{background:#141a2a;border:1px solid #26304a;border-radius:10px;padding:12px}",
+      ".vor-card .k{font-size:11px;color:#9aa3b8;margin-bottom:4px}",
+      ".vor-card .v{font-size:16px;font-weight:700}",
+      ".vor-sel{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 6px}",
+      ".vor-chip{padding:7px 13px;border-radius:999px;border:1px solid #2c3652;background:#101523;color:#cfd6e6;font-size:12.5px;cursor:pointer}",
+      ".vor-chip.sel{background:#8b5cf6;border-color:#8b5cf6;color:#fff}"
+    ].join("\n");
+    document.head.appendChild(style);
+
+    var section = document.createElement("section");
+    section.id = "view-vorhome";
+    section.className = "view vor-home";
+    section.innerHTML =
+      '<div class="vor-orb" id="vorOrb"><div class="vor-orb-icon" id="vorOrbLabel">CONNECT</div></div>' +
+      '<div class="vor-pill"><span class="vor-dot" id="vorDot"></span><span id="vorStatus">Vor Ready</span></div>' +
+      '<div class="vor-cards">' +
+        '<div class="vor-card"><div class="k">Engine</div><div class="v" id="vorEngine">idle</div></div>' +
+        '<div class="vor-card"><div class="k">Ping</div><div class="v" id="vorPing">—</div></div>' +
+        '<div class="vor-card"><div class="k">Exit IP</div><div class="v" id="vorIp">—</div></div>' +
+        '<div class="vor-card"><div class="k">Location</div><div class="v" id="vorLoc">—</div></div>' +
+        '<div class="vor-card"><div class="k">Threat</div><div class="v" id="vorThreat">none</div></div>' +
+        '<div class="vor-card"><div class="k">AI pick</div><div class="v" id="vorPick">—</div></div>' +
+      '</div>' +
+      '<div style="font-size:12px;color:#9aa3b8;margin-top:14px">Transport engine — Auto lets the on-device adaptive AI pick (learned per network); manual pins one engine.</div>' +
+      '<div class="vor-sel" id="vorEngines"></div>';
+    var app = document.querySelector(".app") || document.body;
+    app.insertBefore(section, app.firstChild);
+
+    // Engine selector chips
+    var engineLabels = {"auto":"Auto (AI)","xray":"Xray","singbox":"sing-box","sni-tunnel":"SNI Tunnel","pattern":"Pattern (wrong-seq)","dns-tunnel-dnstt":"DNS dnstt","dns-tunnel-masterdns":"DNS MasterDns","tor":"Tor","psiphon":"Psiphon","mitm-fronting":"MITM fronting"};
+    var engineList = ["auto","xray","singbox","sni-tunnel","pattern","dns-tunnel-dnstt","dns-tunnel-masterdns","tor","psiphon","mitm-fronting"];
+    var chips = document.getElementById("vorEngines");
+    engineList.forEach(function(id){
+      if (id === "pattern" && !/Windows/i.test(navigator.userAgent)) return; // WinDivert engine
+      var chip = document.createElement("button");
+      chip.className = "vor-chip";
+      chip.textContent = engineLabels[id] || id;
+      chip.dataset.engine = id;
+      chip.addEventListener("click", function(){
+        api("/api/engine/select", {engine: id}).then(function(){ markSelection(id); refreshHome(); });
+      });
+      chips.appendChild(chip);
+    });
+    function markSelection(id){
+      var selected = document.querySelectorAll("#vorEngines .vor-chip");
+      for (var i=0;i<selected.length;i++){
+        selected[i].classList.toggle("sel", selected[i].dataset.engine === id);
+      }
+    }
+    api("/api/engine/list").then(function(res){
+      markSelection(res && res.selection ? res.selection : "auto");
+    });
+
+    // Nav entry
+    var nav = document.getElementById("nav");
+    if (nav){
+      var homeLink = document.createElement("button");
+      homeLink.className = "navitem";
+      homeLink.textContent = "Home";
+      homeLink.addEventListener("click", function(){ showVorHome(); });
+      nav.insertBefore(homeLink, nav.firstChild);
+    }
+    function showVorHome(){
+      var views = document.querySelectorAll(".view");
+      for (var i=0;i<views.length;i++) views[i].style.display = "none";
+      section.style.display = "block";
+    }
+    section.style.display = "block";
+    // hide other views initially so Home is the landing view
+    var views = document.querySelectorAll(".view");
+    for (var i=0;i<views.length;i++){
+      if (views[i] !== section) views[i].style.display = "none";
+    }
+
+    function refreshHome(){
+      api("/api/home/telemetry").then(function(t){
+        if (!t) return;
+        var orb = document.getElementById("vorOrb");
+        var dot = document.getElementById("vorDot");
+        orb.classList.toggle("on", !!t.connected);
+        dot.classList.toggle("on", !!t.connected);
+        document.getElementById("vorEngine").textContent = t.engine || "idle";
+        document.getElementById("vorPing").textContent = t.ping_ms >= 0 ? t.ping_ms + " ms" : "—";
+        document.getElementById("vorIp").textContent = t.exit_ip || "—";
+        document.getElementById("vorLoc").textContent = t.location || "—";
+        document.getElementById("vorThreat").textContent = t.threat_level || "none";
+        document.getElementById("vorStatus").textContent = t.connected ? "Vor Active" : "Vor Ready";
+        document.getElementById("vorOrbLabel").textContent = t.connected ? "ACTIVE" : "CONNECT";
+      });
+      api("/api/engine/decide", {}).then(function(d){
+        if (d && d.engine) document.getElementById("vorPick").textContent = d.engine + (d.is_champion ? " ★" : "");
+      }).catch(function(){});
+    }
+    refreshHome();
+    setInterval(refreshHome, 5000);
+  }
+})();
+</script>
+<!-- ======================= /Vor additions ======================= -->
+
 <div id="dlbar" aria-hidden="true"><div class="dlbar-fill"></div></div>
 <div id="gprog"></div>
 <div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
