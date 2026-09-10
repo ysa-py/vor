@@ -64,25 +64,35 @@ jobs:
           ./gradlew :app:testDebugUnitTest :license-manager:testDebugUnitTest :app:lintRelease --stacktrace
           ./gradlew :app:assembleRelease :license-manager:assembleRelease \
             -Pv2rayez.addons.githubRepo=ovld-team/V2RayEZ \
-            -Pv2rayez.addons.releaseTag=V2RayEZ-v1.0.1 \
+            -Pv2rayez.addons.releaseTag=V2RayEZ-v1.0.2 \
             -Pvor.licensePublicKey="${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" \
             --stacktrace
       - name: Stage artifacts
         working-directory: android
         run: |
           mkdir -p release-assets
-          if [ -f app/build/outputs/apk/universal/release/app-universal-release.apk ]; then
-            cp app/build/outputs/apk/universal/release/app-universal-release.apk \
-               "release-assets/Vor-v${{ steps.version.outputs.version }}-android-universal-release.apk"
-          fi
-          for abi in arm64-v8a armeabi-v7a x86_64; do
-            if [ -f "app/build/outputs/apk/$abi/release/app-$abi-release.apk" ]; then
-              cp "app/build/outputs/apk/$abi/release/app-$abi-release.apk" \
-                 "release-assets/Vor-v${{ steps.version.outputs.version }}-android-$abi-release.apk"
-            fi
+          VER="${{ steps.version.outputs.version }}"
+          # AGP splits put EVERY apk in outputs/apk/release/ (single dir) named
+          # app-<abi>-release[-unsigned].apk; unsigned when no KEYSTORE secret.
+          staged=0
+          for f in app/build/outputs/apk/release/app-*-release*.apk; do
+            [ -f "$f" ] || continue
+            base="$(basename "$f" .apk)"           # app-arm64-v8a-release[-unsigned]
+            base="${base/-unsigned/}"
+            abi="${base#app-}"; abi="${abi%-release}"
+            cp "$f" "release-assets/Vor-v${VER}-android-${abi}-release.apk"
+            staged=$((staged+1))
           done
-          cp license-manager/build/outputs/apk/release/license-manager-release.apk \
-             "release-assets/Vor-v${{ steps.version.outputs.version }}-license-manager-release.apk" || true
+          for f in license-manager/build/outputs/apk/release/*.apk; do
+            [ -f "$f" ] || continue
+            cp "$f" "release-assets/Vor-v${VER}-license-manager-release.apk"
+            staged=$((staged+1))
+          done
+          if [ "$staged" -eq 0 ]; then
+            echo "::error::no Android APKs staged — check assembleRelease outputs"
+            exit 1
+          fi
+          echo "staged $staged APKs"
           (cd release-assets && sha256sum *.apk > SHA256SUMS.txt)
       - uses: actions/upload-artifact@v7
         with:
@@ -105,7 +115,8 @@ jobs:
           go vet ./...
           go test ./...
           # embed the production license public key when configured
-          go build -trimpath -ldflags "-s -w -X main.vorLicensePublicKey=${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" -o "Vor-desktop.exe" .
+          # (link-time var: desktop/internal/server/license_gate.go)
+          go build -trimpath -ldflags "-s -w -X ezsni/internal/server.vorLicensePublicKey=${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" -o "Vor-desktop.exe" .
       - name: Stage portable bundle
         working-directory: desktop
         shell: pwsh
@@ -136,7 +147,9 @@ jobs:
         run: |
           go vet ./...
           go test ./...
-          go build -trimpath -ldflags "-s -w" -o vor-desktop .
+          # embed the production license public key when configured
+          # (link-time var: desktop/internal/server/license_gate.go)
+          go build -trimpath -ldflags "-s -w -X ezsni/internal/server.vorLicensePublicKey=${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" -o vor-desktop .
       - name: deb package
         working-directory: desktop
         run: |
@@ -352,7 +365,7 @@ jobs:
 
             | Platform | Artifact | Notes |
             |---|---|---|
-            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | Signed; license gate on first launch |
+            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | Signed when the KEYSTORE_BASE64/PASSWORD/ALIAS secrets are set, otherwise debug-unsigned APKs (install via `adb install`); license gate on first launch |
             | Windows | `Vor-desktop.exe` (+ WinDivert files) | Portable single binary; default engine = Go desync; pattern (wrong-seq) engine selectable |
             | Linux | `vor-desktop` + `.deb` + AppDir archive | |
             | OpenWrt | `vor_1.0.0_<arch>.ipk` matrix | Universal package — one source, every target |

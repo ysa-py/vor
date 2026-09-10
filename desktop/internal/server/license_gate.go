@@ -32,12 +32,21 @@ var (
 	licenseVerified bool
 )
 
+// vorLicensePublicKey is set at link-time by release builds:
+//
+//	go build -ldflags "-X ezsni/internal/server.vorLicensePublicKey=<b64url>"
+//
+// Priority: env VOR_LICENSE_PUBLIC_KEY > this link-time value > dev key.
+var vorLicensePublicKey string
+
 func licensePublicKey() string {
 	if key := os.Getenv("VOR_LICENSE_PUBLIC_KEY"); key != "" {
 		return key
 	}
-	// Dev key (license/keys/dev) — CI release builds embed the production
-	// key via -ldflags or the env var above.
+	if vorLicensePublicKey != "" {
+		return vorLicensePublicKey
+	}
+	// Dev key (license/keys/dev) — local development default only.
 	return "f54nNpWuth1MHZsbi6sdEODSDvWp7V6XSSDqWtmCyMA"
 }
 
