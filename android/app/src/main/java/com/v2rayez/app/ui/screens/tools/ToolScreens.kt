@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -98,6 +99,7 @@ import com.v2rayez.app.ui.components.V2FilterChip
 import com.v2rayez.app.ui.components.V2Switch
 import com.v2rayez.app.ui.components.VSpacer
 import com.v2rayez.app.ui.theme.Connected
+import com.v2rayez.app.ui.theme.AccentGreen
 import com.v2rayez.app.ui.theme.ErrorRed
 import com.v2rayez.app.ui.theme.V2RayEzTheme
 import com.v2rayez.app.ui.theme.Warning
@@ -1694,6 +1696,107 @@ private fun SpeedResultTile(label: String, value: String, modifier: Modifier = M
             Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             VSpacer(6)
             Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
+
+// ============================================================ DNS scanner
+
+/**
+ * DNS resolver scanner/scorer — probes resolvers for latency, EDNS0
+ * support and NXDOMAIN-hijack behavior, scored 0-100. Mirrors the
+ * reference implementation (desktop internal/dnsprobe, ENGINES.md) so
+ * both platforms present identical semantics.
+ */
+@Composable
+fun DnsScannerScreen(onBack: () -> Unit, viewModel: com.v2rayez.app.ui.viewmodel.DnsScannerViewModel = hiltViewModel()) {
+    val state by viewModel.state.collectAsState()
+    ToolScaffold(stringResource(R.string.dnsscan_title), onBack) {
+        Text(
+            stringResource(R.string.dnsscan_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        VSpacer(12)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+                onClick = { viewModel.scan() },
+                enabled = !state.running,
+                modifier = Modifier.weight(1f)
+            ) {
+                if (state.running) {
+                    CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
+                    VSpacer(6)
+                }
+                Text(stringResource(R.string.dnsscan_run))
+            }
+        }
+        VSpacer(8)
+        state.error?.let {
+            Text(it, color = ErrorRed, style = MaterialTheme.typography.bodySmall)
+            VSpacer(8)
+        }
+
+        if (state.results.isNotEmpty()) {
+            VSpacer(4)
+            CardSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
+                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    // Header row
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.dnsscan_col_resolver), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1.4f))
+                        Text(stringResource(R.string.dnsscan_col_latency), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(0.8f))
+                        Text(stringResource(R.string.dnsscan_col_edns), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(0.6f))
+                        Text(stringResource(R.string.dnsscan_col_score), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(0.7f), textAlign = androidx.compose.ui.text.style.TextAlign.End)
+                    }
+                    state.results.forEachIndexed { index, result ->
+                        if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp, modifier = Modifier.padding(vertical = 8.dp))
+                        Row(Modifier.fillMaxWidth()) {
+                            Column(Modifier.weight(1.4f)) {
+                                Text(result.server, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                if (result.error != null) {
+                                    Text(result.error, style = MaterialTheme.typography.labelSmall, color = ErrorRed, maxLines = 1)
+                                } else if (!result.honest) {
+                                    Text(
+                                        stringResource(R.string.dnsscan_hijack, result.hijackIp ?: "?"),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = ErrorRed,
+                                        maxLines = 1
+                                    )
+                                } else {
+                                    Text(result.transport, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            }
+                            Text(
+                                if (result.error == null) "%.0f ms".format(result.latencyMs) else "—",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(0.8f)
+                            )
+                            Text(
+                                if (result.error == null) stringResource(if (result.edns) R.string.dnsscan_yes else R.string.dnsscan_no) else "—",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (result.edns) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(0.6f)
+                            )
+                            Text(
+                                if (result.error == null) "%.0f".format(result.score) else "0",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = when {
+                                    result.error != null -> ErrorRed
+                                    result.score >= 70 -> AccentGreen
+                                    result.score >= 40 -> Warning
+                                    else -> ErrorRed
+                                },
+                                modifier = Modifier.weight(0.7f),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.End
+                            )
+                        }
+                    }
+                }
+            }
+            VSpacer(8)
+            Text(stringResource(R.string.dnsscan_hint), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

@@ -1062,4 +1062,18 @@
     <string name="license_gate_error_invalid">Invalid token. Check that you copied the whole token.</string>
     <string name="license_gate_expired_title">License expired</string>
     <string name="license_gate_expired_body">This license expired on %1$s. Obtain a new token to unlock Vor again.</string>
+
+    <!-- DNS resolver scanner -->
+    <string name="dnsscan_title">DNS Resolver Scanner</string>
+    <string name="dnsscan_subtitle">Probe public resolvers for latency, EDNS support and NXDOMAIN hijacking, then pick the best one for your tunnel.</string>
+    <string name="dnsscan_run">Scan resolvers</string>
+    <string name="dnsscan_col_resolver">Resolver</string>
+    <string name="dnsscan_col_latency">Latency</string>
+    <string name="dnsscan_col_edns">EDNS</string>
+    <string name="dnsscan_col_score">Score</string>
+    <string name="dnsscan_hijack">Hijacked! Returned %1$s for a non-existent domain</string>
+    <string name="dnsscan_yes">yes</string>
+    <string name="dnsscan_no">no</string>
+    <string name="dnsscan_hint">Hijacking resolvers poison DNS-tunnel traffic — always prefer an honest resolver with a high score.</string>
+    <string name="dnsscan_open_from_editor">Scan resolvers to pick the best one →</string>
 </resources>

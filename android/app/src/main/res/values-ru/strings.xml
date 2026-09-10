@@ -1060,4 +1060,18 @@
     <string name="license_gate_error_invalid">Недействительный токен. Скопируйте токен полностью.</string>
     <string name="license_gate_expired_title">Лицензия истекла</string>
     <string name="license_gate_expired_body">Лицензия истекла %1$s. Получите новый токен, чтобы снова разблокировать Vor.</string>
+
+    <!-- DNS resolver scanner -->
+    <string name="dnsscan_title">Сканер DNS-резолверов</string>
+    <string name="dnsscan_subtitle">Проверьте публичные резолверы на задержку, поддержку EDNS и подделку NXDOMAIN, затем выберите лучший для туннеля.</string>
+    <string name="dnsscan_run">Сканировать</string>
+    <string name="dnsscan_col_resolver">Резолвер</string>
+    <string name="dnsscan_col_latency">Задержка</string>
+    <string name="dnsscan_col_edns">EDNS</string>
+    <string name="dnsscan_col_score">Оценка</string>
+    <string name="dnsscan_hijack">Подделка! Вернул %1$s для несуществующего домена</string>
+    <string name="dnsscan_yes">да</string>
+    <string name="dnsscan_no">нет</string>
+    <string name="dnsscan_hint">Резолверы-обманщики отравляют трафик DNS-туннелей — всегда выбирайте честный резолвер с высокой оценкой.</string>
+    <string name="dnsscan_open_from_editor">Сканировать резолверы и выбрать лучший →</string>
 </resources>

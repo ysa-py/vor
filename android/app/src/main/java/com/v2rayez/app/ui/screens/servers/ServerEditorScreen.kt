@@ -54,6 +54,7 @@ private val SECURITIES = listOf("none", "tls", "reality")
 fun ServerEditorScreen(
     serverId: String?,
     onBack: () -> Unit,
+    onOpenDnsScanner: (() -> Unit)? = null,
     viewModel: ServerEditorViewModel = hiltViewModel()
 ) {
     // Key form state by serverId so navigating new↔edit (or between servers) clears stale fields.
@@ -222,6 +223,17 @@ fun ServerEditorScreen(
                     EditorField(stringResource(R.string.editor_dns_domain), dnsDomain) { dnsDomain = it }
                     EditorField(stringResource(R.string.editor_dns_public_key), dnsPubKey) { dnsPubKey = it }
                     EditorField(stringResource(R.string.editor_dns_resolver), dnsResolver) { dnsResolver = it }
+                    if (onOpenDnsScanner != null) {
+                        Text(
+                            stringResource(R.string.dnsscan_open_from_editor),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onOpenDnsScanner() }
+                                .padding(vertical = 6.dp)
+                        )
+                    }
                     EditorField(stringResource(R.string.editor_dns_mode), dnsMode) { dnsMode = it.lowercase() }
                 }
                 Protocol.PSIPHON -> {

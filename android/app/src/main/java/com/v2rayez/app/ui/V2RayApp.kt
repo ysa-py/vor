@@ -55,6 +55,7 @@ import com.v2rayez.app.ui.screens.tools.AppProxyScreen
 import com.v2rayez.app.ui.screens.tools.BpbPanelScreen
 import com.v2rayez.app.ui.screens.tools.CertificatesScreen
 import com.v2rayez.app.ui.screens.tools.DiagnosticsScreen
+import com.v2rayez.app.ui.screens.tools.DnsScannerScreen
 import com.v2rayez.app.ui.screens.tools.DnsScreen
 import com.v2rayez.app.ui.screens.browser.BrowserScreen
 import com.v2rayez.app.ui.screens.mitm.MitmDomainFrontingScreen
@@ -273,6 +274,7 @@ fun V2RayApp(
             composable(Routes.CERTIFICATES) { CertificatesScreen(onBack = { navController.popBackStack() }) }
             composable(Routes.DIAGNOSTICS) { DiagnosticsScreen(onBack = { navController.popBackStack() }) }
             composable(Routes.SPEED_TEST) { SpeedTestScreen(onBack = { navController.popBackStack() }) }
+            composable(Routes.DNS_SCANNER) { DnsScannerScreen(onBack = { navController.popBackStack() }) }
 
             composable(
                 route = Routes.SERVER_EDITOR_ROUTE,
@@ -286,7 +288,8 @@ fun V2RayApp(
             ) { entry ->
                 ServerEditorScreen(
                     serverId = entry.arguments?.getString(Routes.SERVER_EDITOR_ARG),
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onOpenDnsScanner = { go(Routes.DNS_SCANNER) }
                 )
             }
         }

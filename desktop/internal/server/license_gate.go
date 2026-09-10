@@ -252,7 +252,7 @@ var errLicenseRequired = fmt.Errorf("license required")
 
 // defaultAvailableEngines lists the engines this build can actually start.
 func defaultAvailableEngines() []string {
-	engines := []string{"xray", "singbox", "sni-tunnel", "tor", "mitm-fronting", "dns-tunnel-dnstt", "dns-tunnel-masterdns", "psiphon"}
+	engines := []string{"xray", "singbox", "sni-tunnel", "tor", "mitm-fronting", "dns-tunnel-dnstt", "dns-tunnel-masterdns", "psiphon", "ssh-chain", "naive-https"}
 	if runtime.GOOS == "windows" {
 		engines = append(engines, "pattern")
 	}

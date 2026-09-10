@@ -1026,4 +1026,18 @@
     <string name="license_gate_error_invalid">توکن نامعتبر است. کل توکن را کپی کنید.</string>
     <string name="license_gate_expired_title">لایسنس منقضی شده</string>
     <string name="license_gate_expired_body">این لایسنس در %1$s منقضی شده است. برای باز کردن دوبارهٔ Vor توکن جدید بگیرید.</string>
+
+    <!-- DNS resolver scanner -->
+    <string name="dnsscan_title">اسکنر DNS</string>
+    <string name="dnsscan_subtitle">بررسی سرعت، پشتیبانی EDNS و جعل پاسخ NXDOMAIN در رزولورهای عمومی، سپس انتخاب بهترین برای تانل شما.</string>
+    <string name="dnsscan_run">اسکن رزولورها</string>
+    <string name="dnsscan_col_resolver">رزولور</string>
+    <string name="dnsscan_col_latency">تأخیر</string>
+    <string name="dnsscan_col_edns">EDNS</string>
+    <string name="dnsscan_col_score">امتیاز</string>
+    <string name="dnsscan_hijack">تقلب! برای دامنهٔ ناموجود %1$s برگرداند</string>
+    <string name="dnsscan_yes">بله</string>
+    <string name="dnsscan_no">خیر</string>
+    <string name="dnsscan_hint">رزولورهای متقلب ترافیک تانل‌های DNS را مسموم می‌کنند — همیشه رزولور صادق با امتیاز بالاتر را انتخاب کنید.</string>
+    <string name="dnsscan_open_from_editor">برای انتخاب بهترین رزولور اسکن کنید ←</string>
 </resources>

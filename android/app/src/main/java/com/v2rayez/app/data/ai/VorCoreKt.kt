@@ -306,6 +306,7 @@ object VorCoreKt {
     val KNOWN_ENGINES = listOf(
         "xray", "singbox", "sni-tunnel", "pattern", "dns-tunnel-dnstt",
         "dns-tunnel-masterdns", "tor", "psiphon", "mitm-fronting",
+        "ssh-chain", "naive-https",
     )
 
     private fun fragmentApplicable(engine: String): Boolean =

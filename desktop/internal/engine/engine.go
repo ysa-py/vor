@@ -355,6 +355,7 @@ func contains(list []string, value string) bool {
 var KnownEngines = []string{
 	"xray", "singbox", "sni-tunnel", "pattern", "dns-tunnel-dnstt",
 	"dns-tunnel-masterdns", "tor", "psiphon", "mitm-fronting",
+	"ssh-chain", "naive-https",
 }
 
 func fragmentApplicable(engine string) bool {

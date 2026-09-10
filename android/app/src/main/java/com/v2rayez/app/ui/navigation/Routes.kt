@@ -55,6 +55,8 @@ object Routes {
     const val CERTIFICATES = "certificates"
     const val DIAGNOSTICS = "diagnostics"
     const val SPEED_TEST = "speed_test"
+    /** DNS resolver scanner/scorer (latency, EDNS, NXDOMAIN-hijack detection). */
+    const val DNS_SCANNER = "dns_scanner"
 }
 
 /** The five bottom-bar tabs. */
