@@ -9,6 +9,10 @@ targets:
     platform: iOS
     sources:
       - path: Vor
+        excludes:
+          # Unit tests compile in the VorTests target only — XCTest cannot
+          # resolve inside the app target.
+          - "LicenseTests.swift"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.vor.app
@@ -17,6 +21,10 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        # Embedded license public key (dev default). Release builds override
+        # this setting on the xcodebuild command line:
+        #   xcodebuild ... INFOPLIST_KEY_VORLicensePublicKey=<prod b64url>
+        INFOPLIST_KEY_VORLicensePublicKey: "f54nNpWuth1MHZsbi6sdEODSDvWp7V6XSSDqWtmCyMA"
         SWIFT_VERSION: "5.9"
         CODE_SIGNING_ALLOWED: "NO"
   VorTests:

@@ -8,10 +8,18 @@ import CryptoKit
 /// key. Fully offline: no network call, ever.
 ///
 /// The dev public key matches license/keys/dev (unit tests + dev builds);
-/// CI release builds override it with the production key.
+/// release builds embed the production key via the
+/// INFOPLIST_KEY_VORLicensePublicKey build setting (see project.yml).
 enum LicenseVerifier {
 
     static let devPublicKey = "f54nNpWuth1MHZsbi6sdEODSDvWp7V6XSSDqWtmCyMA"
+
+    /// Key priority: Info.plist (release-injected prod key) > dev default.
+    static var configuredPublicKey: String {
+        let injected = (Bundle.main.infoDictionary?["VORLicensePublicKey"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return injected.isEmpty ? devPublicKey : injected
+    }
 
     enum Status: String {
         case valid = "VALID"
@@ -28,7 +36,8 @@ enum LicenseVerifier {
         var licenseId: String? { payload?["id"] as? String }
     }
 
-    static func verify(_ token: String, now: Date = Date(), publicKey: String = devPublicKey) -> Result {
+    static func verify(_ token: String, now: Date = Date(), publicKey: String? = nil) -> Result {
+        let key = publicKey ?? configuredPublicKey
         let parts = token.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: ".")
         guard parts.count == 3, parts[0] == "VOR1" else { return .init(status: .invalid, payload: nil) }
         guard let payload = base64urlDecode(String(parts[1])),

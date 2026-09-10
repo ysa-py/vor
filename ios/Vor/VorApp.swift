@@ -116,6 +116,16 @@ struct MainScreen: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
+                // Selectable resolution transport for upstream dials
+                // (system resolver or DNS-over-HTTPS).
+                Picker("DNS", selection: $proxy.resolution) {
+                    ForEach(SocksProxyEngine.ResolutionTransport.allCases) { transport in
+                        Text(transport.rawValue).tag(transport)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 24)
+
                 VStack(alignment: .leading, spacing: 6) {
                     Label("License ID: \(license.lastResult?.licenseId ?? "—")", systemImage: "checkmark.seal")
                     Label("Expires: \(license.lastResult?.expiresAt?.formatted(date: .abbreviated, time: .omitted) ?? "—")", systemImage: "calendar")

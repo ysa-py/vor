@@ -231,15 +231,24 @@ jobs:
       - name: Build unsigned .ipa
         working-directory: ios
         run: |
+          set -euo pipefail
           xcodebuild -project Vor.xcodeproj -scheme Vor -configuration Release \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-            -destination 'generic/platform=iOS' build | xcpretty || exit 1
+            -destination 'generic/platform=iOS' build 2>&1 | xcpretty; test ${PIPESTATUS[0]} -eq 0
           APP="build/Build/Products/Release-iphoneos/Vor.app"
           [ -d "$APP" ] || APP="build/Build/Products/Release-iphones/Vor.app"
+          test -d "$APP" || { echo "::error::Vor.app was not produced"; exit 1; }
+          # A green xcodebuild must yield a real compiled binary — verify
+          # before packaging so a skeleton .app can never ship as an .ipa.
+          test -f "$APP/Vor" || { echo "::error::compiled binary Vor.app/Vor is missing"; exit 1; }
+          file "$APP/Vor" | grep -q "Mach-O" || { echo "::error::Vor.app/Vor is not Mach-O"; exit 1; }
+          SIZE=$(stat -f%z "$APP/Vor")
+          [ "$SIZE" -gt 500000 ] || { echo "::error::binary implausibly small ($SIZE bytes)"; exit 1; }
           rm -rf build/Payload build/Vor-iOS-unsigned.ipa
           mkdir -p build/Payload && cp -R "$APP" build/Payload/
           (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
+          echo "Vor.app binary: $SIZE bytes; ipa: $(stat -f%z build/Vor-iOS-unsigned.ipa) bytes"
       - uses: actions/upload-artifact@v7
         with:
           name: vor-ios-unsigned-ipa
