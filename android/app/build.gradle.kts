@@ -23,11 +23,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.v2rayez.app"
+        applicationId = "com.vor.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 102
-        versionName = "1.0.2"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -46,6 +46,16 @@ android {
             "String",
             "ADDONS_RELEASE_TAG",
             "\"${linkProp("v2rayez.addons.releaseTag", "V2RayEZ-v1.0.1")}\""
+        )
+        // License verification public key. The committed DEV key matches
+        // license/keys/dev (unit tests + debug builds); CI release builds
+        // pass -Pvor.licensePublicKey=<prod b64url> so the production key is
+        // baked into release APKs. The matching private key only ever lives
+        // in the LICENSE_SIGNING_KEY GitHub secret.
+        buildConfigField(
+            "String",
+            "VOR_LICENSE_PUBLIC_KEY",
+            "\"${linkProp("vor.licensePublicKey", "f54nNpWuth1MHZsbi6sdEODSDvWp7V6XSSDqWtmCyMA")}\""
         )
         // Ship English + Persian + Russian; strip every other locale (incl. library ones).
         resourceConfigurations += listOf("en", "fa", "ru")
@@ -172,6 +182,7 @@ ksp {
 }
 
 dependencies {
+    implementation(project(":core-license"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

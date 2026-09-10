@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">V2RayEz</string>
+    <string name="app_name">Vor</string>
 
     <!-- App shortcuts -->
     <string name="shortcut_connect_short">Connect</string>
@@ -1051,4 +1051,15 @@
     <string name="vpn_error_mitm_ca">Install and acknowledge the Domain Fronting CA before connecting</string>
     <string name="vpn_error_mitm_xray">Domain Fronting requires the Xray core</string>
     <string name="mitm_session_name">Domain Fronting</string>
+    <!-- Vor license gate -->
+    <string name="license_gate_title">Activate Vor</string>
+    <string name="license_gate_subtitle">Paste the license token you received. Verification happens offline on this device — no internet connection is required or used.</string>
+    <string name="license_gate_token_label">License token</string>
+    <string name="license_gate_token_hint">VOR1.eyJ2IjoxLCJpZCI6…</string>
+    <string name="license_gate_activate">Check / Activate License</string>
+    <string name="license_gate_offline_note">Verified locally with an embedded public key.</string>
+    <string name="license_gate_error_expired">This license has expired.</string>
+    <string name="license_gate_error_invalid">Invalid token. Check that you copied the whole token.</string>
+    <string name="license_gate_expired_title">License expired</string>
+    <string name="license_gate_expired_body">This license expired on %1$s. Obtain a new token to unlock Vor again.</string>
 </resources>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">V2RayEz</string>
+    <string name="app_name">Vor</string>
 
     <string name="shortcut_connect_short">اتصال</string>
     <string name="shortcut_connect_long">اتصال / قطع VPN</string>
@@ -1015,4 +1015,15 @@
     <string name="vpn_error_mitm_ca">قبل از اتصال، CA دامنه‌فرانتینگ را نصب و تأیید کنید</string>
     <string name="vpn_error_mitm_xray">دامنه‌فرانتینگ به هسته Xray نیاز دارد</string>
     <string name="mitm_session_name">دامنه‌فرانتینگ</string>
+    <!-- Vor license gate -->
+    <string name="license_gate_title">فعال‌سازی Vor</string>
+    <string name="license_gate_subtitle">توکن لایسنس دریافتی خود را وارد کنید. تأیید به‌صورت آفلاین روی همین دستگاه انجام می‌شود — هیچ اتصال اینترنتی لازم نیست یا استفاده نمی‌شود.</string>
+    <string name="license_gate_token_label">توکن لایسنس</string>
+    <string name="license_gate_token_hint">VOR1.eyJ2IjoxLCJpZCI6…</string>
+    <string name="license_gate_activate">بررسی / فعال‌سازی لایسنس</string>
+    <string name="license_gate_offline_note">با کلید عمومی داخلی و به‌صورت محلی تأیید می‌شود.</string>
+    <string name="license_gate_error_expired">این لایسنس منقضی شده است.</string>
+    <string name="license_gate_error_invalid">توکن نامعتبر است. کل توکن را کپی کنید.</string>
+    <string name="license_gate_expired_title">لایسنس منقضی شده</string>
+    <string name="license_gate_expired_body">این لایسنس در %1$s منقضی شده است. برای باز کردن دوبارهٔ Vor توکن جدید بگیرید.</string>
 </resources>

@@ -52,3 +52,4 @@ Thumbs.db
 # Vor local artifacts
 .vor/
 *.log
+app/google-services.json

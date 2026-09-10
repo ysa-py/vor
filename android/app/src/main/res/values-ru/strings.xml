@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">V2RayEz</string>
+    <string name="app_name">Vor</string>
 
     <!-- App shortcuts -->
     <string name="shortcut_connect_short">Подключить</string>
@@ -1049,4 +1049,15 @@
     <string name="vpn_error_mitm_ca">Установите и подтвердите CA доменного фронтинга перед подключением</string>
     <string name="vpn_error_mitm_xray">Доменный фронтинг требует ядро Xray</string>
     <string name="mitm_session_name">Доменный фронтинг</string>
+    <!-- Vor license gate -->
+    <string name="license_gate_title">Активация Vor</string>
+    <string name="license_gate_subtitle">Вставьте полученный лицензионный токен. Проверка выполняется офлайн на этом устройстве — интернет-подключение не требуется и не используется.</string>
+    <string name="license_gate_token_label">Лицензионный токен</string>
+    <string name="license_gate_token_hint">VOR1.eyJ2IjoxLCJpZCI6…</string>
+    <string name="license_gate_activate">Проверить / активировать лицензию</string>
+    <string name="license_gate_offline_note">Проверяется локально встроенным открытым ключом.</string>
+    <string name="license_gate_error_expired">Срок действия лицензии истёк.</string>
+    <string name="license_gate_error_invalid">Недействительный токен. Скопируйте токен полностью.</string>
+    <string name="license_gate_expired_title">Лицензия истекла</string>
+    <string name="license_gate_expired_body">Лицензия истекла %1$s. Получите новый токен, чтобы снова разблокировать Vor.</string>
 </resources>

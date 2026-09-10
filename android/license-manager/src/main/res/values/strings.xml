@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Vor License Manager</string>
+    <string name="app_title">Vor License Manager</string>
+    <string name="subtitle">Import a license token, verify it offline, and see its status. Uses the same offline verification as the Vor app.</string>
+    <string name="token_label">License token</string>
+    <string name="check_activate">Check / Activate License</string>
+    <string name="status_valid">License valid</string>
+    <string name="status_expired">License expired</string>
+    <string name="status_invalid">License invalid</string>
+    <string name="detail_id">ID</string>
+    <string name="detail_issued">Issued</string>
+    <string name="detail_expires">Expires</string>
+    <string name="detail_tier">Tier</string>
+</resources>

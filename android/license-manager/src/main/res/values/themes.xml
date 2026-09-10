@@ -1,0 +1,3 @@
+<resources>
+    <style name="Theme.VorLicenseManager" parent="android:Theme.Material.NoActionBar" />
+</resources>

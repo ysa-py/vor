@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">مدیر لایسنس Vor</string>
+    <string name="app_title">مدیر لایسنس Vor</string>
+    <string name="subtitle">توکن لایسنس را وارد کنید، به‌صورت آفلاین تأیید کنید و وضعیت آن را ببینید. از همان بررسی آفلاین اپلیکیشن Vor استفاده می‌کند.</string>
+    <string name="token_label">توکن لایسنس</string>
+    <string name="check_activate">بررسی / فعال‌سازی لایسنس</string>
+    <string name="status_valid">لایسنس معتبر است</string>
+    <string name="status_expired">لایسنس منقضی شده است</string>
+    <string name="status_invalid">لایسنس نامعتبر است</string>
+    <string name="detail_id">شناسه</string>
+    <string name="detail_issued">تاریخ صدور</string>
+    <string name="detail_expires">تاریخ انقضا</string>
+    <string name="detail_tier">سطح</string>
+</resources>

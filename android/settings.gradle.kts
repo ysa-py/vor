@@ -19,5 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "V2RayEz"
+rootProject.name = "Vor"
 include(":app")
+include(":core-license")
+include(":license-manager")

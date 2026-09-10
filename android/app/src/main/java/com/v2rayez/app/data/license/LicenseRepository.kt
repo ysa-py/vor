@@ -1,0 +1,136 @@
+package com.v2rayez.app.data.license
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import com.vor.license.LicenseResult
+import com.vor.license.LicenseStatus
+import com.vor.license.LicenseVerifier
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
+
+private val Context.licenseDataStore: DataStore<Preferences> by preferencesDataStore(name = "vor_license")
+
+/**
+ * Offline license gate state — persistence + verification.
+ *
+ * The gate is the FIRST screen of Vor: the user pastes/imports a token, it
+ * is verified locally against the embedded public key (no network), and
+ * only then does the rest of the app unlock. Re-checked on every launch and
+ * at least every 24 hours while running — an expired license re-locks the
+ * app automatically at the next check (no admin action, per spec).
+ */
+@Singleton
+class LicenseRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
+) {
+    companion object {
+        private val KEY_TOKEN = stringPreferencesKey("vor_license_token")
+        private val KEY_LAST_CHECK = longPreferencesKey("vor_license_last_check_epoch")
+
+        /** Re-verification cadence while the app runs (24h). */
+        const val RECHECK_INTERVAL_S = 24 * 3600L
+
+        /**
+         * DEV public key (base64url) — used by debug builds and unit tests.
+         * Release builds override this via [publicKeyOverride] at init time
+         * with the production key baked by CI.
+         */
+        val DEV_PUBLIC_KEY: String = BuildConfigLicenses.DEV_PUBLIC_KEY
+
+        /** Production public key override (set from app init when present). */
+        @Volatile
+        var publicKeyOverride: String? = null
+
+        /** The public key this build verifies against. */
+        val activePublicKey: String
+            get() = publicKeyOverride ?: DEV_PUBLIC_KEY
+    }
+
+    /** Gate state surfaced to the UI. */
+    data class GateState(
+        val hydrated: Boolean = false,
+        val status: LicenseStatus = LicenseStatus.INVALID,
+        val token: String? = null,
+        val payload: com.vor.license.LicensePayload? = null,
+    )
+
+    /** Flow of the current gate state (null token -> locked). */
+    val gateState: Flow<GateState> = context.licenseDataStore.data.map { preferences ->
+        val token = preferences[KEY_TOKEN]
+        if (token.isNullOrBlank()) {
+            GateState(hydrated = true)
+        } else {
+            val result = verifyBlocking(token, System.currentTimeMillis() / 1000)
+            GateState(
+                hydrated = true,
+                status = result.status,
+                token = token,
+                payload = result.payload,
+            )
+        }
+    }
+
+    /** Current token (blocking — used by launch-time checks only). */
+    private fun currentToken(): String? = runBlocking {
+        context.licenseDataStore.data.first()[KEY_TOKEN]
+    }
+
+    /** Verify a token string; returns [LicenseResult]. Never touches the network. */
+    fun verify(token: String): LicenseResult =
+        verifyBlocking(token, System.currentTimeMillis() / 1000)
+
+    private fun verifyBlocking(token: String, nowEpochSeconds: Long): LicenseResult =
+        LicenseVerifier.verify(activePublicKey, token, nowEpochSeconds)
+
+    /** Activate a token: verifies first, persists only when valid (or
+     * expired-with-valid-signature so the UI can show the expiry). */
+    suspend fun activate(token: String): LicenseResult {
+        val result = verify(token)
+        if (result.status != LicenseStatus.INVALID) {
+            context.licenseDataStore.edit { preferences ->
+                preferences[KEY_TOKEN] = token.trim()
+                preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
+            }
+        }
+        return result
+    }
+
+    /** Clear the stored license (locks the app). */
+    suspend fun clear() {
+        context.licenseDataStore.edit { preferences ->
+            preferences.remove(KEY_TOKEN)
+            preferences.remove(KEY_LAST_CHECK)
+        }
+    }
+
+    /**
+     * Periodic re-check: returns true when the license is still valid and
+     * refreshes the last-check timestamp. An expired license returns false —
+     * the caller re-locks the UI (no admin action needed, per spec).
+     */
+    suspend fun recheck(): Boolean {
+        val token = currentToken() ?: return false
+        val result = verify(token)
+        context.licenseDataStore.edit { preferences ->
+            preferences[KEY_LAST_CHECK] = System.currentTimeMillis() / 1000
+        }
+        return result.status == LicenseStatus.VALID
+    }
+}
+
+/** Build-config license key holder (see build.gradle.kts VOR_LICENSE_PUBLIC_KEY). */
+object BuildConfigLicenses {
+    /** Public key for this build: dev key by default, production key when CI
+     * passes -Pvor.licensePublicKey for release builds. */
+    val DEV_PUBLIC_KEY: String = com.v2rayez.app.BuildConfig.VOR_LICENSE_PUBLIC_KEY
+}

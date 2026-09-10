@@ -31,6 +31,8 @@ import com.v2rayez.app.ui.components.StartupPromoDialog
 import com.v2rayez.app.ui.V2RayApp
 import com.v2rayez.app.ui.VpnPermissionRequester
 import com.v2rayez.app.ui.navigation.Routes
+import com.v2rayez.app.ui.screens.license.LicenseGateScreen
+import com.v2rayez.app.ui.screens.license.LicenseGateViewModel
 import com.v2rayez.app.ui.screens.onboarding.WelcomeWizardScreen
 import com.v2rayez.app.ui.theme.V2RayEzTheme
 import com.v2rayez.app.ui.viewmodel.SettingsViewModel
@@ -174,24 +176,52 @@ private fun AppRoot(
         Surface(modifier = Modifier.fillMaxSize()) {
             if (!hydrated) {
                 // Wait for DataStore so returning users do not flash the wizard.
-            } else if (!settings.onboardingComplete) {
-                WelcomeWizardScreen()
             } else {
-                CompositionLocalProvider(LocalVpnPermission provides vpnPermission) {
-                    V2RayApp(
-                        initialRoute = initialRoute.value,
-                        onInitialRouteConsumed = { initialRoute.value = null }
-                    )
-                    if (!settings.promoDismissed && !promoShownThisSession.value) {
-                        StartupPromoDialog(
-                            onDismiss = { dontShowAgain ->
-                                if (dontShowAgain) settingsViewModel.dismissPromo()
-                                promoShownThisSession.value = true
+                // LICENSE GATE — the first screen of Vor. Everything below it
+                // (onboarding, main UI) stays locked until a valid signed
+                // token is stored; expiry re-locks automatically.
+                LicenseGateCoordinator {
+                    if (!settings.onboardingComplete) {
+                        WelcomeWizardScreen()
+                    } else {
+                        CompositionLocalProvider(LocalVpnPermission provides vpnPermission) {
+                            V2RayApp(
+                                initialRoute = initialRoute.value,
+                                onInitialRouteConsumed = { initialRoute.value = null }
+                            )
+                            if (!settings.promoDismissed && !promoShownThisSession.value) {
+                                StartupPromoDialog(
+                                    onDismiss = { dontShowAgain ->
+                                        if (dontShowAgain) settingsViewModel.dismissPromo()
+                                        promoShownThisSession.value = true
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+/**
+ * Wraps the app content with the offline license gate: shows the gate until
+ * the stored license verifies as VALID (re-checked on every launch), then
+ * renders the content. The periodic in-session re-check that re-locks on
+ * expiry runs in [LicenseGateViewModel]'s data flow — the gate reappears as
+ * soon as the persisted token stops verifying.
+ */
+@Composable
+private fun LicenseGateCoordinator(content: @Composable () -> Unit) {
+    val licenseViewModel: LicenseGateViewModel = hiltViewModel()
+    val gateState by licenseViewModel.gateState.collectAsState()
+    if (!gateState.hydrated) {
+        // License DataStore still loading — hold a blank surface (no flash
+        // of locked UI for licensed users).
+    } else if (gateState.status != com.vor.license.LicenseStatus.VALID) {
+        LicenseGateScreen(onUnlocked = { /* gateState flow flips to VALID */ })
+    } else {
+        content()
     }
 }
