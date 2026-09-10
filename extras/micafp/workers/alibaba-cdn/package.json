@@ -1,0 +1,13 @@
+{
+  "name": "shield-alibaba-worker",
+  "version": "6.0.0",
+  "description": "Shield CDN Worker for Alibaba Cloud Function Compute (Chinese CDN - not blocked in Iran)",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "fun deploy"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

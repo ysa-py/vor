@@ -1,0 +1,365 @@
+{
+  "metadata": {
+    "description": "Pluggable transport configurations for UnifiedShield - includes meek (CDN-fronted), snowflake, and obfs4 bridges with emphasis on Chinese CDN-fronted bridges accessible from Iran",
+    "last_updated": "2025-01-15"
+  },
+  "meek": {
+    "description": "Meek transport using domain fronting via CDN. Chinese CDNs are prioritized as they are accessible from Iran.",
+    "description_fa": "انتقال Meek با استفاده از domain fronting از طریق CDN. CDNهای چینی اولویت دارند.",
+    "bridges": [
+      {
+        "bridge_id": "meek-alibaba-1",
+        "name": "Meek via Alibaba Cloud CDN",
+        "transport": "meek",
+        "front_domain": "cdn.alicdn.com",
+        "cdn_provider": "alibaba",
+        "bridge_address": "meek-alibaba.unifiedshield.dev:443",
+        "url_path": "/bridge/alibaba-1",
+        "accessible_from_iran": true,
+        "priority": 1,
+        "status": "active",
+        "bandwidth_mbps": 15,
+        "latency_ms": 120
+      },
+      {
+        "bridge_id": "meek-alibaba-2",
+        "name": "Meek via Alibaba Cloud CDN (Secondary)",
+        "transport": "meek",
+        "front_domain": "g.alicdn.com",
+        "cdn_provider": "alibaba",
+        "bridge_address": "meek-alibaba-2.unifiedshield.dev:443",
+        "url_path": "/bridge/alibaba-2",
+        "accessible_from_iran": true,
+        "priority": 2,
+        "status": "active",
+        "bandwidth_mbps": 12,
+        "latency_ms": 130
+      },
+      {
+        "bridge_id": "meek-tencent-1",
+        "name": "Meek via Tencent Cloud CDN",
+        "transport": "meek",
+        "front_domain": "cdn-go.cn",
+        "cdn_provider": "tencent",
+        "bridge_address": "meek-tencent.unifiedshield.dev:443",
+        "url_path": "/bridge/tencent-1",
+        "accessible_from_iran": true,
+        "priority": 3,
+        "status": "active",
+        "bandwidth_mbps": 10,
+        "latency_ms": 135
+      },
+      {
+        "bridge_id": "meek-tencent-2",
+        "name": "Meek via Tencent Cloud CDN (Secondary)",
+        "transport": "meek",
+        "front_domain": "imgcache.cn",
+        "cdn_provider": "tencent",
+        "bridge_address": "meek-tencent-2.unifiedshield.dev:443",
+        "url_path": "/bridge/tencent-2",
+        "accessible_from_iran": true,
+        "priority": 4,
+        "status": "active",
+        "bandwidth_mbps": 8,
+        "latency_ms": 145
+      },
+      {
+        "bridge_id": "meek-baidu-1",
+        "name": "Meek via Baidu Cloud CDN",
+        "transport": "meek",
+        "front_domain": "cdn.baidu.com",
+        "cdn_provider": "baidu",
+        "bridge_address": "meek-baidu.unifiedshield.dev:443",
+        "url_path": "/bridge/baidu-1",
+        "accessible_from_iran": true,
+        "priority": 5,
+        "status": "active",
+        "bandwidth_mbps": 8,
+        "latency_ms": 150
+      },
+      {
+        "bridge_id": "meek-huawei-1",
+        "name": "Meek via Huawei Cloud CDN",
+        "transport": "meek",
+        "front_domain": "cdn.huaweicloud.com",
+        "cdn_provider": "huawei",
+        "bridge_address": "meek-huawei.unifiedshield.dev:443",
+        "url_path": "/bridge/huawei-1",
+        "accessible_from_iran": true,
+        "priority": 6,
+        "status": "active",
+        "bandwidth_mbps": 10,
+        "latency_ms": 140
+      },
+      {
+        "bridge_id": "meek-azure-1",
+        "name": "Meek via Azure CDN",
+        "transport": "meek",
+        "front_domain": "ajax.aspnetcdn.com",
+        "cdn_provider": "azure",
+        "bridge_address": "meek-azure.unifiedshield.dev:443",
+        "url_path": "/bridge/azure-1",
+        "accessible_from_iran": true,
+        "priority": 7,
+        "status": "active",
+        "bandwidth_mbps": 6,
+        "latency_ms": 200
+      },
+      {
+        "bridge_id": "meek-azure-2",
+        "name": "Meek via Azure CDN (Secondary)",
+        "transport": "meek",
+        "front_domain": "az413943.vo.msecnd.net",
+        "cdn_provider": "azure",
+        "bridge_address": "meek-azure-2.unifiedshield.dev:443",
+        "url_path": "/bridge/azure-2",
+        "accessible_from_iran": true,
+        "priority": 8,
+        "status": "active",
+        "bandwidth_mbps": 5,
+        "latency_ms": 210
+      },
+      {
+        "bridge_id": "meek-amazon-1",
+        "name": "Meek via Amazon CloudFront",
+        "transport": "meek",
+        "front_domain": "a0.awsstatic.com",
+        "cdn_provider": "amazon",
+        "bridge_address": "meek-amazon.unifiedshield.dev:443",
+        "url_path": "/bridge/amazon-1",
+        "accessible_from_iran": true,
+        "priority": 9,
+        "status": "active",
+        "bandwidth_mbps": 5,
+        "latency_ms": 220
+      }
+    ],
+    "default_bridge": "meek-alibaba-1",
+    "fallback_order": [
+      "meek-alibaba-1",
+      "meek-tencent-1",
+      "meek-baidu-1",
+      "meek-huawei-1",
+      "meek-azure-1"
+    ]
+  },
+  "snowflake": {
+    "description": "Snowflake transport using WebRTC via broker. Front domains must be accessible from Iran.",
+    "description_fa": "انتقال Snowflake با استفاده از WebRTC از طریق بروکر. دامنه‌های جلویی باید از ایران قابل دسترسی باشند.",
+    "broker_url": "https://snowflake-broker.unifiedshield.dev/",
+    "front_domain": "cdn.alicdn.com",
+    "front_domain_alt": "cdn-go.cn",
+    "ice_servers": [
+      "stun:stun.l.google.com:19302",
+      "stun:stun.ekiga.net",
+      "stun:stun.schlund.de",
+      "stun:stun.stunprotocol.org:3478"
+    ],
+    "max_peers": 3,
+    "nat_remediation": true,
+    "bridges": [
+      {
+        "bridge_id": "snowflake-alibaba-1",
+        "name": "Snowflake via Alibaba CDN Front",
+        "transport": "snowflake",
+        "broker_url": "https://snowflake-broker.unifiedshield.dev/",
+        "front_domain": "cdn.alicdn.com",
+        "accessible_from_iran": true,
+        "priority": 1,
+        "status": "active"
+      },
+      {
+        "bridge_id": "snowflake-tencent-1",
+        "name": "Snowflake via Tencent CDN Front",
+        "transport": "snowflake",
+        "broker_url": "https://snowflake-broker.unifiedshield.dev/",
+        "front_domain": "cdn-go.cn",
+        "accessible_from_iran": true,
+        "priority": 2,
+        "status": "active"
+      },
+      {
+        "bridge_id": "snowflake-huawei-1",
+        "name": "Snowflake via Huawei CDN Front",
+        "transport": "snowflake",
+        "broker_url": "https://snowflake-broker.unifiedshield.dev/",
+        "front_domain": "cdn.huaweicloud.com",
+        "accessible_from_iran": true,
+        "priority": 3,
+        "status": "active"
+      }
+    ],
+    "volunteer_proxy_urls": [
+      "https://snowflake-volunteer-1.unifiedshield.dev/embed",
+      "https://snowflake-volunteer-2.unifiedshield.dev/embed",
+      "https://snowflake-volunteer-3.unifiedshield.dev/embed"
+    ]
+  },
+  "obfs4": {
+    "description": "obfs4 transport with bridge addresses. Limited effectiveness in Iran due to DPI protocol detection.",
+    "description_fa": "انتقال obfs4 با آدرس‌های پل. اثربخشی محدود در ایران به دلیل شناسایی پروتکل DPI.",
+    "bridges": [
+      {
+        "bridge_id": "obfs4-eu-1",
+        "name": "obfs4 Bridge EU-1",
+        "transport": "obfs4",
+        "address": "45.138.72.10:54433",
+        "fingerprint": "A1B2C3D4E5F6789012345678901234567890ABCD",
+        "cert": "BvJkZ2hlaWdodHdvcmRzZXJ2ZXJ0/Gl0YWxvbmU/ZXhhbXBsZQ==",
+        "iat_mode": "1",
+        "accessible_from_iran": true,
+        "priority": 1,
+        "status": "active",
+        "notes": "Use with caution - obfs4 fingerprint may be detected by Iranian DPI"
+      },
+      {
+        "bridge_id": "obfs4-eu-2",
+        "name": "obfs4 Bridge EU-2",
+        "transport": "obfs4",
+        "address": "91.108.56.22:64433",
+        "fingerprint": "F1E2D3C4B5A6789012345678901234567890FEDC",
+        "cert": "CxLmZ3hmb3VyLXNlcnZlci9jZXJ0aWZpY2F0ZQ==",
+        "iat_mode": "2",
+        "accessible_from_iran": true,
+        "priority": 2,
+        "status": "active",
+        "notes": "iat_mode=2 for random timing to evade timing analysis"
+      },
+      {
+        "bridge_id": "obfs4-ap-1",
+        "name": "obfs4 Bridge AP-1",
+        "transport": "obfs4",
+        "address": "103.25.72.14:443",
+        "fingerprint": "D4E5F6A7B8C9012345678901234567890ABCDE12",
+        "cert": "DwNoZ3R3by1mb3VyL3NlcnZlci9jZXJ0aWZpY2F0ZQ==",
+        "iat_mode": "1",
+        "accessible_from_iran": true,
+        "priority": 3,
+        "status": "active"
+      },
+      {
+        "bridge_id": "obfs4-tr-1",
+        "name": "obfs4 Bridge TR-1 (Turkey - Low Latency)",
+        "transport": "obfs4",
+        "address": "185.122.56.8:443",
+        "fingerprint": "E5F6A7B8C9D012345678901234567890ABCDEF23",
+        "cert": "ExNpZ3R3by1maXZlL3NlcnZlci9jZXJ0aWZpY2F0ZQ==",
+        "iat_mode": "2",
+        "accessible_from_iran": true,
+        "priority": 4,
+        "status": "active",
+        "notes": "Geographically close to Iran - lower latency"
+      }
+    ],
+    "recommended_transport": "meek",
+    "notes": "obfs4 is detectable by Iranian DPI. Prefer meek or snowflake transports."
+  },
+  "transport_selection_strategy": {
+    "default_transport": "meek",
+    "selection_rules": [
+      {
+        "condition": "normal",
+        "transport_order": [
+          "meek",
+          "snowflake",
+          "obfs4"
+        ],
+        "meek_cdn_order": [
+          "alibaba",
+          "tencent",
+          "baidu",
+          "huawei",
+          "azure"
+        ]
+      },
+      {
+        "condition": "high_censorship",
+        "transport_order": [
+          "meek",
+          "snowflake"
+        ],
+        "meek_cdn_order": [
+          "alibaba",
+          "huawei",
+          "tencent",
+          "baidu"
+        ],
+        "notes": "Skip obfs4 during high censorship events"
+      },
+      {
+        "condition": "national_intranet_mode",
+        "transport_order": [
+          "meek"
+        ],
+        "meek_cdn_order": [
+          "alibaba",
+          "huawei"
+        ],
+        "notes": "Only Chinese CDNs, only meek transport"
+      },
+      {
+        "condition": "low_bandwidth",
+        "transport_order": [
+          "snowflake",
+          "meek"
+        ],
+        "notes": "Snowflake uses WebRTC which is more bandwidth efficient"
+      }
+    ]
+  },
+  "version": "2024.1",
+  "transports": [
+    {
+      "id": "meek-azure",
+      "name": "Meek (Azure CDN)",
+      "type": "meek",
+      "front_domain": "ajax.aspnetcdn.com",
+      "target_host": "meek.azureedge.net",
+      "works_in_iran": true,
+      "priority": 2
+    },
+    {
+      "id": "meek-amazon",
+      "name": "Meek (Amazon CDN)",
+      "type": "meek",
+      "front_domain": "d1.cloudfront.net",
+      "target_host": "meek.amazon.aws.amazon.com",
+      "works_in_iran": false,
+      "priority": 5
+    },
+    {
+      "id": "snowflake",
+      "name": "Snowflake (WebRTC)",
+      "type": "snowflake",
+      "broker_url": "https://snowflake-broker.torproject.net/",
+      "front_domain": "cdn.snowflake.torproject.org",
+      "works_in_iran": true,
+      "priority": 3
+    },
+    {
+      "id": "obfs4",
+      "name": "obfs4 (nTor handshake)",
+      "type": "obfs4",
+      "works_in_iran": true,
+      "priority": 4
+    },
+    {
+      "id": "meek-alibaba",
+      "name": "Meek (Alibaba CDN)",
+      "type": "meek",
+      "front_domain": "alibaba.com",
+      "target_host": "meek-relay.alicdn-unifiedshield.com",
+      "works_in_iran": true,
+      "priority": 1
+    },
+    {
+      "id": "meek-tencent",
+      "name": "Meek (Tencent CDN)",
+      "type": "meek",
+      "front_domain": "cloud.tencent.com",
+      "target_host": "meek-relay.tencent-unifiedshield.com",
+      "works_in_iran": true,
+      "priority": 1
+    }
+  ]
+}

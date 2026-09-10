@@ -1,0 +1,13 @@
+unifiedshield (1.0.0-1) unstable; urgency=low
+
+  * Initial release.
+  - Multi-core support: Xray, NaïveProxy, Hysteria2, TUIC
+  - DPI detection with automatic core switching (threshold > 0.72)
+  - Split tunnel: Iranian IPs excluded for local service access
+  - Kill switch: always-on VPN lockdown mode
+  - DNS: Alibaba/Tencent primary (Cloudflare blocked in Iran)
+  - OTA updates via GitHub Releases with SHA256 verification
+  - No root required (uses CAP_NET_ADMIN capability)
+  - systemd integration with watchdog support
+
+ -- UnifiedShield Team <team@unifiedshield.org>  Mon, 01 Jan 2024 00:00:00 +0000

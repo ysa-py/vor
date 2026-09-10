@@ -1,0 +1,1187 @@
+{
+  "metadata": {
+    "description": "CDN endpoints for domain fronting and relay. Chinese CDNs are prioritized as they are NOT blocked in Iran. Cloudflare IS blocked in Iran.",
+    "last_updated": "2025-01-15",
+    "iran_accessibility_note": "Cloudflare domains are BLOCKED in Iran. Chinese CDNs (Alibaba, Tencent, Baidu, Huawei) are accessible from Iran."
+  },
+  "alibaba_cdn": {
+    "description": "Alibaba Cloud CDN (AliCDN) - Accessible from Iran, primary relay",
+    "description_fa": "CDN علی‌بابا (علی‌سی‌دی‌ان) - در ایران قابل دسترسی، رله اصلی",
+    "status": "accessible_iran",
+    "priority": 1,
+    "anycast_ips": [
+      "47.246.0.1",
+      "47.246.0.2",
+      "47.246.0.3",
+      "47.246.0.4",
+      "47.246.0.5",
+      "47.246.0.6",
+      "47.246.0.7",
+      "47.246.0.8",
+      "47.246.24.1",
+      "47.246.24.2",
+      "47.246.24.3",
+      "47.246.24.4",
+      "47.246.48.1",
+      "47.246.48.2",
+      "47.246.48.3",
+      "47.246.48.4",
+      "106.14.0.1",
+      "106.14.0.2",
+      "106.14.0.3",
+      "120.55.0.1",
+      "120.55.0.2",
+      "120.55.0.3",
+      "139.95.0.1",
+      "139.95.0.2",
+      "47.254.0.1",
+      "47.254.0.2",
+      "8.209.0.1",
+      "8.209.0.2",
+      "8.209.0.3"
+    ],
+    "front_domains": [
+      "cdn.alicdn.com",
+      "g.alicdn.com",
+      "img.alicdn.com",
+      "assets.alicdn.com",
+      "laz-g-cdn.alicdn.com",
+      "ae01.alicdn.com",
+      "cbu01.alicdn.com",
+      "sc01.alicdn.com"
+    ],
+    "relay_function_urls": {
+      "fc_hongkong": "https://unifiedshield-hk.cn-hongkong.fc.aliyuncs.com/relay",
+      "fc_singapore": "https://unifiedshield-sg.ap-southeast-1.fc.aliyuncs.com/relay",
+      "fc_germany": "https://unifiedshield-de.eu-central-1.fc.aliyuncs.com/relay",
+      "fc_japan": "https://unifiedshield-jp.ap-northeast-1.fc.aliyuncs.com/relay",
+      "fc_uae": "https://unifiedshield-ae.me-east-1.fc.aliyuncs.com/relay"
+    },
+    "websocket_support": true,
+    "tls_version": "1.3",
+    "bandwidth_limit_mbps": 200,
+    "latency_from_iran_ms": 120
+  },
+  "tencent_cdn": {
+    "description": "Tencent Cloud CDN - Accessible from Iran, secondary relay",
+    "description_fa": "CDN تنسنت کلاد - در ایران قابل دسترسی، رله ثانویه",
+    "status": "accessible_iran",
+    "priority": 2,
+    "anycast_ips": [
+      "43.135.0.1",
+      "43.135.0.2",
+      "43.135.0.3",
+      "43.135.0.4",
+      "43.135.0.5",
+      "43.135.0.6",
+      "43.136.0.1",
+      "43.136.0.2",
+      "43.136.0.3",
+      "43.137.0.1",
+      "43.137.0.2",
+      "43.138.0.1",
+      "43.138.0.2",
+      "119.28.0.1",
+      "119.28.0.2",
+      "119.28.0.3",
+      "119.29.0.1",
+      "119.29.0.2",
+      "129.204.0.1",
+      "129.204.0.2",
+      "129.204.0.3",
+      "150.109.0.1",
+      "150.109.0.2",
+      "170.106.0.1",
+      "170.106.0.2"
+    ],
+    "front_domains": [
+      "cdn-go.cn",
+      "cdn-go.cn",
+      "imgcache.cn",
+      "tencent-cloud.cn",
+      "cloud.tencent.com",
+      "cdn-go.cn",
+      "myqcloud.com",
+      "qpic.cn"
+    ],
+    "relay_function_urls": {
+      "scf_hongkong": "https://unifiedshield-hk.service.tcloudbase.com/relay",
+      "scf_singapore": "https://unifiedshield-sg.service.tcloudbase.com/relay",
+      "scf_germany": "https://unifiedshield-de.service.tcloudbase.com/relay",
+      "scf_japan": "https://unifiedshield-jp.service.tcloudbase.com/relay",
+      "scf_silicon_valley": "https://unifiedshield-sv.service.tcloudbase.com/relay"
+    },
+    "websocket_support": true,
+    "tls_version": "1.3",
+    "bandwidth_limit_mbps": 150,
+    "latency_from_iran_ms": 135
+  },
+  "baidu_cdn": {
+    "description": "Baidu Cloud CDN (BCD) - Accessible from Iran, tertiary relay",
+    "description_fa": "CDN بیدو کلاد - در ایران قابل دسترسی، رله سوم",
+    "status": "accessible_iran",
+    "priority": 3,
+    "anycast_ips": [
+      "180.76.0.1",
+      "180.76.0.2",
+      "180.76.0.3",
+      "180.76.0.4",
+      "180.76.0.5",
+      "180.76.1.1",
+      "180.76.1.2",
+      "180.76.2.1",
+      "180.76.2.2",
+      "180.76.3.1",
+      "180.76.3.2",
+      "180.76.4.1",
+      "180.76.4.2",
+      "180.76.5.1",
+      "180.76.5.2",
+      "182.61.0.1",
+      "182.61.0.2",
+      "182.61.0.3",
+      "182.61.1.1",
+      "182.61.1.2",
+      "182.61.2.1",
+      "182.61.2.2",
+      "36.152.44.1",
+      "36.152.44.2",
+      "36.152.44.3"
+    ],
+    "front_domains": [
+      "cdn.baidu.com",
+      "ss0.bdstatic.com",
+      "ss1.bdstatic.com",
+      "ss2.bdstatic.com",
+      "himg.bdimg.com",
+      "img.baidu.com",
+      "fex.bdstatic.com",
+      "pos.baidu.com"
+    ],
+    "relay_function_urls": {
+      "bcf_hongkong": "https://unifiedshield-hk.gz.bcebos.com/relay",
+      "bcf_singapore": "https://unifiedshield-sg.sgp.bcebos.com/relay",
+      "bcf_germany": "https://unifiedshield-de.fra.bcebos.com/relay"
+    },
+    "websocket_support": true,
+    "tls_version": "1.3",
+    "bandwidth_limit_mbps": 100,
+    "latency_from_iran_ms": 150
+  },
+  "huawei_cdn": {
+    "description": "Huawei Cloud CDN - Accessible from Iran, quaternary relay",
+    "description_fa": "CDN هواوی کلاد - در ایران قابل دسترسی، رله چهارم",
+    "status": "accessible_iran",
+    "priority": 4,
+    "anycast_ips": [
+      "119.8.0.1",
+      "119.8.0.2",
+      "119.8.0.3",
+      "119.8.0.4",
+      "119.8.0.5",
+      "119.8.1.1",
+      "119.8.1.2",
+      "119.8.2.1",
+      "119.8.2.2",
+      "119.8.3.1",
+      "119.8.3.2",
+      "124.71.0.1",
+      "124.71.0.2",
+      "124.71.0.3",
+      "124.71.1.1",
+      "124.71.1.2",
+      "124.71.2.1",
+      "124.71.2.2",
+      "116.63.0.1",
+      "116.63.0.2",
+      "116.63.0.3",
+      "122.112.0.1",
+      "122.112.0.2",
+      "122.112.0.3"
+    ],
+    "front_domains": [
+      "cdn.huaweicloud.com",
+      "obs.huaweicloud.com",
+      "static.huaweicloud.com",
+      "res.hc-cdn.com",
+      "portal-hk.huaweicloud.com",
+      "cdn.myhuaweicloud.com"
+    ],
+    "relay_function_urls": {
+      "fg_hongkong": "https://unifiedshield-hk.ap-southeast-1.functiongraph.myhuaweicloud.com/relay",
+      "fg_singapore": "https://unifiedshield-sg.ap-southeast-3.functiongraph.myhuaweicloud.com/relay",
+      "fg_germany": "https://unifiedshield-de.eu-west-101.functiongraph.myhuaweicloud.com/relay",
+      "fg_uae": "https://unifiedshield-ae.me-east-201.functiongraph.myhuaweicloud.com/relay"
+    },
+    "websocket_support": true,
+    "tls_version": "1.3",
+    "bandwidth_limit_mbps": 120,
+    "latency_from_iran_ms": 140
+  },
+  "cloudfront": {
+    "description": "Amazon CloudFront - Backup only, may be throttled from Iran",
+    "description_fa": "کلادفرانت آمازون - فقط پشتیبان، ممکن است در ایران کند باشد",
+    "status": "partially_accessible_iran",
+    "priority": 5,
+    "distribution_domains": [
+      "d1a2b3c4d5e6f7.cloudfront.net",
+      "d7g8h9i0j1k2l3.cloudfront.net",
+      "d4m5n6o7p8q9r0.cloudfront.net",
+      "d1s2t3u4v5w6x7.cloudfront.net",
+      "d8y9z0a1b2c3d4.cloudfront.net"
+    ],
+    "front_domains": [
+      "a0.awsstatic.com",
+      "a1.awsstatic.com",
+      "cdn.awsstatic.com",
+      "d1.awsstatic.com",
+      "d2.awsstatic.com",
+      "d3.awsstatic.com",
+      "d4.awsstatic.com",
+      "d5.awsstatic.com",
+      "d6.awsstatic.com",
+      "d7.awsstatic.com",
+      "d8.awsstatic.com",
+      "d9.awsstatic.com"
+    ],
+    "lambda_edge_urls": {
+      "us_east_1": "https://unifiedshield-us.lambda-url.us-east-1.on.aws/relay",
+      "eu_west_1": "https://unifiedshield-eu.lambda-url.eu-west-1.on.aws/relay",
+      "ap_southeast_1": "https://unifiedshield-ap.lambda-url.ap-southeast-1.on.aws/relay"
+    },
+    "websocket_support": true,
+    "tls_version": "1.3",
+    "bandwidth_limit_mbps": 80,
+    "latency_from_iran_ms": 200
+  },
+  "fastly": {
+    "description": "Fastly CDN - Backup only, limited accessibility from Iran",
+    "description_fa": "CDN فستلی - فقط پشتیبان، دسترسی محدود از ایران",
+    "status": "limited_iran",
+    "priority": 6,
+    "service_domains": [
+      "unifiedshield-1.fastly.net",
+      "unifiedshield-2.fastly.net",
+      "unifiedshield-3.fastly.net"
+    ],
+    "front_domains": [
+      "www.fastly.com",
+      "cdn.fastly.net",
+      "fastly-insights.com"
+    ],
+    "compute_at_edge_urls": {
+      "us_east": "https://unifiedshield-us.edgecompute.app/relay",
+      "eu_west": "https://unifiedshield-eu.edgecompute.app/relay",
+      "asia_pacific": "https://unifiedshield-ap.edgecompute.app/relay"
+    },
+    "websocket_support": true,
+    "tls_version": "1.3",
+    "bandwidth_limit_mbps": 60,
+    "latency_from_iran_ms": 250
+  },
+  "relay_selection_strategy": {
+    "description": "Strategy for selecting relay CDN based on conditions",
+    "rules": [
+      {
+        "condition": "normal_operation",
+        "preferred_cdns": [
+          "alibaba_cdn",
+          "tencent_cdn",
+          "baidu_cdn",
+          "huawei_cdn"
+        ],
+        "fallback_cdns": [
+          "cloudfront",
+          "fastly"
+        ]
+      },
+      {
+        "condition": "national_intranet_mode",
+        "preferred_cdns": [
+          "alibaba_cdn",
+          "huawei_cdn"
+        ],
+        "fallback_cdns": [
+          "tencent_cdn",
+          "baidu_cdn"
+        ]
+      },
+      {
+        "condition": "high_censorship_event",
+        "preferred_cdns": [
+          "alibaba_cdn",
+          "tencent_cdn",
+          "huawei_cdn",
+          "baidu_cdn"
+        ],
+        "fallback_cdns": [],
+        "note": "Use all Chinese CDNs with rapid rotation, avoid Western CDNs entirely"
+      },
+      {
+        "condition": "low_bandwidth",
+        "preferred_cdns": [
+          "alibaba_cdn"
+        ],
+        "fallback_cdns": [
+          "tencent_cdn"
+        ],
+        "note": "Use highest bandwidth CDN with lowest latency"
+      }
+    ]
+  },
+  "version": "6.0.0",
+  "endpoints": [
+    {
+      "provider": "alibaba_cloud",
+      "display_name": "Alibaba Cloud CDN",
+      "sni_domain": "alibaba.com",
+      "front_domains": [
+        "*.aliyun.com",
+        "*.alibabacloud.com"
+      ],
+      "anycast_ips": [
+        "47.246.0.0/16",
+        "47.254.0.0/16"
+      ],
+      "works_in_iran": true,
+      "priority": 1,
+      "protocol": "wss"
+    },
+    {
+      "provider": "tencent_cloud",
+      "display_name": "Tencent Cloud CDN",
+      "sni_domain": "cloud.tencent.com",
+      "front_domains": [
+        "*.tencent.com",
+        "*.qq.com"
+      ],
+      "anycast_ips": [
+        "43.135.0.0/16",
+        "43.136.0.0/16"
+      ],
+      "works_in_iran": true,
+      "priority": 2,
+      "protocol": "wss"
+    },
+    {
+      "provider": "jd_cloud",
+      "display_name": "JD Cloud CDN",
+      "sni_domain": "jdcloud.com",
+      "front_domains": [
+        "*.jd.com",
+        "*.jdcloud.com"
+      ],
+      "anycast_ips": [
+        "36.112.0.0/16"
+      ],
+      "works_in_iran": true,
+      "priority": 3,
+      "protocol": "wss"
+    },
+    {
+      "provider": "qiniu",
+      "display_name": "Qiniu CDN",
+      "sni_domain": "qiniu.com",
+      "front_domains": [
+        "*.qiniu.com",
+        "*.qbox.me"
+      ],
+      "anycast_ips": [
+        "115.231.0.0/16"
+      ],
+      "works_in_iran": true,
+      "priority": 4,
+      "protocol": "wss"
+    },
+    {
+      "provider": "amazon_cloudfront",
+      "display_name": "Amazon CloudFront",
+      "sni_domain": "d1.cloudfront.net",
+      "front_domains": [
+        "*.cloudfront.net"
+      ],
+      "anycast_ips": [
+        "13.224.0.0/14"
+      ],
+      "works_in_iran": false,
+      "priority": 5,
+      "protocol": "wss"
+    },
+    {
+      "provider": "fastly",
+      "display_name": "Fastly CDN",
+      "sni_domain": "global.fastly.net",
+      "front_domains": [
+        "*.fastly.net"
+      ],
+      "anycast_ips": [
+        "151.101.0.0/16"
+      ],
+      "works_in_iran": false,
+      "priority": 6,
+      "protocol": "wss"
+    },
+    {
+      "id": "deno-ir-01",
+      "url": "https://deploy.shield-01.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_deno_01",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 35,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "deno-ir-02",
+      "url": "https://deploy.shield-02.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_deno_02",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 38,
+      "reliability_score": 0.96
+    },
+    {
+      "id": "deno-eu-03",
+      "url": "https://deploy.shield-03.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "europe-west",
+      "country": "DE",
+      "priority": 9,
+      "auth_token_hint": "dshield_ir_v6_deno_03",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 65,
+      "reliability_score": 0.98
+    },
+    {
+      "id": "deno-eu-04",
+      "url": "https://deploy.shield-04.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "europe-west",
+      "country": "NL",
+      "priority": 9,
+      "auth_token_hint": "dshield_ir_v6_deno_04",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 70,
+      "reliability_score": 0.98
+    },
+    {
+      "id": "deno-eu-05",
+      "url": "https://deploy.shield-05.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "europe-north",
+      "country": "FI",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_deno_05",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 80,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "deno-as-06",
+      "url": "https://deploy.shield-06.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "asia-south",
+      "country": "IN",
+      "priority": 7,
+      "auth_token_hint": "dshield_ir_v6_deno_06",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 55,
+      "reliability_score": 0.95
+    },
+    {
+      "id": "deno-as-07",
+      "url": "https://deploy.shield-07.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "asia-east",
+      "country": "SG",
+      "priority": 6,
+      "auth_token_hint": "dshield_ir_v6_deno_07",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 90,
+      "reliability_score": 0.96
+    },
+    {
+      "id": "deno-na-08",
+      "url": "https://deploy.shield-08.deno.dev",
+      "tier": 1,
+      "platform": "deno-deploy",
+      "region": "north-america",
+      "country": "US",
+      "priority": 5,
+      "auth_token_hint": "dshield_ir_v6_deno_08",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 500,
+      "latency_estimate_ms": 130,
+      "reliability_score": 0.99
+    },
+    {
+      "id": "valtown-ir-01",
+      "url": "https://shield-01.val.town",
+      "tier": 1,
+      "platform": "val-town",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_vt_01",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 200,
+      "latency_estimate_ms": 40,
+      "reliability_score": 0.94
+    },
+    {
+      "id": "valtown-ir-02",
+      "url": "https://shield-02.val.town",
+      "tier": 1,
+      "platform": "val-town",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_vt_02",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 200,
+      "latency_estimate_ms": 42,
+      "reliability_score": 0.93
+    },
+    {
+      "id": "valtown-eu-03",
+      "url": "https://shield-03.val.town",
+      "tier": 1,
+      "platform": "val-town",
+      "region": "europe-west",
+      "country": "IE",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_vt_03",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 200,
+      "latency_estimate_ms": 72,
+      "reliability_score": 0.96
+    },
+    {
+      "id": "valtown-eu-04",
+      "url": "https://shield-04.val.town",
+      "tier": 1,
+      "platform": "val-town",
+      "region": "europe-west",
+      "country": "DE",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_vt_04",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 200,
+      "latency_estimate_ms": 68,
+      "reliability_score": 0.95
+    },
+    {
+      "id": "valtown-as-05",
+      "url": "https://shield-05.val.town",
+      "tier": 1,
+      "platform": "val-town",
+      "region": "asia-south",
+      "country": "JP",
+      "priority": 6,
+      "auth_token_hint": "dshield_ir_v6_vt_05",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 200,
+      "latency_estimate_ms": 95,
+      "reliability_score": 0.94
+    },
+    {
+      "id": "valtown-na-06",
+      "url": "https://shield-06.val.town",
+      "tier": 1,
+      "platform": "val-town",
+      "region": "north-america",
+      "country": "US",
+      "priority": 5,
+      "auth_token_hint": "dshield_ir_v6_vt_06",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 200,
+      "latency_estimate_ms": 135,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "supabase-ir-01",
+      "url": "https://shield-01.supabase.co/functions/v1",
+      "tier": 1,
+      "platform": "supabase-edge",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_sb_01",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 350,
+      "latency_estimate_ms": 30,
+      "reliability_score": 0.96
+    },
+    {
+      "id": "supabase-ir-02",
+      "url": "https://shield-02.supabase.co/functions/v1",
+      "tier": 1,
+      "platform": "supabase-edge",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_sb_02",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 350,
+      "latency_estimate_ms": 32,
+      "reliability_score": 0.95
+    },
+    {
+      "id": "supabase-eu-03",
+      "url": "https://shield-03.supabase.co/functions/v1",
+      "tier": 1,
+      "platform": "supabase-edge",
+      "region": "europe-west",
+      "country": "FR",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_sb_03",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 350,
+      "latency_estimate_ms": 62,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "supabase-eu-04",
+      "url": "https://shield-04.supabase.co/functions/v1",
+      "tier": 1,
+      "platform": "supabase-edge",
+      "region": "europe-west",
+      "country": "IE",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_sb_04",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 350,
+      "latency_estimate_ms": 67,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "supabase-as-05",
+      "url": "https://shield-05.supabase.co/functions/v1",
+      "tier": 1,
+      "platform": "supabase-edge",
+      "region": "asia-southeast",
+      "country": "SG",
+      "priority": 6,
+      "auth_token_hint": "dshield_ir_v6_sb_05",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 350,
+      "latency_estimate_ms": 88,
+      "reliability_score": 0.96
+    },
+    {
+      "id": "supabase-na-06",
+      "url": "https://shield-06.supabase.co/functions/v1",
+      "tier": 1,
+      "platform": "supabase-edge",
+      "region": "north-america",
+      "country": "US",
+      "priority": 5,
+      "auth_token_hint": "dshield_ir_v6_sb_06",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 350,
+      "latency_estimate_ms": 125,
+      "reliability_score": 0.98
+    },
+    {
+      "id": "netlify-ir-01",
+      "url": "https://shield-01.netlify.app",
+      "tier": 1,
+      "platform": "netlify-edge",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_nf_01",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 300,
+      "latency_estimate_ms": 38,
+      "reliability_score": 0.95
+    },
+    {
+      "id": "netlify-eu-02",
+      "url": "https://shield-02.netlify.app",
+      "tier": 1,
+      "platform": "netlify-edge",
+      "region": "europe-west",
+      "country": "DE",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_nf_02",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 300,
+      "latency_estimate_ms": 60,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "netlify-eu-03",
+      "url": "https://shield-03.netlify.app",
+      "tier": 1,
+      "platform": "netlify-edge",
+      "region": "europe-west",
+      "country": "GB",
+      "priority": 8,
+      "auth_token_hint": "dshield_ir_v6_nf_03",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 300,
+      "latency_estimate_ms": 72,
+      "reliability_score": 0.97
+    },
+    {
+      "id": "netlify-as-04",
+      "url": "https://shield-04.netlify.app",
+      "tier": 1,
+      "platform": "netlify-edge",
+      "region": "asia-east",
+      "country": "JP",
+      "priority": 6,
+      "auth_token_hint": "dshield_ir_v6_nf_04",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 300,
+      "latency_estimate_ms": 98,
+      "reliability_score": 0.96
+    },
+    {
+      "id": "netlify-na-05",
+      "url": "https://shield-05.netlify.app",
+      "tier": 1,
+      "platform": "netlify-edge",
+      "region": "north-america",
+      "country": "US",
+      "priority": 5,
+      "auth_token_hint": "dshield_ir_v6_nf_05",
+      "protocols": [
+        "https"
+      ],
+      "max_connections": 300,
+      "latency_estimate_ms": 128,
+      "reliability_score": 0.98
+    },
+    {
+      "id": "arvan-ir-01",
+      "url": "https://shield-01.arvan.run",
+      "tier": 1,
+      "platform": "arvan-cloud",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_ar_01",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 600,
+      "latency_estimate_ms": 12,
+      "reliability_score": 0.98,
+      "national_intranet_accessible": true
+    },
+    {
+      "id": "arvan-ir-02",
+      "url": "https://shield-02.arvan.run",
+      "tier": 1,
+      "platform": "arvan-cloud",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_ar_02",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 600,
+      "latency_estimate_ms": 14,
+      "reliability_score": 0.97,
+      "national_intranet_accessible": true
+    },
+    {
+      "id": "arvan-ir-03",
+      "url": "https://shield-03.arvan.run",
+      "tier": 1,
+      "platform": "arvan-cloud",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 10,
+      "auth_token_hint": "dshield_ir_v6_ar_03",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 600,
+      "latency_estimate_ms": 15,
+      "reliability_score": 0.97,
+      "national_intranet_accessible": true
+    },
+    {
+      "id": "arvan-ir-04",
+      "url": "https://shield-04.arvan.run",
+      "tier": 1,
+      "platform": "arvan-cloud",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 9,
+      "auth_token_hint": "dshield_ir_v6_ar_04",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 400,
+      "latency_estimate_ms": 18,
+      "reliability_score": 0.96,
+      "national_intranet_accessible": true
+    },
+    {
+      "id": "arvan-ir-05",
+      "url": "https://shield-05.arvan.run",
+      "tier": 1,
+      "platform": "arvan-cloud",
+      "region": "middle-east",
+      "country": "IR",
+      "priority": 9,
+      "auth_token_hint": "dshield_ir_v6_ar_05",
+      "protocols": [
+        "wss",
+        "https"
+      ],
+      "max_connections": 400,
+      "latency_estimate_ms": 20,
+      "reliability_score": 0.95,
+      "national_intranet_accessible": true
+    },
+    {
+      "id": "deno-ist-01",
+      "url": "https://shield-deno-ist-01.deno.dev",
+      "type": "deno_deploy",
+      "region": "turkey-istanbul",
+      "priority": 1,
+      "auth_token_hash": "a3f2b8c1d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef"
+    },
+    {
+      "id": "deno-ist-02",
+      "url": "https://shield-deno-ist-02.deno.dev",
+      "type": "deno_deploy",
+      "region": "turkey-istanbul",
+      "priority": 1,
+      "auth_token_hash": "b4c3d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef01"
+    },
+    {
+      "id": "deno-dxb-01",
+      "url": "https://shield-deno-dxb-01.deno.dev",
+      "type": "deno_deploy",
+      "region": "uae-dubai",
+      "priority": 2,
+      "auth_token_hash": "c5d4e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0102"
+    },
+    {
+      "id": "deno-dxb-02",
+      "url": "https://shield-deno-dxb-02.deno.dev",
+      "type": "deno_deploy",
+      "region": "uae-dubai",
+      "priority": 2,
+      "auth_token_hash": "d6e5f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef010203"
+    },
+    {
+      "id": "deno-bom-01",
+      "url": "https://shield-deno-bom-01.deno.dev",
+      "type": "deno_deploy",
+      "region": "india-mumbai",
+      "priority": 3,
+      "auth_token_hash": "e7f60819293a4b5c6d7e8f9012345678abcdef0123456789abcdef01020304"
+    },
+    {
+      "id": "deno-bom-02",
+      "url": "https://shield-deno-bom-02.deno.dev",
+      "type": "deno_deploy",
+      "region": "india-mumbai",
+      "priority": 3,
+      "auth_token_hash": "f80719293a4b5c6d7e8f9012345678abcdef0123456789abcdef0102030405"
+    },
+    {
+      "id": "deno-fra-01",
+      "url": "https://shield-deno-fra-01.deno.dev",
+      "type": "deno_deploy",
+      "region": "germany-frankfurt",
+      "priority": 4,
+      "auth_token_hash": "091a2b3c4d5e6f70819293a4b5c6d7e8f90abcdef0123456789abcdef010203040506"
+    },
+    {
+      "id": "deno-fra-02",
+      "url": "https://shield-deno-fra-02.deno.dev",
+      "type": "deno_deploy",
+      "region": "germany-frankfurt",
+      "priority": 4,
+      "auth_token_hash": "1a2b3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0ab"
+    },
+    {
+      "id": "deno-ams-01",
+      "url": "https://shield-deno-ams-01.deno.dev",
+      "type": "deno_deploy",
+      "region": "netherlands-amsterdam",
+      "priority": 4,
+      "auth_token_hash": "2b3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcd"
+    },
+    {
+      "id": "deno-ams-02",
+      "url": "https://shield-deno-ams-02.deno.dev",
+      "type": "deno_deploy",
+      "region": "netherlands-amsterdam",
+      "priority": 4,
+      "auth_token_hash": "3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcde"
+    },
+    {
+      "id": "valtown-ist-01",
+      "url": "https://shield-valtown-ist-01.val.town",
+      "type": "val_town",
+      "region": "turkey-istanbul",
+      "priority": 2,
+      "auth_token_hash": "4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcdef0"
+    },
+    {
+      "id": "valtown-dxb-01",
+      "url": "https://shield-valtown-dxb-01.val.town",
+      "type": "val_town",
+      "region": "uae-dubai",
+      "priority": 3,
+      "auth_token_hash": "5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcdef01"
+    },
+    {
+      "id": "valtown-bom-01",
+      "url": "https://shield-valtown-bom-01.val.town",
+      "type": "val_town",
+      "region": "india-mumbai",
+      "priority": 3,
+      "auth_token_hash": "6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcdef012"
+    },
+    {
+      "id": "valtown-fra-01",
+      "url": "https://shield-valtown-fra-01.val.town",
+      "type": "val_town",
+      "region": "germany-frankfurt",
+      "priority": 4,
+      "auth_token_hash": "70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcdef0123"
+    },
+    {
+      "id": "valtown-ams-01",
+      "url": "https://shield-valtown-ams-01.val.town",
+      "type": "val_town",
+      "region": "netherlands-amsterdam",
+      "priority": 4,
+      "auth_token_hash": "819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcdef012345"
+    },
+    {
+      "id": "supabase-ist-01",
+      "url": "https://shield-supabase-ist-01.supabase.co/functions/v1/shield",
+      "type": "supabase_edge",
+      "region": "turkey-istanbul",
+      "priority": 2,
+      "auth_token_hash": "9293a4b5c6d7e8f9012345678abcdef0123456789abcdef0abcdef01234567"
+    },
+    {
+      "id": "supabase-dxb-01",
+      "url": "https://shield-supabase-dxb-01.supabase.co/functions/v1/shield",
+      "type": "supabase_edge",
+      "region": "uae-dubai",
+      "priority": 3,
+      "auth_token_hash": "a3b4c5d6e7f80919293a4b5c6d7e8f9012345678abcdef0123456789abcdef"
+    },
+    {
+      "id": "supabase-bom-01",
+      "url": "https://shield-supabase-bom-01.supabase.co/functions/v1/shield",
+      "type": "supabase_edge",
+      "region": "india-mumbai",
+      "priority": 3,
+      "auth_token_hash": "b4c5d6e7f80919293a4b5c6d7e8f9012345678abcdef0123456789abcdef01"
+    },
+    {
+      "id": "supabase-fra-01",
+      "url": "https://shield-supabase-fra-01.supabase.co/functions/v1/shield",
+      "type": "supabase_edge",
+      "region": "germany-frankfurt",
+      "priority": 4,
+      "auth_token_hash": "c5d6e7f80919293a4b5c6d7e8f9012345678abcdef0123456789abcdef0123"
+    },
+    {
+      "id": "supabase-ams-01",
+      "url": "https://shield-supabase-ams-01.supabase.co/functions/v1/shield",
+      "type": "supabase_edge",
+      "region": "netherlands-amsterdam",
+      "priority": 4,
+      "auth_token_hash": "d6e7f80919293a4b5c6d7e8f9012345678abcdef0123456789abcdef012345"
+    },
+    {
+      "id": "netlify-ist-01",
+      "url": "https://shield-netlify-ist-01.netlify.app",
+      "type": "netlify_edge",
+      "region": "turkey-istanbul",
+      "priority": 2,
+      "auth_token_hash": "e7f80919293a4b5c6d7e8f9012345678abcdef0123456789abcdef0123456789"
+    },
+    {
+      "id": "netlify-dxb-01",
+      "url": "https://shield-netlify-dxb-01.netlify.app",
+      "type": "netlify_edge",
+      "region": "uae-dubai",
+      "priority": 3,
+      "auth_token_hash": "f80919293a4b5c6d7e8f9012345678abcdef0123456789abcdef0123456789ab"
+    },
+    {
+      "id": "netlify-bom-01",
+      "url": "https://shield-netlify-bom-01.netlify.app",
+      "type": "netlify_edge",
+      "region": "india-mumbai",
+      "priority": 3,
+      "auth_token_hash": "091a2b3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcd"
+    },
+    {
+      "id": "netlify-fra-01",
+      "url": "https://shield-netlify-fra-01.netlify.app",
+      "type": "netlify_edge",
+      "region": "germany-frankfurt",
+      "priority": 4,
+      "auth_token_hash": "1a2b3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef"
+    },
+    {
+      "id": "netlify-ams-01",
+      "url": "https://shield-netlify-ams-01.netlify.app",
+      "type": "netlify_edge",
+      "region": "netherlands-amsterdam",
+      "priority": 4,
+      "auth_token_hash": "2b3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef01"
+    },
+    {
+      "id": "arvan-teh-01",
+      "url": "https://shield-arvan-teh-01.arvancloud.ir/faas/shield",
+      "type": "arvan_faas",
+      "region": "iran-tehran",
+      "priority": 0,
+      "auth_token_hash": "3c4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef01234"
+    },
+    {
+      "id": "arvan-teh-02",
+      "url": "https://shield-arvan-teh-02.arvancloud.ir/faas/shield",
+      "type": "arvan_faas",
+      "region": "iran-tehran",
+      "priority": 0,
+      "auth_token_hash": "4d5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef012345"
+    },
+    {
+      "id": "arvan-msh-01",
+      "url": "https://shield-arvan-msh-01.arvancloud.ir/faas/shield",
+      "type": "arvan_faas",
+      "region": "iran-mashhad",
+      "priority": 0,
+      "auth_token_hash": "5e6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef012345678"
+    },
+    {
+      "id": "arvan-isf-01",
+      "url": "https://shield-arvan-isf-01.arvancloud.ir/faas/shield",
+      "type": "arvan_faas",
+      "region": "iran-isfahan",
+      "priority": 0,
+      "auth_token_hash": "6f70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0123456789a"
+    },
+    {
+      "id": "arvan-tbr-01",
+      "url": "https://shield-arvan-tbr-01.arvancloud.ir/faas/shield",
+      "type": "arvan_faas",
+      "region": "iran-tabriz",
+      "priority": 0,
+      "auth_token_hash": "70819293a4b5c6d7e8f9012345678abcdef0123456789abcdef0123456789abc"
+    }
+  ],
+  "updated": "2025-01-15T00:00:00Z",
+  "description": "Tier 1 CDN endpoints for MICAFP-UnifiedShield. Pre-deployed relay nodes on serverless/edge platforms that provide censorship-resistant transport. Each endpoint runs a minimal proxy that can tunnel Shield traffic over HTTPS/WebSocket.",
+  "selection_policy": {
+    "algorithm": "ucb_bandit",
+    "exploration_factor": 0.3,
+    "priority_weight": 0.4,
+    "latency_weight": 0.3,
+    "reliability_weight": 0.3,
+    "national_intranet_bonus": 2.0,
+    "cooldown_failed_seconds": 300,
+    "max_concurrent_endpoints": 3
+  },
+  "failover": {
+    "max_retries": 3,
+    "retry_delay_ms": 1000,
+    "circuit_breaker_threshold": 5,
+    "circuit_breaker_reset_seconds": 600
+  }
+}

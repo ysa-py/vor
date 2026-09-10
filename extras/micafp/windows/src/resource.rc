@@ -1,0 +1,64 @@
+/**
+ * Windows Resource file for UnifiedShield
+ */
+
+#include <windows.h>
+
+#define APP_NAME "UnifiedShield"
+#define APP_VERSION "1.0.0"
+#define APP_DESCRIPTION "UnifiedShield Anti-Censorship VPN"
+
+// Application icon
+// IDI_APP_ICON ICON "app.ico"
+
+// Version information
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEFLAGS 0
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "UnifiedShield"
+            VALUE "FileDescription", APP_DESCRIPTION
+            VALUE "FileVersion", APP_VERSION
+            VALUE "InternalName", "unifiedshield"
+            VALUE "LegalCopyright", "Copyright 2024 UnifiedShield"
+            VALUE "OriginalFilename", "unifiedshield.exe"
+            VALUE "ProductName", APP_NAME
+            VALUE "ProductVersion", APP_VERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 0x04B0
+    END
+END
+
+// Manifest for DPI awareness and UAC
+1 RT_MANIFEST
+BEGIN
+    "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>"
+    "<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>"
+    "  <assemblyIdentity version='1.0.0.0' processorArchitecture='*' name='UnifiedShield' type='win32'/>"
+    "  <trustInfo xmlns='urn:schemas-microsoft-com:asm.v3'>"
+    "    <security>"
+    "      <requestedPrivileges>"
+    "        <requestedExecutionLevel level='asInvoker' uiAccess='false'/>"
+    "      </requestedPrivileges>"
+    "    </security>"
+    "  </trustInfo>"
+    "  <application xmlns='urn:schemas-microsoft-com:asm.v3'>"
+    "    <windowsSettings>"
+    "      <dpiAware xmlns='http://schemas.microsoft.com/SMI/2005/WindowsSettings'>true</dpiAware>"
+    "      <dpiAwareness xmlns='http://schemas.microsoft.com/SMI/2016/WindowsSettings'>PerMonitorV2</dpiAwareness>"
+    "    </windowsSettings>"
+    "  </application>"
+    "</assembly>"
+END

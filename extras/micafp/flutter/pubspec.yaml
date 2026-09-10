@@ -1,0 +1,81 @@
+name: shield
+description: A utility application with enhanced connectivity features.
+publish_to: 'none'
+version: 6.0.0+600
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # Persistent storage
+  shared_preferences: ^2.2.3
+
+  # Foreground service (Android)
+  flutter_foreground_task: ^8.11.0
+
+  # WiFi Aware (peer-to-peer)
+  wifi_iot: ^0.3.19
+
+  # Acoustic channel
+  flutter_sound: ^9.16.3
+
+  # File system paths
+  path_provider: ^2.1.4
+
+  # URL handling
+  url_launcher: ^6.3.1
+
+  # Biometric authentication
+  local_auth: ^2.3.0
+
+  # Network connectivity monitoring
+  connectivity_plus: ^6.0.5
+
+  # Battery monitoring
+  battery_plus: ^6.0.3
+
+  # Background task scheduling
+  workmanager: ^0.5.2
+
+  # Network information
+  network_info_plus: ^6.0.2
+
+  # Crypto for config validation
+  cryptography: ^2.7.0
+
+  # Vibration feedback
+  vibration: ^2.0.0
+
+  # Secure storage
+  flutter_secure_storage: ^9.2.4
+
+  # Animations
+  flutter_animate: ^4.5.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Steganographic launcher icons
+  assets:
+    - assets/icons/
+    - assets/sounds/
+
+# Android configuration
+android:
+  minSdkVersion: 24
+  targetSdkVersion: 34
+
+# iOS configuration  
+ios:
+  deploymentTarget: "15.0"

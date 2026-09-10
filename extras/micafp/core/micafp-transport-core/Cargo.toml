@@ -1,0 +1,50 @@
+[package]
+name = "micafp-transport-core"
+version = "0.70.0"
+edition = "2021"
+authors = ["MICAFP Architecture Team <core@unifiedshield.org>"]
+description = "ENGINEERING DIRECTIVE v70 — Dual-Mode Transport Core (Mode A: Parallel Multipath QUIC & Mode B: 5-Hop Nested Sphinx/Noise Encapsulation)"
+license = "Apache-2.0"
+
+[lib]
+name = "unifiedshield"
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+# Async Runtime
+tokio = { version = "1.38", features = ["full", "io-util", "sync", "rt-multi-thread"] }
+bytes = { version = "1.6", features = ["serde"] }
+
+# Serialization & Logging
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+thiserror = "1.0"
+
+# Cryptography (Hardware-accelerated ChaCha20-Poly1305 and AES-256-GCM)
+ring = "0.17"
+
+# Noise Protocol state machine for Mode B 5-hop layered transport
+snow = "0.9"
+
+# QUIC transport for Mode A Parallel Multipath
+quinn = { version = "0.11", default-features = false, features = ["runtime-tokio", "rustls"] }
+
+# Mobile FFI Bridges
+jni = { version = "0.21", default-features = false }
+
+[target.'cfg(target_os = "ios")'.dependencies]
+# Single-threaded runtime & mimalloc for iOS NetworkExtension memory constraints
+mimalloc = { version = "0.1", default-features = false }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[features]
+default = ["std"]
+std = []
+ios-extension = ["tokio/rt"]

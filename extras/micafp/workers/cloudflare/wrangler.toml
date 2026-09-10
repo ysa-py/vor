@@ -1,0 +1,20 @@
+name = "unifiedshield-relay"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+RELAY_SECRET = "change-me-in-production"
+MAX_CONNECTIONS = 1000
+RATE_LIMIT_RPM = 600
+PADDING_MAX_BYTES = 512
+
+# Note: Cloudflare Workers are BLOCKED in Iran.
+# This worker is for relay points OUTSIDE Iran only.
+# For users inside Iran, use the Deno relay or direct WebRTC.
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "change-to-your-kv-namespace-id"
+
+[observability]
+enabled = true

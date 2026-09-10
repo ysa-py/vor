@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer Shield Halo -->
+    <path
+        android:fillColor="#1E1B4B"
+        android:pathData="M54,12 L86,26 C86,62 54,92 54,92 C54,92 22,62 22,26 Z" />
+    <!-- Inner Cyber Core -->
+    <path
+        android:fillColor="#312E81"
+        android:pathData="M54,18 L80,30 C80,59 54,84 54,84 C54,84 28,59 28,30 Z" />
+    <!-- Quantum Shield Neon -->
+    <path
+        android:fillColor="#06B6D4"
+        android:pathData="M54,26 L74,36 C74,56 54,76 54,76 C54,76 34,56 34,36 Z" />
+    <!-- Center Quantum Core -->
+    <path
+        android:fillColor="#6366F1"
+        android:pathData="M54,34 L66,42 C66,54 54,66 54,66 C54,66 42,54 42,42 Z" />
+    <!-- Quantum Spark Symbol -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,40 L57,48 L65,51 L57,54 L54,62 L51,54 L43,51 L51,48 Z" />
+</vector>

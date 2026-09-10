@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MICAFP</string>
+    <string name="vpn_notification_channel">VPN Connection</string>
+    <string name="vpn_notification_connected">Connected - %1$s core</string>
+    <string name="vpn_notification_connecting">Connecting…</string>
+    <string name="vpn_notification_disconnected">Disconnected</string>
+
+    <string name="status_connected">Connected</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="status_error">Error</string>
+
+    <string name="btn_connect">CONNECT</string>
+    <string name="btn_disconnect">DISCONNECT</string>
+
+    <string name="core_xray">Xray</string>
+    <string name="core_naive">NaïveProxy</string>
+    <string name="core_hysteria2">Hysteria2</string>
+    <string name="core_tuic">TUIC</string>
+
+    <string name="settings_kill_switch">Kill Switch</string>
+    <string name="settings_split_tunnel">Split Tunnel</string>
+    <string name="settings_auto_core_switch">Auto Core Switch</string>
+    <string name="settings_auto_update">Auto Update</string>
+    <string name="settings_start_on_boot">Start on Boot</string>
+    <string name="settings_dns_provider">DNS Provider</string>
+    <string name="settings_obfuscation">Obfuscation Level</string>
+
+    <string name="dns_alibaba">Alibaba DNS (223.5.5.5)</string>
+    <string name="dns_tencent">Tencent DNS (119.29.29.29)</string>
+
+    <string name="download_speed">Download</string>
+    <string name="upload_speed">Upload</string>
+
+    <string name="dpi_warning">DPI detected! Switching core…</string>
+    <string name="update_available">Update available: v%1$s</string>
+    <string name="update_critical">Critical security update available!</string>
+</resources>

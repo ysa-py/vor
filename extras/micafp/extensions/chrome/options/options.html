@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnifiedShield — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="options-container">
+    <header class="header">
+      <h1>UnifiedShield Settings</h1>
+      <span class="version">v2.0.0</span>
+    </header>
+
+    <!-- Connection Settings -->
+    <section class="section">
+      <h2 class="section-title">Connection</h2>
+
+      <div class="form-group">
+        <label for="socksHost">SOCKS5 Host</label>
+        <input type="text" id="socksHost" placeholder="127.0.0.1" />
+      </div>
+
+      <div class="form-group">
+        <label for="socksPort">SOCKS5 Port</label>
+        <input type="number" id="socksPort" placeholder="1080" min="1" max="65535" />
+      </div>
+
+      <div class="form-group">
+        <label for="socksUsername">Username (optional)</label>
+        <input type="text" id="socksUsername" placeholder="Leave empty for no auth" />
+      </div>
+
+      <div class="form-group">
+        <label for="socksPassword">Password (optional)</label>
+        <input type="password" id="socksPassword" placeholder="Leave empty for no auth" />
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="socksEnabled">SOCKS5 Proxy Enabled</label>
+          <input type="checkbox" id="socksEnabled" />
+        </div>
+      </div>
+    </section>
+
+    <!-- WebRTC Relay Settings -->
+    <section class="section">
+      <h2 class="section-title">WebRTC Relay</h2>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="webrtcFallback">Enable WebRTC Fallback</label>
+          <input type="checkbox" id="webrtcFallback" />
+        </div>
+        <p class="help-text">Use WebRTC data channels when SOCKS5 is unavailable</p>
+      </div>
+
+      <div class="form-group">
+        <label for="relaySignalingUrl">Signaling Server URL</label>
+        <input type="text" id="relaySignalingUrl" placeholder="wss://relay.example.com/signaling" />
+      </div>
+
+      <div class="form-group">
+        <label for="webrtcLocalPort">Local Relay Port</label>
+        <input type="number" id="webrtcLocalPort" placeholder="1081" min="1" max="65535" />
+      </div>
+    </section>
+
+    <!-- DNS Settings -->
+    <section class="section">
+      <h2 class="section-title">DNS-over-HTTPS</h2>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="dohEnabled">Enable DoH</label>
+          <input type="checkbox" id="dohEnabled" />
+        </div>
+        <p class="help-text">Bypass ISP DNS poisoning using encrypted DNS</p>
+      </div>
+
+      <div class="form-group">
+        <label>DoH Server Priority</label>
+        <div class="doh-servers">
+          <label class="check-item">
+            <input type="checkbox" data-doh="alidns" checked />
+            <span>Alidns (dns.alidns.com)</span>
+            <span class="badge chinese">CN</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" data-doh="dnspod" checked />
+            <span>DNSPod (doh.pub)</span>
+            <span class="badge chinese">CN</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" data-doh="byteplus" checked />
+            <span>BytePlus (dns.byteplus.com)</span>
+            <span class="badge chinese">CN</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" data-doh="quad9" />
+            <span>Quad9 (dns.quad9.net)</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" data-doh="mullvad" />
+            <span>Mullvad (dns.mullvad.net)</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" data-doh="google" />
+            <span>Google (dns.google)</span>
+            <span class="badge warning">Blocked in IR</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- TURN Server -->
+    <section class="section">
+      <h2 class="section-title">TURN / STUN Servers</h2>
+      <p class="help-text">Required for WebRTC when direct connection is blocked. Chinese CDNs recommended.</p>
+
+      <div class="form-group">
+        <label for="turnServers">TURN Server URLs (one per line)</label>
+        <textarea id="turnServers" rows="3" placeholder="turn:turn.example.com:3478"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="turnUsername">TURN Username</label>
+        <input type="text" id="turnUsername" />
+      </div>
+
+      <div class="form-group">
+        <label for="turnPassword">TURN Password</label>
+        <input type="password" id="turnPassword" />
+      </div>
+    </section>
+
+    <!-- DPI Bypass -->
+    <section class="section">
+      <h2 class="section-title">DPI Bypass</h2>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="dpibypassEnabled">Enable DPI Bypass</label>
+          <input type="checkbox" id="dpibypassEnabled" />
+        </div>
+        <p class="help-text">Randomize TLS ClientHello, add timing jitter, and pad packets</p>
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="webrtcRelayEnabled">WebRTC Relay Mode</label>
+          <input type="checkbox" id="webrtcRelayEnabled" />
+        </div>
+        <p class="help-text">Route all traffic through WebRTC data channels (stealth mode)</p>
+      </div>
+    </section>
+
+    <!-- Advanced -->
+    <section class="section">
+      <h2 class="section-title">Advanced</h2>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="autoStart">Auto-start on browser launch</label>
+          <input type="checkbox" id="autoStart" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="toggle-row">
+          <label for="nativeAppEnabled">Native App Integration</label>
+          <input type="checkbox" id="nativeAppEnabled" />
+        </div>
+        <p class="help-text">Connect to UnifiedShield native app for enhanced proxy features</p>
+      </div>
+
+      <div class="form-group">
+        <label for="preferredMode">Preferred Mode</label>
+        <select id="preferredMode">
+          <option value="auto">Auto (recommended)</option>
+          <option value="socks5">SOCKS5 Only</option>
+          <option value="webrtc">WebRTC Only</option>
+          <option value="direct">Direct (no proxy)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="dohBlocklist">DoH Blocklist (one domain per line)</label>
+        <textarea id="dohBlocklist" rows="4" placeholder="example.com&#10;blocked-site.ir"></textarea>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <div class="actions-bar">
+      <button class="btn btn-secondary" id="resetBtn">Reset Defaults</button>
+      <button class="btn btn-primary" id="saveBtn">Save Settings</button>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar" id="statusBar">
+      <span id="statusMessage"></span>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+Source: unifiedshield
+Section: net
+Priority: optional
+Maintainer: UnifiedShield <team@unifiedshield.org>
+Build-Depends: debhelper-compat (= 13), cmake (>= 3.22), build-essential, libssl-dev, pkg-config
+Standards-Version: 4.6.2
+Homepage: https://github.com/unifiedshield/unifiedshield
+Vcs-Git: https://github.com/unifiedshield/unifiedshield.git
+Vcs-Browser: https://github.com/unifiedshield/unifiedshield
+
+Package: unifiedshield
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libc6 (>= 2.31), libgcc-s1 (>= 10)
+Recommends: systemd (>= 245)
+Suggests: unifiedshield-gui
+Description: Next-gen anti-censorship VPN for Iran
+ UnifiedShield is a VPN client designed specifically for users in Iran.
+ It supports multiple protocol cores (Xray, NaïveProxy, Hysteria2, TUIC)
+ and includes DPI evasion with automatic core switching.
+ .
+ Key features:
+  - Split tunnel (Iranian IPs excluded for local banking/gov access)
+  - DPI detection with sliding window algorithm (threshold > 0.72)
+  - Kill switch (always-on VPN lockdown)
+  - DNS: Alibaba/Tencent CDN primary (Cloudflare blocked in Iran)
+  - No root required (uses CAP_NET_ADMIN capability)
+  - OTA updates via GitHub Releases with SHA256 verification

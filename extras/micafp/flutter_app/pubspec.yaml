@@ -1,0 +1,72 @@
+name: unified_shield
+description: Next-generation anti-censorship tool
+version: 6.0.0
+
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.24.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # Background services
+  flutter_background_service: ^5.0.7
+  workmanager: ^0.5.2
+  flutter_foreground_task: ^8.11.0
+
+  # Storage
+  shared_preferences: ^2.3.4
+
+  # Connectivity & network
+  connectivity_plus: ^6.1.2
+
+  # Battery monitoring
+  battery_plus: ^6.2.1
+
+  # Permissions
+  permission_handler: ^11.3.1
+
+  # URL launcher
+  url_launcher: ^6.3.1
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+
+  # WiFi & hotspot
+  wifi_iot: ^0.3.19
+
+  # UI utilities
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+
+  # Animations
+  animations: ^2.0.11
+
+  # Vibration feedback
+  vibration: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Localization support
+  generate: true
+
+  fonts:
+    - family: Vazirmatn
+      fonts:
+        - asset: assets/fonts/Vazirmatn-Regular.ttf
+        - asset: assets/fonts/Vazirmatn-Bold.ttf
+          weight: 700

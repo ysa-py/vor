@@ -1,0 +1,430 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-vazirmatn), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.002 247.839);
+  --foreground: oklch(0.21 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.02 260);
+  --primary: oklch(0.21 0.02 260);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0.004 247.839);
+  --secondary-foreground: oklch(0.21 0.02 260);
+  --muted: oklch(0.97 0.004 247.839);
+  --muted-foreground: oklch(0.552 0.02 260);
+  --accent: oklch(0.94 0.006 247.839);
+  --accent-foreground: oklch(0.21 0.02 260);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.006 247.839);
+  --input: oklch(0.92 0.006 247.839);
+  --ring: oklch(0.552 0.02 260);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.985 0.002 247.839);
+  --sidebar-foreground: oklch(0.21 0.02 260);
+  --sidebar-primary: oklch(0.21 0.02 260);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.94 0.006 247.839);
+  --sidebar-accent-foreground: oklch(0.21 0.02 260);
+  --sidebar-border: oklch(0.92 0.006 247.839);
+  --sidebar-ring: oklch(0.552 0.02 260);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv01";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgba(16, 185, 129, 0.28);
+    color: #ecfdf5;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UnifiedShield — Obsidian Command Console Design System
+   Premium enterprise surfaces, ambient atmosphere & utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Ambient page atmosphere: layered aurora + precision grid ── */
+.shield-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 520px at 85% -8%, rgba(16, 185, 129, 0.09), transparent 62%),
+    radial-gradient(900px 480px at -12% 12%, rgba(34, 211, 238, 0.07), transparent 58%),
+    radial-gradient(1000px 620px at 55% 118%, rgba(139, 92, 246, 0.07), transparent 62%),
+    linear-gradient(180deg, #070b13 0%, #0a101d 48%, #070b13 100%);
+}
+
+.shield-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 75%);
+}
+
+.shield-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: 13px 13px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black 10%, transparent 70%);
+  opacity: 0.5;
+}
+
+/* ── Glass surface system ── */
+.shield-surface {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 24px 48px -28px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: border-color 240ms ease, box-shadow 240ms ease, background 240ms ease;
+}
+
+.shield-surface:hover {
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+.shield-surface-strong {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 24px 48px -28px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.shield-tile {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.shield-tile:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.shield-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.shield-inset {
+  background: rgba(5, 9, 16, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+/* ── Signature gradient text ── */
+.gradient-text {
+  background: linear-gradient(100deg, #34d399 0%, #22d3ee 55%, #818cf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-text-soft {
+  background: linear-gradient(100deg, #6ee7b7 0%, #67e8f9 60%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Signature gradient button surface ── */
+.shield-gradient-btn {
+  background: linear-gradient(135deg, #059669 0%, #0891b2 100%);
+  box-shadow:
+    0 10px 28px -12px rgba(16, 185, 129, 0.55),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+  transition: filter 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+
+.shield-gradient-btn:hover {
+  filter: brightness(1.12);
+  box-shadow:
+    0 14px 34px -12px rgba(16, 185, 129, 0.65),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ── Ambient glow helpers ── */
+.glow-emerald {
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.18), 0 0 34px -6px rgba(16, 185, 129, 0.35);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.18), 0 0 34px -6px rgba(6, 182, 212, 0.35);
+}
+
+.glow-violet {
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2), 0 0 34px -6px rgba(139, 92, 246, 0.4);
+}
+
+/* ── Hairline dividers ── */
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.22), transparent);
+}
+
+.hairline-v {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(148, 163, 184, 0.22), transparent);
+}
+
+/* ── Numeric tabular display for dashboards ── */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ── Custom scrollbar ── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.28);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.28) transparent;
+}
+
+/* ── RTL fixes for recharts ── */
+.recharts-wrapper {
+  direction: ltr;
+}
+.recharts-default-tooltip {
+  border-radius: 10px !important;
+}
+
+/* ── Smooth tab transitions ── */
+.tab-content-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.tab-content-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* ── Focus rings ── */
+:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.55);
+  outline-offset: 2px;
+}
+
+/* ── Reduced motion respect ── */
+@media (prefers-reduced-motion: reduce) {
+  .shield-atmosphere::before,
+  .shield-atmosphere::after {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Theme switching — smooth transition + coherent light theme
+   ═══════════════════════════════════════════════════════════════ */
+body {
+  transition: background-color 180ms ease, color 180ms ease;
+}
+.shield-atmosphere {
+  transition: background 180ms ease;
+}
+header,
+footer {
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+html.light .shield-atmosphere {
+  background:
+    radial-gradient(1100px 520px at 85% -8%, rgba(16, 185, 129, 0.10), transparent 62%),
+    radial-gradient(900px 480px at -12% 12%, rgba(6, 182, 212, 0.10), transparent 58%),
+    radial-gradient(1000px 620px at 55% 118%, rgba(139, 92, 246, 0.08), transparent 62%),
+    linear-gradient(180deg, #f5f8fd 0%, #eef2f9 48%, #f5f8fd 100%);
+}
+html.light .shield-atmosphere::before {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+}
+html.light .shield-atmosphere::after {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.14) 1px, transparent 1px);
+}
+
+html.light .shield-surface,
+html.light .shield-surface-strong {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.46));
+  border-color: rgba(15, 23, 42, 0.10);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    0 24px 48px -28px rgba(15, 23, 42, 0.16);
+}
+html.light .shield-surface:hover,
+html.light .shield-surface-strong:hover {
+  border-color: rgba(15, 23, 42, 0.18);
+}
+html.light .shield-tile {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+html.light .shield-tile:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(15, 23, 42, 0.14);
+}
+html.light .shield-chip {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(15, 23, 42, 0.10);
+}
+html.light .shield-inset {
+  background: rgba(15, 23, 42, 0.05);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+/* Neutral body text — dark grays on light surfaces */
+html.light .text-slate-200,
+html.light .text-slate-300 {
+  color: oklch(0.27 0.02 260);
+}
+html.light .text-slate-400 {
+  color: oklch(0.44 0.02 260);
+}
+html.light .text-slate-500 {
+  color: oklch(0.55 0.02 260);
+}
+html.light .text-slate-600 {
+  color: oklch(0.6 0.02 260);
+}
+html.light .bg-slate-800 {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+html.light header {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+html.light header h1 {
+  color: oklch(0.21 0.02 260);
+}
+html.light footer {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(15, 23, 42, 0.08);
+}

@@ -1,0 +1,13 @@
+{
+  "name": "shield-tencent-worker",
+  "version": "6.0.0",
+  "description": "Shield CDN Worker for Tencent EdgeOne (Chinese CDN - not blocked in Iran)",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "tcb fn deploy shield-relay"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

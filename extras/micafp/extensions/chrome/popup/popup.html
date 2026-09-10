@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnifiedShield</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 14l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h1>UnifiedShield</h1>
+      </div>
+      <span class="version">v2.0</span>
+    </header>
+
+    <!-- Connection Status -->
+    <div class="status-card" id="statusCard">
+      <div class="status-indicator" id="statusIndicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Disconnected</span>
+      </div>
+      <div class="status-details" id="statusDetails">
+        <span id="modeText">Mode: —</span>
+        <span id="ispText">ISP: Detecting...</span>
+      </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button class="toggle-btn" id="toggleBtn">
+      <span class="toggle-label" id="toggleLabel">Connect</span>
+    </button>
+
+    <!-- Quick Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-value" id="blockedCount">0</span>
+        <span class="stat-label">Blocked</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="relayCount">0</span>
+        <span class="stat-label">Relays</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="dnsQueries">0</span>
+        <span class="stat-label">DNS</span>
+      </div>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <label class="mode-option">
+        <input type="radio" name="mode" value="auto" checked />
+        <span class="mode-label">Auto</span>
+      </label>
+      <label class="mode-option">
+        <input type="radio" name="mode" value="socks5" />
+        <span class="mode-label">SOCKS5</span>
+      </label>
+      <label class="mode-option">
+        <input type="radio" name="mode" value="webrtc" />
+        <span class="mode-label">WebRTC</span>
+      </label>
+      <label class="mode-option">
+        <input type="radio" name="mode" value="direct" />
+        <span class="mode-label">Direct</span>
+      </label>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions">
+      <button class="action-btn" id="dnsTestBtn" title="Test DNS-over-HTTPS">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M2 8h12M8 2c2 2 3 4 3 6s-1 4-3 6M8 2c-2 2-3 4-3 6s1 4 3 6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
+        DNS Test
+      </button>
+      <button class="action-btn" id="ispDetectBtn" title="Re-detect ISP">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2v5l3.5 2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
+        ISP Detect
+      </button>
+      <button class="action-btn" id="optionsBtn" title="Open settings">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M13 3l-1.5 1.5M4.5 11.5L3 13" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        Settings
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span id="lastBlockTime"></span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

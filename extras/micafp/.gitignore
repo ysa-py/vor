@@ -1,0 +1,161 @@
+# MICAFP-UnifiedShield v6.0 — Git Ignore
+# Complete ignore rules for all project components
+
+═══════════════════════════════════════════
+# Rust / Cargo
+═══════════════════════════════════════════
+/target/
+**/target/
+**/*.rs.bk
+Cargo.lock.user
+*.d
+*.rlib
+*.so
+*.dylib
+*.dll
+
+═══════════════════════════════════════════
+# Flutter / Dart
+═══════════════════════════════════════════
+flutter_app/.dart_tool/
+flutter_app/.packages
+flutter_app/.pub-cache/
+flutter_app/.pub/
+flutter_app/build/
+flutter_app/.flutter-plugins
+flutter_app/.flutter-plugins-dependencies
+flutter_app/pubspec.lock
+flutter_app/ios/Pods/
+flutter_app/ios/.symlinks/
+flutter_app/android/.gradle/
+flutter_app/android/app/build/
+flutter_app/android/build/
+
+═══════════════════════════════════════════
+# Android
+═══════════════════════════════════════════
+*.apk
+*.aab
+*.dex
+*.class
+android/.gradle/
+android/app/build/
+android/build/
+local.properties
+*.jks
+*.keystore
+
+═══════════════════════════════════════════
+# iOS / macOS
+═══════════════════════════════════════════
+*.xcworkspace/
+*.xcuserdata/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+ios/Pods/
+ios/build/
+DerivedData/
+*.mobileprovision
+*.cer
+*.p12
+
+═══════════════════════════════════════════
+# Go
+═══════════════════════════════════════════
+go-bridge/**/*.h
+go-bridge/**/*.a
+go-bridge/**/vendor/
+
+═══════════════════════════════════════════
+# Node.js / TypeScript
+═══════════════════════════════════════════
+node_modules/
+**/node_modules/
+
+═══════════════════════════════════════════
+# Next.js / Dashboard
+═══════════════════════════════════════════
+.next/
+**/.next/
+**/out/
+tsconfig.tsbuildinfo
+**/tsconfig.tsbuildinfo
+.next/cache/
+**/dist/
+**/*.js.map
+.npm
+.eslintcache
+
+═══════════════════════════════════════════
+# WASM
+═══════════════════════════════════════════
+extensions/wasm-obfuscator/pkg/
+extensions/wasm-obfuscator/target/
+
+═══════════════════════════════════════════
+# Python / AI
+═══════════════════════════════════════════
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+*.whl
+.venv/
+venv/
+ai-models/cache/*.onnx
+ai-models/train/checkpoints/
+ai-models/train/data/
+wandb/
+
+═══════════════════════════════════════════
+# Docker
+═══════════════════════════════════════════
+tests/censorship-simulation/suricata/logs/
+
+═══════════════════════════════════════════
+# OpenWrt
+═══════════════════════════════════════════
+openwrt/sdk/
+openwrt/bin/
+openwrt/tmp/
+
+═══════════════════════════════════════════
+# Build artifacts / releases
+═══════════════════════════════════════════
+release/
+artifacts/
+*.tar.gz
+*.zip
+*.sha256
+*.sig
+
+═══════════════════════════════════════════
+# IDE / Editor
+═══════════════════════════════════════════
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+═══════════════════════════════════════════
+# Secrets — NEVER commit
+═══════════════════════════════════════════
+.env
+.env.*
+secrets/
+*.pem
+*.key
+credentials.json
+service-account.json
+ARVAN_API_KEY*
+ALIYUN_*
+BYTEDANCE_*
+RELEASE_SIGNING_KEY*

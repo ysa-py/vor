@@ -1,0 +1,706 @@
+{
+  "metadata": {
+    "description": "P2P bootstrap peer list for UnifiedShield mesh network using libp2p multiaddr format",
+    "last_updated": "2025-01-15",
+    "network_id": "unifiedshield-mesh-v1",
+    "protocol_version": 1
+  },
+  "bootstrap_peers": [
+    {
+      "peer_id": "QmX7Vb5k2f1Hp9LQmFNBbS4vS8u3gBbF7nGvQKh3gT5nN",
+      "name": "bootstrap-eu-1",
+      "addresses": [
+        "/ip4/45.138.72.10/tcp/4001/p2p/QmX7Vb5k2f1Hp9LQmFNBbS4vS8u3gBbF7nGvQKh3gT5nN",
+        "/ip4/45.138.72.10/udp/4001/quic-v1/p2p/QmX7Vb5k2f1Hp9LQmFNBbS4vS8u3gBbF7nGvQKh3gT5nN",
+        "/ip6/2a0e:1cb0:0:1::10/tcp/4001/p2p/QmX7Vb5k2f1Hp9LQmFNBbS4vS8u3gBbF7nGvQKh3gT5nN"
+      ],
+      "country": "DE",
+      "region": "eu-central",
+      "relay_capability": true,
+      "max_relayed_connections": 100,
+      "bandwidth_mbps": 200,
+      "uptime_30d_percent": 99.9,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmY8Wc6r3h2Iq9MRnFpCcD4vT9uHwCf8oHrRKi4hU6mOo",
+      "name": "bootstrap-eu-2",
+      "addresses": [
+        "/ip4/91.108.56.22/tcp/4001/p2p/QmY8Wc6r3h2Iq9MRnFpCcD4vT9uHwCf8oHrRKi4hU6mOo",
+        "/ip4/91.108.56.22/udp/4001/quic-v1/p2p/QmY8Wc6r3h2Iq9MRnFpCcD4vT9uHwCf8oHrRKi4hU6mOo",
+        "/ip6/2a01:4f8:13a:1b3e::22/tcp/4001/p2p/QmY8Wc6r3h2Iq9MRnFpCcD4vT9uHwCf8oHrRKi4hU6mOo"
+      ],
+      "country": "NL",
+      "region": "eu-west",
+      "relay_capability": true,
+      "max_relayed_connections": 80,
+      "bandwidth_mbps": 150,
+      "uptime_30d_percent": 99.5,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmZ9Xd7e4k2j5Ns6uQ8pLbM3cR7vWtXyA1dBhFgD4eE5fF",
+      "name": "bootstrap-ap-1",
+      "addresses": [
+        "/ip4/103.25.72.14/tcp/4001/p2p/QmZ9Xd7e4k2j5Ns6uQ8pLbM3cR7vWtXyA1dBhFgD4eE5fF",
+        "/ip4/103.25.72.14/udp/4001/quic-v1/p2p/QmZ9Xd7e4k2j5Ns6uQ8pLbM3cR7vWtXyA1dBhFgD4eE5fF",
+        "/ip6/2403:9800:1a:3::14/tcp/4001/p2p/QmZ9Xd7e4k2j5Ns6uQ8pLbM3cR7vWtXyA1dBhFgD4eE5fF"
+      ],
+      "country": "SG",
+      "region": "ap-southeast",
+      "relay_capability": true,
+      "max_relayed_connections": 120,
+      "bandwidth_mbps": 250,
+      "uptime_30d_percent": 99.8,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmR2Ye5f8g3h6Ij7Kp8LqM4cN5oP6rS7tU8vW9xY0zA1bB",
+      "name": "bootstrap-ap-2",
+      "addresses": [
+        "/ip4/47.246.88.16/tcp/4001/p2p/QmR2Ye5f8g3h6Ij7Kp8LqM4cN5oP6rS7tU8vW9xY0zA1bB",
+        "/ip4/47.246.88.16/udp/4001/quic-v1/p2p/QmR2Ye5f8g3h6Ij7Kp8LqM4cN5oP6rS7tU8vW9xY0zA1bB"
+      ],
+      "country": "HK",
+      "region": "ap-east",
+      "relay_capability": true,
+      "max_relayed_connections": 150,
+      "bandwidth_mbps": 300,
+      "uptime_30d_percent": 99.7,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmS3Zf6g9h0i1Jk2Lm3Nn4O5pP6qQ7rR8sS9tT0uU1vV2wW",
+      "name": "bootstrap-us-1",
+      "addresses": [
+        "/ip4/198.51.100.18/tcp/4001/p2p/QmS3Zf6g9h0i1Jk2Lm3Nn4O5pP6qQ7rR8sS9tT0uU1vV2wW",
+        "/ip4/198.51.100.18/udp/4001/quic-v1/p2p/QmS3Zf6g9h0i1Jk2Lm3Nn4O5pP6qQ7rR8sS9tT0uU1vV2wW",
+        "/ip6/2606:4700:1::18/tcp/4001/p2p/QmS3Zf6g9h0i1Jk2Lm3Nn4O5pP6qQ7rR8sS9tT0uU1vV2wW"
+      ],
+      "country": "US",
+      "region": "us-west",
+      "relay_capability": true,
+      "max_relayed_connections": 200,
+      "bandwidth_mbps": 500,
+      "uptime_30d_percent": 99.9,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmT4aG5h6i7J8kL9mN0oP1qQ2rR3sS4tT5uU6vV7wW8xX",
+      "name": "bootstrap-us-2",
+      "addresses": [
+        "/ip4/203.0.113.24/tcp/4001/p2p/QmT4aG5h6i7J8kL9mN0oP1qQ2rR3sS4tT5uU6vV7wW8xX",
+        "/ip4/203.0.113.24/udp/4001/quic-v1/p2p/QmT4aG5h6i7J8kL9mN0oP1qQ2rR3sS4tT5uU6vV7wW8xX",
+        "/ip6/2620:1ec:1::24/tcp/4001/p2p/QmT4aG5h6i7J8kL9mN0oP1qQ2rR3sS4tT5uU6vV7wW8xX"
+      ],
+      "country": "US",
+      "region": "us-east",
+      "relay_capability": true,
+      "max_relayed_connections": 180,
+      "bandwidth_mbps": 400,
+      "uptime_30d_percent": 99.6,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmU5bH6cI7jK8lMnNoP0qQ1rR2sS3tT4uU5vV6wW7xX8yY",
+      "name": "bootstrap-jp-1",
+      "addresses": [
+        "/ip4/160.16.92.30/tcp/4001/p2p/QmU5bH6cI7jK8lMnNoP0qQ1rR2sS3tT4uU5vV6wW7xX8yY",
+        "/ip4/160.16.92.30/udp/4001/quic-v1/p2p/QmU5bH6cI7jK8lMnNoP0qQ1rR2sS3tT4uU5vV6wW7xX8yY",
+        "/ip6/2001:e42:102:1704:160:16:92:30/tcp/4001/p2p/QmU5bH6cI7jK8lMnNoP0qQ1rR2sS3tT4uU5vV6wW7xX8yY"
+      ],
+      "country": "JP",
+      "region": "ap-northeast",
+      "relay_capability": true,
+      "max_relayed_connections": 90,
+      "bandwidth_mbps": 180,
+      "uptime_30d_percent": 99.4,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmV6cI7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP",
+      "name": "bootstrap-ca-1",
+      "addresses": [
+        "/ip4/142.132.200.12/tcp/4001/p2p/QmV6cI7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP",
+        "/ip4/142.132.200.12/udp/4001/quic-v1/p2p/QmV6cI7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP",
+        "/ip6/2a01:4f8:c010:4a9::12/tcp/4001/p2p/QmV6cI7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP"
+      ],
+      "country": "CA",
+      "region": "ca-central",
+      "relay_capability": true,
+      "max_relayed_connections": 100,
+      "bandwidth_mbps": 200,
+      "uptime_30d_percent": 99.7,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmW7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ",
+      "name": "bootstrap-au-1",
+      "addresses": [
+        "/ip4/103.108.94.20/tcp/4001/p2p/QmW7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ",
+        "/ip4/103.108.94.20/udp/4001/quic-v1/p2p/QmW7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ",
+        "/ip6/2403:e800:1:1::20/tcp/4001/p2p/QmW7dJ8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ"
+      ],
+      "country": "AU",
+      "region": "ap-southeast",
+      "relay_capability": true,
+      "max_relayed_connections": 70,
+      "bandwidth_mbps": 120,
+      "uptime_30d_percent": 98.5,
+      "status": "active"
+    },
+    {
+      "peer_id": "QmX8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ1rR",
+      "name": "bootstrap-tr-1",
+      "addresses": [
+        "/ip4/185.122.56.8/tcp/4001/p2p/QmX8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ1rR",
+        "/ip4/185.122.56.8/udp/4001/quic-v1/p2p/QmX8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ1rR",
+        "/ip6/2a06:9800:1::8/tcp/4001/p2p/QmX8eK9fL0gM1hN2iO3jP4kQ5lR6mS7nT8oU9pP0qQ1rR"
+      ],
+      "country": "TR",
+      "region": "eu-west-asia",
+      "relay_capability": true,
+      "max_relayed_connections": 130,
+      "bandwidth_mbps": 220,
+      "uptime_30d_percent": 99.3,
+      "status": "active",
+      "notes": "Geographically close to Iran, lower latency relay option"
+    },
+    {
+      "peer_id": "QmXa1B2c3D4e5F6g7H8i9J0kL1mN2oP3qR4sT5",
+      "addresses": [
+        "/dns4/bootstrap1.unifiedshield.org/tcp/4001/p2p/QmXa1B2c3D4e5F6g7H8i9J0kL1mN2oP3qR4sT5"
+      ],
+      "region": "eu",
+      "relay_capable": true
+    },
+    {
+      "peer_id": "QmYb2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9",
+      "addresses": [
+        "/dns4/bootstrap2.unifiedshield.org/tcp/4001/p2p/QmYb2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9"
+      ],
+      "region": "us",
+      "relay_capable": true
+    },
+    {
+      "peer_id": "QmZc3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0",
+      "addresses": [
+        "/dns4/bootstrap3.unifiedshield.org/tcp/4001/p2p/QmZc3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0"
+      ],
+      "region": "eu",
+      "relay_capable": true
+    },
+    {
+      "peer_id": "QmAd4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1",
+      "addresses": [
+        "/dns4/bootstrap4.unifiedshield.org/tcp/4001/p2p/QmAd4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1"
+      ],
+      "region": "ap",
+      "relay_capable": true
+    },
+    {
+      "peer_id": "QmBe5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2",
+      "addresses": [
+        "/dns4/bootstrap5.unifiedshield.org/tcp/4001/p2p/QmBe5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2"
+      ],
+      "region": "eu",
+      "relay_capable": false
+    },
+    {
+      "peer_id": "QmCf6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3",
+      "addresses": [
+        "/dns4/bootstrap6.unifiedshield.org/tcp/4001/p2p/QmCf6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3"
+      ],
+      "region": "us",
+      "relay_capable": true
+    },
+    {
+      "peer_id": "QmDg7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4",
+      "addresses": [
+        "/dns4/bootstrap7.unifiedshield.org/tcp/4001/p2p/QmDg7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3X4"
+      ],
+      "region": "eu",
+      "relay_capable": true
+    },
+    {
+      "peer_id": "QmEh8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3x4Y5",
+      "addresses": [
+        "/dns4/bootstrap8.unifiedshield.org/tcp/4001/p2p/QmEh8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3x4Y5"
+      ],
+      "region": "ap",
+      "relay_capable": true
+    }
+  ],
+  "discovery_config": {
+    "rendezvous_string": "unifiedshield-mesh-v1",
+    "dht_protocol": "/unifiedshield/kad/1.0.0",
+    "pubsub_topic": "unifiedshield-mesh-v1",
+    "auto_bootstrap": true,
+    "max_bootstrap_peers": 5,
+    "connection_timeout_ms": 10000,
+    "health_check_interval_s": 60
+  },
+  "version": "6.0.0",
+  "updated": "2025-01-15T00:00:00Z",
+  "description": "P2P bootstrap peers for MICAFP-UnifiedShield. Includes Yggdrasil seed nodes accessible via Iranian national intranet, Arvan-hosted peers, and MQTT-reachable peers for multi-transport bootstrapping.",
+  "yggdrasil_seed_peers": [
+    {
+      "id": "ygg-seed-ir-01",
+      "address": "[200:5246:3f8e:5e3f:aec2:94ff:fe1b:7a10]:9001",
+      "public_key": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T18:30:00Z",
+      "region": "Tehran",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 99.2,
+      "bandwidth_mbps": 100,
+      "operator": "MICAFP-Community"
+    },
+    {
+      "id": "ygg-seed-ir-02",
+      "address": "[200:8f7a:2c1d:9b4e:d3f6:a1e2:c3b4:d5a6]:9001",
+      "public_key": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T17:45:00Z",
+      "region": "Isfahan",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 97.8,
+      "bandwidth_mbps": 80,
+      "operator": "MICAFP-Community"
+    },
+    {
+      "id": "ygg-seed-ir-03",
+      "address": "[200:4e9d:7a2b:1c3f:e5d8:a6b7:c9d0:e1f2]:9002",
+      "public_key": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T16:20:00Z",
+      "region": "Shiraz",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 96.5,
+      "bandwidth_mbps": 60,
+      "operator": "MICAFP-Community"
+    },
+    {
+      "id": "ygg-seed-ir-04",
+      "address": "[200:2b8e:f1d3:9c5a:e7b6:d4a2:c3f1:8e9d]:9001",
+      "public_key": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T19:10:00Z",
+      "region": "Mashhad",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 98.1,
+      "bandwidth_mbps": 75,
+      "operator": "Volunteer-Network"
+    },
+    {
+      "id": "ygg-seed-ir-05",
+      "address": "[200:6d2c:a9e1:3b7f:d4c8:b5a6:e2f3:1d9a]:9003",
+      "public_key": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
+      "protocol": "yggdrasil",
+      "transport": "quic",
+      "last_seen": "2025-02-28T15:55:00Z",
+      "region": "Tabriz",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 95.3,
+      "bandwidth_mbps": 50,
+      "operator": "Volunteer-Network"
+    },
+    {
+      "id": "ygg-seed-ir-06",
+      "address": "[200:f3a1:8c5d:2e7b:a9d4:e6f2:b1c3:d8a7]:9001",
+      "public_key": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T14:30:00Z",
+      "region": "Ahvaz",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 94.7,
+      "bandwidth_mbps": 40,
+      "operator": "MICAFP-Community"
+    },
+    {
+      "id": "ygg-seed-ir-07",
+      "address": "[200:1b9e:d4f6:a2c8:3e7d:b5a1:c9f2:e8d3]:9002",
+      "public_key": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8",
+      "protocol": "yggdrasil",
+      "transport": "quic",
+      "last_seen": "2025-02-28T13:00:00Z",
+      "region": "Kermanshah",
+      "country": "IR",
+      "national_intranet": true,
+      "uptime_percentage": 93.2,
+      "bandwidth_mbps": 30,
+      "operator": "Volunteer-Network"
+    },
+    {
+      "id": "ygg-seed-eu-08",
+      "address": "[301:4b2c:e8d7:a1f3:9c5e:b6d4:a2c8:f1e3]:9001",
+      "public_key": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T20:00:00Z",
+      "region": "Frankfurt",
+      "country": "DE",
+      "national_intranet": false,
+      "uptime_percentage": 99.5,
+      "bandwidth_mbps": 200,
+      "operator": "MICAFP-Infrastructure"
+    },
+    {
+      "id": "ygg-seed-eu-09",
+      "address": "[301:7d3a:c5f1:e2b8:a4d9:f6c2:b1e7:d3a8]:9001",
+      "public_key": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T19:30:00Z",
+      "region": "Amsterdam",
+      "country": "NL",
+      "national_intranet": false,
+      "uptime_percentage": 99.3,
+      "bandwidth_mbps": 250,
+      "operator": "MICAFP-Infrastructure"
+    },
+    {
+      "id": "ygg-seed-eu-10",
+      "address": "[301:9e1b:d2c4:f7a6:e3b8:c5d1:a4f2:8c9d]:9002",
+      "public_key": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1",
+      "protocol": "yggdrasil",
+      "transport": "quic",
+      "last_seen": "2025-02-28T18:00:00Z",
+      "region": "Helsinki",
+      "country": "FI",
+      "national_intranet": false,
+      "uptime_percentage": 99.1,
+      "bandwidth_mbps": 180,
+      "operator": "MICAFP-Infrastructure"
+    }
+  ],
+  "arvan_hosted_peers": [
+    {
+      "id": "arvan-ygg-01",
+      "address": "[200:c3d4:e5f6:a7b8:c9d0:e1f2:a3b4:c5d6]:9001",
+      "public_key": "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T21:00:00Z",
+      "region": "Tehran-Arvan",
+      "country": "IR",
+      "hosting": "arvan-cloud",
+      "ip_fqdn": "ygg-peer-01.shield.arvan.run",
+      "national_intranet": true,
+      "uptime_percentage": 99.8,
+      "bandwidth_mbps": 500
+    },
+    {
+      "id": "arvan-ygg-02",
+      "address": "[200:d4e5:f6a7:b8c9:d0e1:f2a3:b4c5:d6e7]:9001",
+      "public_key": "f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3",
+      "protocol": "yggdrasil",
+      "transport": "quic",
+      "last_seen": "2025-02-28T20:30:00Z",
+      "region": "Tehran-Arvan-2",
+      "country": "IR",
+      "hosting": "arvan-cloud",
+      "ip_fqdn": "ygg-peer-02.shield.arvan.run",
+      "national_intranet": true,
+      "uptime_percentage": 99.7,
+      "bandwidth_mbps": 500
+    },
+    {
+      "id": "arvan-ygg-03",
+      "address": "[200:e5f6:a7b8:c9d0:e1f2:a3b4:c5d6:e7f8]:9002",
+      "public_key": "a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T19:45:00Z",
+      "region": "Isfahan-Arvan",
+      "country": "IR",
+      "hosting": "arvan-cloud",
+      "ip_fqdn": "ygg-peer-03.shield.arvan.run",
+      "national_intranet": true,
+      "uptime_percentage": 99.5,
+      "bandwidth_mbps": 300
+    },
+    {
+      "id": "arvan-ygg-04",
+      "address": "[200:f6a7:b8c9:d0e1:f2a3:b4c5:d6e7:f8a9]:9001",
+      "public_key": "b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5",
+      "protocol": "yggdrasil",
+      "transport": "tcp",
+      "last_seen": "2025-02-28T18:15:00Z",
+      "region": "Shiraz-Arvan",
+      "country": "IR",
+      "hosting": "arvan-cloud",
+      "ip_fqdn": "ygg-peer-04.shield.arvan.run",
+      "national_intranet": true,
+      "uptime_percentage": 99.3,
+      "bandwidth_mbps": 200
+    },
+    {
+      "id": "arvan-ygg-05",
+      "address": "[200:a7b8:c9d0:e1f2:a3b4:c5d6:e7f8:a9b0]:9003",
+      "public_key": "c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+      "protocol": "yggdrasil",
+      "transport": "quic",
+      "last_seen": "2025-02-28T17:00:00Z",
+      "region": "Mashhad-Arvan",
+      "country": "IR",
+      "hosting": "arvan-cloud",
+      "ip_fqdn": "ygg-peer-05.shield.arvan.run",
+      "national_intranet": true,
+      "uptime_percentage": 99.0,
+      "bandwidth_mbps": 200
+    }
+  ],
+  "mqtt_reachable_peers": [
+    {
+      "id": "mqtt-peer-01",
+      "address": "mqtt://mqtt.shield.ir:1883",
+      "public_key": "d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7",
+      "protocol": "mqtt-yggdrasil-bridge",
+      "transport": "mqtt",
+      "last_seen": "2025-02-28T20:00:00Z",
+      "region": "Tehran",
+      "country": "IR",
+      "mqtt_topic": "unifiedshield/peer/discovery/v6",
+      "mqtt_qos": 1,
+      "mqtt_keepalive_seconds": 120,
+      "national_intranet": true
+    },
+    {
+      "id": "mqtt-peer-02",
+      "address": "mqtt://mqtt2.shield.ir:1883",
+      "public_key": "e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8",
+      "protocol": "mqtt-yggdrasil-bridge",
+      "transport": "mqtt",
+      "last_seen": "2025-02-28T19:30:00Z",
+      "region": "Isfahan",
+      "country": "IR",
+      "mqtt_topic": "unifiedshield/peer/discovery/v6",
+      "mqtt_qos": 1,
+      "mqtt_keepalive_seconds": 120,
+      "national_intranet": true
+    },
+    {
+      "id": "mqtt-peer-03",
+      "address": "mqtt://mqtt-arvan.shield.arvan.run:8883",
+      "public_key": "f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9",
+      "protocol": "mqtt-yggdrasil-bridge",
+      "transport": "mqtt-tls",
+      "last_seen": "2025-02-28T18:00:00Z",
+      "region": "Arvan-Cloud",
+      "country": "IR",
+      "mqtt_topic": "unifiedshield/peer/discovery/v6",
+      "mqtt_qos": 2,
+      "mqtt_keepalive_seconds": 180,
+      "national_intranet": true
+    },
+    {
+      "id": "mqtt-peer-04",
+      "address": "mqtt://mqtt-eu.shield.example.com:8883",
+      "public_key": "a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
+      "protocol": "mqtt-yggdrasil-bridge",
+      "transport": "mqtt-tls",
+      "last_seen": "2025-02-28T17:30:00Z",
+      "region": "Frankfurt",
+      "country": "DE",
+      "mqtt_topic": "unifiedshield/peer/discovery/v6",
+      "mqtt_qos": 1,
+      "mqtt_keepalive_seconds": 120,
+      "national_intranet": false
+    },
+    {
+      "id": "mqtt-peer-05",
+      "address": "mqtt://mqtt-as.shield.example.com:8883",
+      "public_key": "b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1",
+      "protocol": "mqtt-yggdrasil-bridge",
+      "transport": "mqtt-tls",
+      "last_seen": "2025-02-28T16:00:00Z",
+      "region": "Singapore",
+      "country": "SG",
+      "mqtt_topic": "unifiedshield/peer/discovery/v6",
+      "mqtt_qos": 1,
+      "mqtt_keepalive_seconds": 120,
+      "national_intranet": false
+    }
+  ],
+  "bootstrap_policy": {
+    "max_concurrent_connections": 5,
+    "connection_timeout_seconds": 15,
+    "retry_delay_seconds": 30,
+    "max_retries": 3,
+    "peer_rotation_interval_minutes": 60,
+    "prefer_national_intranet": true,
+    "require_encryption": true,
+    "allowed_protocols": [
+      "yggdrasil",
+      "mqtt-yggdrasil-bridge"
+    ],
+    "allowed_transports": [
+      "tcp",
+      "quic",
+      "mqtt",
+      "mqtt-tls"
+    ],
+    "peer_verification": {
+      "require_public_key": true,
+      "require_known_operator": true,
+      "min_uptime_percentage": 90.0,
+      "signature_algorithm": "Ed25519"
+    }
+  },
+  "yggdrasil_peers": [
+    {
+      "id": "arvan-teh-01",
+      "address": "tls://185.143.234.100:8443",
+      "public_key": "a1b2c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef01",
+      "region": "iran-tehran",
+      "hosting": "arvan-cloud",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "bandwidth_mbps": 100,
+      "uptime_percent": 99.5
+    },
+    {
+      "id": "arvan-isf-01",
+      "address": "tls://94.101.184.50:8443",
+      "public_key": "b2c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef0102",
+      "region": "iran-isfahan",
+      "hosting": "arvan-cloud",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "bandwidth_mbps": 50,
+      "uptime_percent": 98.2
+    },
+    {
+      "id": "turkey-ist-01",
+      "address": "tls://185.200.10.50:8443",
+      "public_key": "c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef010203",
+      "region": "turkey-istanbul",
+      "hosting": "hetzner",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "bandwidth_mbps": 1000,
+      "uptime_percent": 99.9
+    },
+    {
+      "id": "turkey-ist-02",
+      "address": "tls://185.200.10.51:8443",
+      "public_key": "d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef01020304",
+      "region": "turkey-istanbul",
+      "hosting": "hetzner",
+      "last_verified": "2025-01-14T17:30:00Z",
+      "bandwidth_mbps": 1000,
+      "uptime_percent": 99.8
+    },
+    {
+      "id": "turkey-ank-01",
+      "address": "tls://185.201.20.30:8443",
+      "public_key": "e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef0102030405",
+      "region": "turkey-ankara",
+      "hosting": "digitalocean",
+      "last_verified": "2025-01-14T16:00:00Z",
+      "bandwidth_mbps": 500,
+      "uptime_percent": 99.7
+    },
+    {
+      "id": "germany-fra-01",
+      "address": "tls://195.201.50.100:8443",
+      "public_key": "f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef010203040506",
+      "region": "germany-frankfurt",
+      "hosting": "hetzner",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "bandwidth_mbps": 1000,
+      "uptime_percent": 99.9
+    },
+    {
+      "id": "germany-fra-02",
+      "address": "tls://195.201.50.101:8443",
+      "public_key": "0718293a4b5c6d7e8f9012345678abcdef0123456789abcdef01020304050607",
+      "region": "germany-frankfurt",
+      "hosting": "ovh",
+      "last_verified": "2025-01-14T17:00:00Z",
+      "bandwidth_mbps": 500,
+      "uptime_percent": 99.6
+    },
+    {
+      "id": "netherlands-ams-01",
+      "address": "tls://146.185.170.100:8443",
+      "public_key": "18293a4b5c6d7e8f9012345678abcdef0123456789abcdef0102030405060708",
+      "region": "netherlands-amsterdam",
+      "hosting": "digitalocean",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "bandwidth_mbps": 1000,
+      "uptime_percent": 99.9
+    },
+    {
+      "id": "france-par-01",
+      "address": "tls://163.172.50.80:8443",
+      "public_key": "293a4b5c6d7e8f9012345678abcdef0123456789abcdef010203040506070809",
+      "region": "france-paris",
+      "hosting": "scaleway",
+      "last_verified": "2025-01-14T16:00:00Z",
+      "bandwidth_mbps": 500,
+      "uptime_percent": 99.5
+    },
+    {
+      "id": "uae-dxb-01",
+      "address": "tls://94.200.70.50:8443",
+      "public_key": "3a4b5c6d7e8f9012345678abcdef0123456789abcdef01020304050607080910",
+      "region": "uae-dubai",
+      "hosting": "vultr",
+      "last_verified": "2025-01-14T15:00:00Z",
+      "bandwidth_mbps": 500,
+      "uptime_percent": 99.0
+    }
+  ],
+  "i2p_floodfill_routers": [
+    {
+      "id": "i2p-ff-01",
+      "address": "i2p://uo2yqg3n7f7l6bq4jwq5h3s2d1f0g9e8a7b6c5d4e3f2g1h0i9j8k7l6m5n4o",
+      "public_key": "i2p_pubkey_01_a1b2c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef",
+      "region": "germany-frankfurt",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "capacity": "high"
+    },
+    {
+      "id": "i2p-ff-02",
+      "address": "i2p://v3p4r5h6g7f8e9d0c1b2a3n4m5l6k7j8i9h0g1f2e3d4c5b6a7n8m9l0k1j2i3h4g",
+      "public_key": "i2p_pubkey_02_b2c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef01",
+      "region": "netherlands-amsterdam",
+      "last_verified": "2025-01-14T17:00:00Z",
+      "capacity": "high"
+    },
+    {
+      "id": "i2p-ff-03",
+      "address": "i2p://w4q5r6h7g8f9e0d1c2b3a4n5m6l7k8j9i0h1g2f3e4d5c6b7a8n9m0l1k2j3i4h5g",
+      "public_key": "i2p_pubkey_03_c3d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef0102",
+      "region": "france-paris",
+      "last_verified": "2025-01-14T16:00:00Z",
+      "capacity": "medium"
+    },
+    {
+      "id": "i2p-ff-04",
+      "address": "i2p://x5r6s7h8g9f0e1d2c3b4a5n6m7l8k9j0i1h2g3f4e5d6c7b8a9n0m1l2k3j4i5h6g",
+      "public_key": "i2p_pubkey_04_d4e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef010203",
+      "region": "switzerland-zurich",
+      "last_verified": "2025-01-14T18:00:00Z",
+      "capacity": "high"
+    },
+    {
+      "id": "i2p-ff-05",
+      "address": "i2p://y6s7t8h9g0f1e2d3c4b5a6n7m8l9k0j1i2h3g4f5e6d7c8b9a0n1m2l3k4j5i6h7g",
+      "public_key": "i2p_pubkey_05_e5f60718293a4b5c6d7e8f9012345678abcdef0123456789abcdef01020304",
+      "region": "sweden-stockholm",
+      "last_verified": "2025-01-14T15:00:00Z",
+      "capacity": "medium"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "shield-arvan-worker",
+  "version": "6.0.0",
+  "description": "Shield CDN Worker for Arvan Cloud FaaS (Iranian CDN - never blocked in Iran)",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "deploy": "arvan faas deploy --function shield-relay"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

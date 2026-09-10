@@ -1,0 +1,49 @@
+# Maintainer: UnifiedShield Team <team@unifiedshield.org>
+pkgname=unifiedshield
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Next-gen anti-censorship VPN for Iran"
+arch=('x86_64' 'aarch64')
+url="https://github.com/unifiedshield/unifiedshield"
+license=('GPL3')
+depends=('glibc' 'gcc-libs' 'openssl' 'systemd')
+makedepends=('cmake' 'rust' 'cargo' 'pkg-config')
+optdepends=('unifiedshield-gui: Graphical interface')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+
+    # Build Rust core
+    cargo build --release --manifest-path ../Cargo.toml
+
+    # Build C++ wrapper
+    cmake -B build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib
+    cmake --build build
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+
+    # Install binary
+    install -Dm755 build/unifiedshield "$pkgdir/usr/bin/unifiedshield"
+
+    # Install systemd service
+    install -Dm644 linux/unifiedshield.service \
+        "$pkgdir/usr/lib/systemd/system/unifiedshield.service"
+
+    # Install config directory
+    install -dm755 "$pkgdir/etc/unifiedshield"
+    install -Dm600 /dev/null "$pkgdir/etc/unifiedshield/config.json"
+
+    # Install runtime directory
+    install -dm755 "$pkgdir/run/unifiedshield"
+
+    # Install documentation
+    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

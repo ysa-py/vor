@@ -1,0 +1,17 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-net --allow-read --allow-env src/main.ts",
+    "start": "deno run --allow-net --allow-read --allow-env src/main.ts",
+    "build": "deno compile --allow-net --allow-read --allow-env --output unifiedshield-relay src/main.ts",
+    "test": "deno test src/",
+    "lint": "deno lint src/"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.ns", "deno.unstable"],
+    "strict": true
+  },
+  "imports": {
+    "std/": "https://deno.land/std@0.224.0/"
+  }
+}

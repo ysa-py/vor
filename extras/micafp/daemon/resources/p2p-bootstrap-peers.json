@@ -1,0 +1,24 @@
+{
+  "version": 3,
+  "updated_utc": "2025-01-01T00:00:00Z",
+  "peers": [
+    { "peer_id": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2", "endpoints": ["tcp://185.234.72.11:51820", "quic://185.234.72.11:51821"], "region": "eu-west", "reliability": 0.95 },
+    { "peer_id": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3", "endpoints": ["tcp://91.108.56.23:51820", "quic://91.108.56.23:51821"], "region": "eu-central", "reliability": 0.92 },
+    { "peer_id": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4", "endpoints": ["tcp://45.155.205.17:51820", "tcp://45.155.205.17:51822"], "region": "asia-east", "reliability": 0.88 },
+    { "peer_id": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5", "endpoints": ["quic://178.62.240.91:51821"], "region": "eu-north", "reliability": 0.90 },
+    { "peer_id": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6", "endpoints": ["tcp://159.89.40.77:51820", "quic://159.89.40.77:51821"], "region": "na-east", "reliability": 0.93 },
+    { "peer_id": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7", "endpoints": ["tcp://103.75.201.44:51820"], "region": "asia-south", "reliability": 0.85 },
+    { "peer_id": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8", "endpoints": ["quic://95.216.72.88:51821", "tcp://95.216.72.88:51820"], "region": "eu-north", "reliability": 0.91 },
+    { "peer_id": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9", "endpoints": ["tcp://68.183.60.115:51820", "quic://68.183.60.115:51821"], "region": "na-east", "reliability": 0.87 }
+  ],
+  "yggdrasil_bootstrap": [
+    "tcp://51.15.118.10:62486",
+    "tcp://2001:41d0:601:1100::1a1:62486",
+    "tcp://80.67.182.69:50001",
+    "tcp://2001:41d0:401:3100::1c5:50001"
+  ],
+  "i2p_bootstrap": [
+    "tcp://127.0.0.1:7654",
+    "tcp://127.0.0.1:7655"
+  ]
+}

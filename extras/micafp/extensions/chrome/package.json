@@ -1,0 +1,18 @@
+{
+  "name": "unifiedshield-nextgen-chrome",
+  "version": "2.0.0",
+  "description": "UnifiedShield NextGen Chrome Extension — anti-censorship proxy manager",
+  "private": true,
+  "scripts": {
+    "build": "tsc && cp manifest.json dist/ && cp -r popup/ options/ icons/ dist/",
+    "dev": "tsc --watch",
+    "lint": "eslint 'src/**/*.ts'",
+    "clean": "rm -rf dist/"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "typescript": "^5.4.5",
+    "eslint": "^9.3.0"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "updated_utc": "2025-01-01T00:00:00Z",
+  "cdn_workers": {
+    "alibaba": [
+      { "host": "shield-cn-hz.alicdn-worker1.net", "port": 443, "path": "/gw", "weight": 30, "protocol": "wss" },
+      { "host": "shield-cn-bj.alicdn-worker2.net", "port": 443, "path": "/gw", "weight": 25, "protocol": "wss" },
+      { "host": "shield-cn-sh.alicdn-worker3.net", "port": 443, "path": "/relay", "weight": 20, "protocol": "https" }
+    ],
+    "bytedance": [
+      { "host": "edge-volc-bd1.toscdn-worker.net", "port": 443, "path": "/api/v2/tunnel", "weight": 30, "protocol": "wss" },
+      { "host": "edge-volc-bd2.toscdn-worker.net", "port": 443, "path": "/api/v2/tunnel", "weight": 25, "protocol": "wss" }
+    ],
+    "tencent": [
+      { "host": "cdn-ehc-tx1.tencdns-worker.net", "port": 443, "path": "/s", "weight": 30, "protocol": "wss" },
+      { "host": "cdn-ehc-tx2.tencdns-worker.net", "port": 443, "path": "/s", "weight": 20, "protocol": "https" }
+    ],
+    "huawei": [
+      { "host": "cdn-hw-cdn1.huaweicdn-worker.net", "port": 443, "path": "/proxy", "weight": 25, "protocol": "wss" },
+      { "host": "cdn-hw-cdn2.huaweicdn-worker.net", "port": 443, "path": "/proxy", "weight": 20, "protocol": "https" }
+    ],
+    "arvan": [
+      { "host": "shield-ar1.arvancloud-worker.ir", "port": 443, "path": "/tunnel", "weight": 40, "protocol": "wss" },
+      { "host": "shield-ar2.arvancloud-worker.ir", "port": 443, "path": "/relay", "weight": 35, "protocol": "wss" },
+      { "host": "shield-ar3.arvancloud-worker.ir", "port": 443, "path": "/gw", "weight": 25, "protocol": "https" }
+    ]
+  },
+  "fallback_direct": [
+    { "host": "direct1.shield-fallback.net", "port": 8443, "protocol": "quic" },
+    { "host": "direct2.shield-fallback.net", "port": 8443, "protocol": "quic" }
+  ]
+}

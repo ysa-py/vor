@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+  "name": "UnifiedShield VPN",
+  "version": "6.0.0",
+  "description": "Anti-censorship VPN tunnel for Iran — WebTransport/HTTPS proxy with traffic obfuscation",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "UnifiedShield",
+    "browser_style": false
+  },
+  "permissions": [
+    "proxy",
+    "webRequest",
+    "webRequestBlocking",
+    "storage",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+  "web_accessible_resources": [
+    "wasm/obfuscator.wasm"
+  ],
+  "applications": {
+    "gecko": {
+      "id": "unifiedshield@micAFP.org",
+      "strict_min_version": "112.0"
+    }
+  }
+}

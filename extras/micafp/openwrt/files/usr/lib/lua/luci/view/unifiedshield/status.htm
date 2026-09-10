@@ -1,0 +1,347 @@
+<%#
+UnifiedShield Status Page - LuCI Template for OpenWrt
+Displays real-time connection status, transport info, peer count,
+data usage statistics, and control buttons.
+Auto-refreshes every 5 seconds via AJAX.
+-%>
+
+<%+header%>
+
+<%
+local SYS = require("luci.sys")
+local UCI = require("luci.model.uci")
+local I18N = require("luci.i18n")
+
+-- Check if daemon is running
+local is_running = (SYS.call("pgrep -f unifiedshield-daemon >/dev/null 2>&1") == 0)
+local status_class = is_running and "success" or "danger"
+local status_text = is_running and translate("Running") or translate("Stopped")
+%>
+
+<script type="text/javascript">
+//<![CDATA[
+    var refreshInterval = 5000; // 5 seconds
+    var refreshTimer = null;
+
+    // Fetch current status from the API
+    function fetchStatus() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '<%=luci.dispatcher.build_url("admin/services/unifiedshield/api/status")%>', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    updateStatusUI(data);
+                } catch (e) {
+                    console.error('Failed to parse status JSON:', e);
+                }
+            }
+        };
+        xhr.send(null);
+    }
+
+    // Update the UI with new status data
+    function updateStatusUI(data) {
+        // Connection status badge
+        var statusBadge = document.getElementById('status-badge');
+        if (data.running) {
+            statusBadge.className = 'badge badge-success';
+            statusBadge.textContent = '<%=translate("Running")%>';
+        } else {
+            statusBadge.className = 'badge badge-danger';
+            statusBadge.textContent = '<%=translate("Stopped")%>';
+        }
+
+        // PID
+        document.getElementById('status-pid').textContent = data.pid || '-';
+
+        // Transport
+        document.getElementById('status-transport').textContent = data.transport || 'unknown';
+
+        // Current endpoint
+        document.getElementById('status-endpoint').textContent = data.endpoint || 'none';
+
+        // ISP
+        document.getElementById('status-isp').textContent = data.isp_name || 'unknown';
+
+        // Fragment strategy
+        document.getElementById('status-fragment').textContent = data.fragment_strategy || 'none';
+
+        // National intranet mode
+        var intranetEl = document.getElementById('status-intranet');
+        if (data.national_intranet_mode) {
+            intranetEl.textContent = '<%=translate("Active")%>';
+            intranetEl.className = 'text-warning';
+        } else {
+            intranetEl.textContent = '<%=translate("Inactive")%>';
+            intranetEl.className = 'text-success';
+        }
+
+        // Peer count
+        document.getElementById('status-peers').textContent = data.peer_count || '0';
+
+        // Data usage
+        document.getElementById('status-bytes-sent').textContent = data.bytes_sent_hr || '0 B';
+        document.getElementById('status-bytes-received').textContent = data.bytes_received_hr || '0 B';
+
+        // Latency
+        var latencyEl = document.getElementById('status-latency');
+        latencyEl.textContent = (data.latency_ms || 0) + ' ms';
+        if (data.latency_ms > 0 && data.latency_ms < 100) {
+            latencyEl.className = 'text-success';
+        } else if (data.latency_ms >= 100 && data.latency_ms < 300) {
+            latencyEl.className = 'text-warning';
+        } else {
+            latencyEl.className = 'text-danger';
+        }
+
+        // Connection quality
+        document.getElementById('status-quality').textContent = data.connection_quality || 'unknown';
+
+        // Uptime
+        document.getElementById('status-uptime').textContent = data.uptime_hr || '0s';
+
+        // Last connected
+        document.getElementById('status-last-connected').textContent = data.last_connected || 'never';
+
+        // Enable/disable control buttons
+        document.getElementById('btn-start').disabled = data.running;
+        document.getElementById('btn-stop').disabled = !data.running;
+        document.getElementById('btn-restart').disabled = !data.running;
+    }
+
+    // Send control command to daemon
+    function sendCommand(cmd) {
+        var url = '<%=luci.dispatcher.build_url("admin/services/unifiedshield/api/")%>' + cmd;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                try {
+                    var result = JSON.parse(xhr.responseText);
+                    var msgEl = document.getElementById('control-message');
+                    if (result.success) {
+                        msgEl.className = 'alert-message success';
+                        msgEl.textContent = result.message;
+                    } else {
+                        msgEl.className = 'alert-message danger';
+                        msgEl.textContent = result.message || 'Operation failed';
+                    }
+                    msgEl.style.display = 'block';
+                    setTimeout(function() {
+                        msgEl.style.display = 'none';
+                        fetchStatus();
+                    }, 2000);
+                } catch (e) {
+                    console.error('Command failed:', e);
+                }
+            }
+        };
+        xhr.send(null);
+    }
+
+    // Test connection
+    function testConnection() {
+        var btn = document.getElementById('btn-test');
+        btn.disabled = true;
+        btn.textContent = '<%=translate("Testing...")%>';
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '<%=luci.dispatcher.build_url("admin/services/unifiedshield/api/test_connection")%>', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                try {
+                    var result = JSON.parse(xhr.responseText);
+                    var testEl = document.getElementById('test-result');
+                    if (result.success && result.reachable) {
+                        testEl.className = 'alert-message success';
+                        testEl.textContent = '<%=translate("Connection OK")%> - ' + result.latency_ms + ' ms';
+                    } else {
+                        testEl.className = 'alert-message danger';
+                        testEl.textContent = '<%=translate("Connection Failed")%>: ' + (result.message || 'Unreachable');
+                    }
+                    testEl.style.display = 'block';
+                    setTimeout(function() { testEl.style.display = 'none'; }, 5000);
+                } catch (e) {}
+                btn.disabled = false;
+                btn.textContent = '<%=translate("Test Connection")%>';
+            }
+        };
+        xhr.send(null);
+    }
+
+    // Auto-refresh
+    function startAutoRefresh() {
+        refreshTimer = setInterval(fetchStatus, refreshInterval);
+    }
+
+    function stopAutoRefresh() {
+        if (refreshTimer) {
+            clearInterval(refreshTimer);
+            refreshTimer = null;
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchStatus();
+        startAutoRefresh();
+    });
+//]]>
+</script>
+
+<style type="text/css">
+    .status-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    .status-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .status-row:last-child {
+        border-bottom: none;
+    }
+    .status-label {
+        font-weight: bold;
+        color: #555;
+    }
+    .status-value {
+        color: #333;
+    }
+    .control-buttons {
+        display: flex;
+        gap: 8px;
+        margin: 16px 0;
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .badge-success { background: #5cb85c; color: #fff; }
+    .badge-danger { background: #d9534f; color: #fff; }
+    .alert-message {
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 8px 0;
+        display: none;
+    }
+    .alert-message.success { background: #dff0d8; color: #3c763d; }
+    .alert-message.danger { background: #f2dede; color: #a94442; }
+    .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        color: #333;
+        border-bottom: 2px solid #337ab7;
+        padding-bottom: 6px;
+    }
+    .data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    @media (max-width: 600px) {
+        .data-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<h2><%:UnifiedShield - Status%></h2>
+
+<div class="status-card">
+    <div class="section-title"><%:Connection Status%></div>
+    <div class="status-row">
+        <span class="status-label"><%:Status%></span>
+        <span class="status-value"><span id="status-badge" class="badge badge-<%=status_class%>"><%=status_text%></span></span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:PID%></span>
+        <span class="status-value" id="status-pid">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:Transport%></span>
+        <span class="status-value" id="status-transport">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:Endpoint%></span>
+        <span class="status-value" id="status-endpoint">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:ISP%></span>
+        <span class="status-value" id="status-isp">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:Fragment Strategy%></span>
+        <span class="status-value" id="status-fragment">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:National Intranet Mode%></span>
+        <span class="status-value" id="status-intranet">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:Latency%></span>
+        <span class="status-value" id="status-latency">-</span>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:Connection Quality%></span>
+        <span class="status-value" id="status-quality">-</span>
+    </div>
+</div>
+
+<div class="status-card">
+    <div class="section-title"><%:Network%></div>
+    <div class="data-grid">
+        <div class="status-row">
+            <span class="status-label"><%:Peers%></span>
+            <span class="status-value" id="status-peers">0</span>
+        </div>
+        <div class="status-row">
+            <span class="status-label"><%:Uptime%></span>
+            <span class="status-value" id="status-uptime">0s</span>
+        </div>
+        <div class="status-row">
+            <span class="status-label"><%:Data Sent%></span>
+            <span class="status-value" id="status-bytes-sent">0 B</span>
+        </div>
+        <div class="status-row">
+            <span class="status-label"><%:Data Received%></span>
+            <span class="status-value" id="status-bytes-received">0 B</span>
+        </div>
+    </div>
+    <div class="status-row">
+        <span class="status-label"><%:Last Connected%></span>
+        <span class="status-value" id="status-last-connected">never</span>
+    </div>
+</div>
+
+<div class="status-card">
+    <div class="section-title"><%:Control%></div>
+    <div id="control-message" class="alert-message"></div>
+    <div class="control-buttons">
+        <input type="button" id="btn-start" class="btn cbi-button cbi-button-apply"
+            value="<%:Start%>" onclick="sendCommand('start')" />
+        <input type="button" id="btn-stop" class="btn cbi-button cbi-button-reset"
+            value="<%:Stop%>" onclick="sendCommand('stop')" />
+        <input type="button" id="btn-restart" class="btn cbi-button cbi-button-reload"
+            value="<%:Restart%>" onclick="sendCommand('restart')" />
+        <input type="button" id="btn-test" class="btn cbi-button cbi-button-find"
+            value="<%:Test Connection%>" onclick="testConnection()" />
+    </div>
+    <div id="test-result" class="alert-message"></div>
+</div>
+
+<div class="status-card" style="text-align: center; color: #999; font-size: 12px;">
+    <%:Auto-refresh every 5 seconds%> | <a href="<%=luci.dispatcher.build_url("admin/services/unifiedshield/log")%>"><%:View Logs%></a> | <a href="<%=luci.dispatcher.build_url("admin/services/unifiedshield/config")%>"><%:Configuration%></a>
+</div>
+
+<%+footer%>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App identity — never show VPN/proxy keywords -->
+    <key>CFBundleName</key>
+    <string>Shield</string>
+    <key>CFBundleDisplayName</key>
+    <string>Shield</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.shield.ios</string>
+    <key>CFBundleVersion</key>
+    <string>600</string>
+    <key>CFBundleShortVersionString</key>
+    <string>6.0.0</string>
+
+    <!-- Network Extension entitlement -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>network-authentication</string>
+        <string>audio</string>
+        <string>processing</string>
+    </array>
+
+    <!-- Microphone permission for acoustic channel -->
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Shield needs microphone access for audio processing features.</string>
+
+    <!-- Privacy descriptions -->
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Shield needs local network access for device communication.</string>
+
+    <!-- App Transport Security — allow custom endpoints -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+    <!-- Network Extension -->
+    <key>NetworkExtension</key>
+    <dict>
+        <key>NEProviderExtensions</key>
+        <dict>
+            <key>com.shield.ios.PacketTunnel</key>
+            <dict>
+                <key>TeamIdentifier</key>
+                <string>$(TeamIdentifierPrefix)</string>
+            </dict>
+        </dict>
+    </dict>
+
+    <!-- Hide app from search (anti-forensics) -->
+    <key>UIStatusBarHidden</key>
+    <true/>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+
+    <!-- Supported interface orientations -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+
+    <!-- Minimum iOS version -->
+    <key>MinimumOSVersion</key>
+    <string>15.0</string>
+</dict>
+</plist>

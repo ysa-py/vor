@@ -1,0 +1,29 @@
+{
+  "name": "shield-worker",
+  "version": "6.0.0",
+  "description": "Universal CDN edge worker for secure relay proxy",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "deno run --watch src/index.ts",
+    "deploy:deno": "deployctl deploy --project=shield-worker src/index.ts",
+    "deploy:valtown": "vt deploy src/index.ts",
+    "deploy:netlify": "netlify deploy --prod --dir=.",
+    "deploy:supabase": "supabase functions deploy shield-worker",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "deno": ">=1.40.0",
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "edge-worker",
+    "cdn",
+    "proxy",
+    "websocket"
+  ],
+  "license": "UNLICENSED"
+}

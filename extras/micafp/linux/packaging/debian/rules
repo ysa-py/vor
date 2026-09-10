@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr
+
+override_dh_auto_build:
+	dh_auto_build
+
+override_dh_auto_install:
+	dh_auto_install
+
+	# Install systemd service
+	install -Dm644 unifiedshield.service \
+		debian/unifiedshield/lib/systemd/system/unifiedshield.service
+
+	# Install default config
+	install -Dm600 /dev/null \
+		debian/unifiedshield/etc/unifiedshield/config.json
+
+	# Create runtime directory
+	install -d debian/unifiedshield/run/unifiedshield
+
+override_dh_auto_clean:
+	dh_auto_clean
+
+override_dh_systemd_enable:
+	dh_systemd_enable --name=unifiedshield
+
+override_dh_systemd_start:
+	dh_systemd_start --name=unifiedshield

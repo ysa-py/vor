@@ -1,0 +1,214 @@
+{
+  "metadata": {
+    "description": "Cloudflare Worker relay URLs for UnifiedShield. NOTE: Cloudflare is BLOCKED in Iran. These serve as fallback for users outside Iran or via CDN proxy (Chinese CDN → Cloudflare relay).",
+    "last_updated": "2025-01-15",
+    "iran_accessibility": "BLOCKED - Cloudflare domains are directly inaccessible from Iran. Access only via Chinese CDN proxy chain.",
+    "access_pattern": "User in Iran → Chinese CDN (Alibaba/Tencent/Baidu/Huawei) → Cloudflare Worker → Free Internet"
+  },
+  "workers": [
+    {
+      "id": "worker-relay-1",
+      "name": "UnifiedShield Relay Alpha",
+      "url": "https://us-relay-alpha.unifiedshield-workers.workers.dev",
+      "region": "us-east",
+      "operator": "community-volunteer-1",
+      "bandwidth_mbps": 50,
+      "max_concurrent_users": 500,
+      "current_load_percent": 0,
+      "status": "active",
+      "tls_version": "1.3",
+      "websocket_support": true,
+      "protocols_supported": [
+        "vless-ws",
+        "vmess-ws",
+        "trojan-ws"
+      ],
+      "uptime_7d_percent": 99.5,
+      "proxy_chain": "alibaba_cdn_fc_hongkong → worker-relay-1"
+    },
+    {
+      "id": "worker-relay-2",
+      "name": "UnifiedShield Relay Beta",
+      "url": "https://eu-relay-beta.unifiedshield-workers.workers.dev",
+      "region": "eu-west",
+      "operator": "community-volunteer-2",
+      "bandwidth_mbps": 40,
+      "max_concurrent_users": 400,
+      "current_load_percent": 0,
+      "status": "active",
+      "tls_version": "1.3",
+      "websocket_support": true,
+      "protocols_supported": [
+        "vless-ws",
+        "vmess-ws",
+        "trojan-ws"
+      ],
+      "uptime_7d_percent": 98.2,
+      "proxy_chain": "tencent_cdn_scf_hongkong → worker-relay-2"
+    },
+    {
+      "id": "worker-relay-3",
+      "name": "UnifiedShield Relay Gamma",
+      "url": "https://ap-relay-gamma.unifiedshield-workers.workers.dev",
+      "region": "ap-southeast",
+      "operator": "community-volunteer-3",
+      "bandwidth_mbps": 60,
+      "max_concurrent_users": 600,
+      "current_load_percent": 0,
+      "status": "active",
+      "tls_version": "1.3",
+      "websocket_support": true,
+      "protocols_supported": [
+        "vless-ws",
+        "vmess-ws",
+        "trojan-ws"
+      ],
+      "uptime_7d_percent": 99.8,
+      "proxy_chain": "huawei_cdn_fg_hongkong → worker-relay-3"
+    },
+    {
+      "id": "worker-relay-4",
+      "name": "UnifiedShield Relay Delta",
+      "url": "https://us-relay-delta.unifiedshield-workers.workers.dev",
+      "region": "us-west",
+      "operator": "community-volunteer-4",
+      "bandwidth_mbps": 35,
+      "max_concurrent_users": 350,
+      "current_load_percent": 0,
+      "status": "active",
+      "tls_version": "1.3",
+      "websocket_support": true,
+      "protocols_supported": [
+        "vless-ws",
+        "vmess-ws"
+      ],
+      "uptime_7d_percent": 97.1,
+      "proxy_chain": "baidu_cdn_bcf_hongkong → worker-relay-4"
+    },
+    {
+      "id": "worker-relay-5",
+      "name": "UnifiedShield Relay Epsilon",
+      "url": "https://eu-relay-epsilon.unifiedshield-workers.workers.dev",
+      "region": "eu-central",
+      "operator": "community-volunteer-5",
+      "bandwidth_mbps": 45,
+      "max_concurrent_users": 450,
+      "current_load_percent": 0,
+      "status": "active",
+      "tls_version": "1.3",
+      "websocket_support": true,
+      "protocols_supported": [
+        "vless-ws",
+        "vmess-ws",
+        "trojan-ws"
+      ],
+      "uptime_7d_percent": 99.2,
+      "proxy_chain": "alibaba_cdn_fc_germany → worker-relay-5"
+    },
+    {
+      "url": "https://us-relay.unifiedshield.workers.dev",
+      "region": "us",
+      "status": "active"
+    },
+    {
+      "url": "https://eu-relay.unifiedshield.workers.dev",
+      "region": "eu",
+      "status": "active"
+    },
+    {
+      "url": "https://ap-relay.unifiedshield.workers.dev",
+      "region": "ap",
+      "status": "active"
+    },
+    {
+      "url": "https://cf-relay1.unifiedshield.workers.dev",
+      "region": "us",
+      "status": "active"
+    },
+    {
+      "url": "https://cf-relay2.unifiedshield.workers.dev",
+      "region": "eu",
+      "status": "active"
+    }
+  ],
+  "proxy_chain_config": {
+    "description": "Configuration for chaining Chinese CDN with Cloudflare Workers",
+    "chains": [
+      {
+        "name": "alibaba-to-cf-alpha",
+        "entry_point": "cdn.alicdn.com (Alibaba CDN)",
+        "relay": "Alibaba FC Hong Kong",
+        "exit_point": "worker-relay-1 (Cloudflare US-East)",
+        "expected_latency_ms": 180,
+        "expected_bandwidth_mbps": 40
+      },
+      {
+        "name": "tencent-to-cf-beta",
+        "entry_point": "cdn-go.cn (Tencent CDN)",
+        "relay": "Tencent SCF Hong Kong",
+        "exit_point": "worker-relay-2 (Cloudflare EU-West)",
+        "expected_latency_ms": 200,
+        "expected_bandwidth_mbps": 30
+      },
+      {
+        "name": "huawei-to-cf-gamma",
+        "entry_point": "cdn.huaweicloud.com (Huawei CDN)",
+        "relay": "Huawei FG Hong Kong",
+        "exit_point": "worker-relay-3 (Cloudflare AP-Southeast)",
+        "expected_latency_ms": 170,
+        "expected_bandwidth_mbps": 45
+      },
+      {
+        "name": "baidu-to-cf-delta",
+        "entry_point": "cdn.baidu.com (Baidu CDN)",
+        "relay": "Baidu BCF Hong Kong",
+        "exit_point": "worker-relay-4 (Cloudflare US-West)",
+        "expected_latency_ms": 210,
+        "expected_bandwidth_mbps": 25
+      },
+      {
+        "name": "alibaba-to-cf-epsilon",
+        "entry_point": "cdn.alicdn.com (Alibaba CDN)",
+        "relay": "Alibaba FC Germany",
+        "exit_point": "worker-relay-5 (Cloudflare EU-Central)",
+        "expected_latency_ms": 160,
+        "expected_bandwidth_mbps": 50
+      }
+    ]
+  },
+  "failover_config": {
+    "max_retries": 3,
+    "retry_delay_ms": 1000,
+    "connection_timeout_ms": 8000,
+    "health_check_interval_s": 300,
+    "auto_switch_on_failure": true
+  },
+  "version": "2024.1",
+  "note": "Cloudflare is BLOCKED in Iran - these are fallback only",
+  "chinese_cdn_relays": [
+    {
+      "url": "wss://relay.alicdn-unifiedshield.com/ws",
+      "provider": "alibaba",
+      "region": "cn",
+      "status": "active"
+    },
+    {
+      "url": "wss://relay.tencent-unifiedshield.com/ws",
+      "provider": "tencent",
+      "region": "cn",
+      "status": "active"
+    },
+    {
+      "url": "wss://relay.jdcloud-unifiedshield.com/ws",
+      "provider": "jdcloud",
+      "region": "cn",
+      "status": "active"
+    },
+    {
+      "url": "wss://relay.qiniu-unifiedshield.com/ws",
+      "provider": "qiniu",
+      "region": "cn",
+      "status": "active"
+    }
+  ]
+}

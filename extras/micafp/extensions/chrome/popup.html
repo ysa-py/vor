@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnifiedShield</title>
+  <style>
+    :root {
+      --color-bg: #0f172a;
+      --color-surface: #1e293b;
+      --color-border: #334155;
+      --color-text: #f1f5f9;
+      --color-muted: #94a3b8;
+      --color-green: #22c55e;
+      --color-red: #ef4444;
+      --color-amber: #f59e0b;
+      --color-gray: #6b7280;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 320px;
+      min-height: 360px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #22c55e, #059669);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .header .version {
+      font-size: 11px;
+      color: var(--color-muted);
+    }
+
+    /* Status section */
+    .status-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-gray);
+      transition: background 0.3s;
+    }
+
+    .status-dot.connected {
+      background: var(--color-green);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    }
+
+    .status-dot.connecting,
+    .status-dot.reconnecting {
+      background: var(--color-amber);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.failed {
+      background: var(--color-red);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .status-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .status-text {
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+
+    /* Endpoint info */
+    .endpoint-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--color-muted);
+    }
+
+    .endpoint-row .lock-icon {
+      font-size: 11px;
+      color: var(--color-green);
+    }
+
+    /* Connect button */
+    .connect-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .connect-btn.connect {
+      background: linear-gradient(135deg, #22c55e, #059669);
+      color: #fff;
+    }
+
+    .connect-btn.connect:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .connect-btn.disconnect {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+
+    .connect-btn.disconnect:hover {
+      filter: brightness(1.1);
+    }
+
+    .connect-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-item {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .stat-item .stat-label {
+      font-size: 11px;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-item .stat-value {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+      border-top: 1px solid var(--color-border);
+      margin-top: auto;
+    }
+
+    .footer a {
+      font-size: 12px;
+      color: var(--color-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer a:hover {
+      color: var(--color-text);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">S</div>
+      <div>
+        <h1>UnifiedShield</h1>
+        <span class="version">v6.0.0</span>
+      </div>
+    </div>
+
+    <!-- Status Card -->
+    <div class="status-card">
+      <div class="status-row">
+        <div class="status-indicator">
+          <div class="status-dot" id="statusDot"></div>
+          <span class="status-label" id="statusLabel">Disconnected</span>
+        </div>
+      </div>
+
+      <div class="endpoint-row" id="endpointRow" style="display:none">
+        <span class="lock-icon">&#128274;</span>
+        <span id="endpointInfo">Connected via secure tunnel</span>
+      </div>
+
+      <button class="connect-btn connect" id="connectBtn">Connect</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Uploaded</div>
+        <div class="stat-value" id="bytesSent">0 B</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Downloaded</div>
+        <div class="stat-value" id="bytesReceived">0 B</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Uptime</div>
+        <div class="stat-value" id="uptime">0:00</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Packets</div>
+        <div class="stat-value" id="packets">0</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a href="#" id="settingsLink">Settings</a>
+      <a href="#" id="aboutLink">About</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

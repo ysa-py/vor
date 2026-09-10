@@ -1,0 +1,233 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// UnifiedShield user accounts
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String   // bcrypt hashed
+  role      Role     @default(USER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions  Session[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  OPERATOR
+  USER
+}
+
+/// User sessions
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+/// VPN Core configurations
+model Core {
+  id          String       @id @default(cuid())
+  coreId      String       @unique // xtls-reality, hysteria2, etc.
+  name        String
+  protocol    String
+  status      CoreStatus   @default(IDLE)
+  config      Json         // Core-specific configuration
+  serverAddr  String?
+  port        Int          @default(443)
+  priority    Int          @default(0)
+  isActive    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  connections Connection[]
+  tests       CoreTest[]
+
+  @@map("cores")
+}
+
+enum CoreStatus {
+  IDLE
+  CONNECTING
+  CONNECTED
+  FAILED
+  BLOCKED
+  TESTING
+}
+
+/// Connection history
+model Connection {
+  id              String   @id @default(cuid())
+  coreId          String
+  serverAddr      String
+  serverCountry   String?
+  bytesIn         BigInt   @default(0)
+  bytesOut        BigInt   @default(0)
+  latencyMs       Float?
+  jitterMs        Float?
+  packetLoss      Float?   @default(0)
+  speedDown       Float?   @default(0) // bytes/sec
+  speedUp         Float?   @default(0)
+  connectedAt     DateTime @default(now())
+  disconnectedAt  DateTime?
+  duration        Int?     // seconds
+  disconnectReason String?
+  createdAt       DateTime @default(now())
+
+  core Core @relation(fields: [coreId], references: [coreId])
+
+  @@index([coreId])
+  @@index([connectedAt])
+  @@map("connections")
+}
+
+/// Core test results
+model CoreTest {
+  id          String   @id @default(cuid())
+  coreId      String
+  testType    String   // latency, bandwidth, dpi_resistance
+  result      String   // pass, fail, error
+  latencyMs   Float?
+  bandwidthKB Float?
+  dpiScore    Float?
+  details     Json?
+  testedAt    DateTime @default(now())
+
+  core Core @relation(fields: [coreId], references: [coreId])
+
+  @@index([coreId])
+  @@index([testedAt])
+  @@map("core_tests")
+}
+
+/// P2P Peer registry
+model P2PPeer {
+  id            String   @id @default(cuid())
+  peerId        String   @unique
+  address       String
+  country       String?
+  isRelay       Boolean  @default(false)
+  isOnline      Boolean  @default(false)
+  latencyMs     Float?
+  bandwidthKB   Float?
+  bytesRelayed  BigInt   @default(0)
+  lastSeen      DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([country])
+  @@index([isRelay, isOnline])
+  @@map("p2p_peers")
+}
+
+/// Threat intelligence reports
+model ThreatReport {
+  id          String          @id @default(cuid())
+  type        ThreatType
+  severity    ThreatSeverity
+  title       String
+  description String
+  affectedAsns    String[]    @default([])
+  affectedDomains String[]    @default([])
+  mitigation  String?
+  isActive    Boolean         @default(true)
+  reportedAt  DateTime        @default(now())
+  resolvedAt  DateTime?
+
+  @@index([type, severity])
+  @@index([isActive])
+  @@map("threat_reports")
+}
+
+enum ThreatType {
+  DPI
+  DNS_POISONING
+  ACTIVE_PROBING
+  IP_BLOCKING
+  THROTTLING
+  MALWARE
+}
+
+enum ThreatSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+/// DPI Signature database
+model DpiSignature {
+  id          String   @id @default(cuid())
+  signature   String   @unique
+  name        String
+  description String?
+  vendor      String?  // Nokia, Sandvine, etc.
+  version     String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([vendor])
+  @@map("dpi_signatures")
+}
+
+/// National Intranet domain whitelist
+model IntranetDomain {
+  id          String   @id @default(cuid())
+  domain      String   @unique
+  category    String   // banking, government, education, health, news, essential
+  nameEn      String?
+  nameFa      String?
+  isAllowed   Boolean  @default(true)
+  addedAt     DateTime @default(now())
+
+  @@index([category])
+  @@map("intranet_domains")
+}
+
+/// Audit log
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  resource  String
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+/// System configuration
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+}

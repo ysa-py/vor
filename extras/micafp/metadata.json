@@ -1,0 +1,8 @@
+{
+  "name": "MICAFP Quantum VPN",
+  "description": "Smart Multi-Core Anti-Censorship Engine for Iran with Dynamic AI Auto-Scanner & National Intranet Circumvention",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

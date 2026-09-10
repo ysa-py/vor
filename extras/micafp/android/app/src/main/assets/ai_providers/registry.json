@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "registrySignature": null,
+  "providers": [
+    {
+      "id": "anthropic",
+      "displayName": "Anthropic Claude",
+      "displayNameFa": "آنتروپیک کلود",
+      "baseUrlDefault": "https://api.anthropic.com/v1",
+      "authHeaderName": "x-api-key",
+      "authHeaderValuePrefix": "",
+      "requestSchema": "anthropic-native",
+      "streamingSupported": true,
+      "models": ["claude-sonnet-4-5", "claude-opus-4-1", "claude-haiku-4-5"],
+      "defaultModel": "claude-sonnet-4-5"
+    },
+    {
+      "id": "openai",
+      "displayName": "OpenAI",
+      "displayNameFa": "اوپن‌ای‌آی",
+      "baseUrlDefault": "https://api.openai.com/v1",
+      "authHeaderName": "Authorization",
+      "authHeaderValuePrefix": "Bearer ",
+      "requestSchema": "openai-compatible",
+      "streamingSupported": true,
+      "models": ["gpt-4o", "gpt-4o-mini", "o4-mini"],
+      "defaultModel": "gpt-4o-mini"
+    },
+    {
+      "id": "google",
+      "displayName": "Google Gemini",
+      "displayNameFa": "گوگل جمنای",
+      "baseUrlDefault": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "authHeaderName": "Authorization",
+      "authHeaderValuePrefix": "Bearer ",
+      "requestSchema": "openai-compatible",
+      "streamingSupported": true,
+      "models": ["gemini-2.5-pro", "gemini-2.5-flash"],
+      "defaultModel": "gemini-2.5-flash"
+    },
+    {
+      "id": "deepseek",
+      "displayName": "DeepSeek",
+      "displayNameFa": "دیپ‌سیک",
+      "baseUrlDefault": "https://api.deepseek.com/v1",
+      "authHeaderName": "Authorization",
+      "authHeaderValuePrefix": "Bearer ",
+      "requestSchema": "openai-compatible",
+      "streamingSupported": true,
+      "models": ["deepseek-chat", "deepseek-reasoner"],
+      "defaultModel": "deepseek-chat"
+    },
+    {
+      "id": "groq",
+      "displayName": "Groq",
+      "displayNameFa": "گراک",
+      "baseUrlDefault": "https://api.groq.com/openai/v1",
+      "authHeaderName": "Authorization",
+      "authHeaderValuePrefix": "Bearer ",
+      "requestSchema": "openai-compatible",
+      "streamingSupported": true,
+      "models": ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
+      "defaultModel": "llama-3.3-70b-versatile"
+    },
+    {
+      "id": "mistral",
+      "displayName": "Mistral",
+      "displayNameFa": "میسترال",
+      "baseUrlDefault": "https://api.mistral.ai/v1",
+      "authHeaderName": "Authorization",
+      "authHeaderValuePrefix": "Bearer ",
+      "requestSchema": "openai-compatible",
+      "streamingSupported": true,
+      "models": ["mistral-large-latest", "mistral-small-latest"],
+      "defaultModel": "mistral-small-latest"
+    },
+    {
+      "id": "custom-openai",
+      "displayName": "Custom OpenAI-compatible",
+      "displayNameFa": "سرویس سازگار با OpenAI (اختیاری)",
+      "baseUrlDefault": "https://your-endpoint.example.com/v1",
+      "authHeaderName": "Authorization",
+      "authHeaderValuePrefix": "Bearer ",
+      "requestSchema": "openai-compatible",
+      "streamingSupported": true,
+      "models": [],
+      "defaultModel": "",
+      "mirrorUrls": []
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UnifiedShield</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    <header class="header">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 14l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h1>UnifiedShield</h1>
+      </div>
+      <span class="version">v2.0</span>
+    </header>
+
+    <div class="status-card" id="statusCard">
+      <div class="status-indicator">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Disconnected</span>
+      </div>
+      <div class="status-details">
+        <span id="modeText">Mode: —</span>
+        <span id="ispText">ISP: Detecting...</span>
+      </div>
+    </div>
+
+    <button class="toggle-btn" id="toggleBtn">
+      <span class="toggle-label" id="toggleLabel">Connect</span>
+    </button>
+
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-value" id="blockedCount">0</span>
+        <span class="stat-label">Blocked</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="dnsQueries">0</span>
+        <span class="stat-label">DNS</span>
+      </div>
+    </div>
+
+    <div class="mode-selector">
+      <label class="mode-option">
+        <input type="radio" name="mode" value="auto" checked />
+        <span class="mode-label">Auto</span>
+      </label>
+      <label class="mode-option">
+        <input type="radio" name="mode" value="socks5" />
+        <span class="mode-label">SOCKS5</span>
+      </label>
+      <label class="mode-option">
+        <input type="radio" name="mode" value="direct" />
+        <span class="mode-label">Direct</span>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" id="dnsTestBtn">DNS Test</button>
+      <button class="action-btn" id="ispDetectBtn">ISP Detect</button>
+      <button class="action-btn" id="optionsBtn">Settings</button>
+    </div>
+
+    <footer class="footer">
+      <span id="lastBlockTime"></span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
