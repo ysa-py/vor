@@ -38,6 +38,22 @@ jobs:
         run: |
           if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
             printf '%s' '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
+          else
+            # Same placeholder fallback as ci.yml: the google-services plugin
+            # is applied unconditionally in :app, so a file must exist even
+            # when no Firebase project is configured. Without this the whole
+            # release job dies at :app:processDebugGoogleServices.
+            cp app/google-services.json.example app/google-services.json
+            python3 - <<'PY'
+          import json
+          # rewrite the placeholder package name to this project's appId
+          cfg = json.load(open('app/google-services.json'))
+          for client in cfg.get('client', []):
+              info = client.get('client_info', {}).get('android_client_info', {})
+              if info.get('package_name'):
+                  info['package_name'] = 'com.vor.app'
+          json.dump(cfg, open('app/google-services.json', 'w'), indent=2)
+          PY
           fi
       - name: Release keystore
         working-directory: android
@@ -153,12 +169,19 @@ jobs:
       - name: deb package
         working-directory: desktop
         run: |
+          # Debian policy: Version must start with a digit — 'vor-v1.0.0' is
+          # rejected by dpkg-deb ("version number does not start with digit").
+          # Strip the 'vor-v' tag prefix: 'vor-v1.0.0' -> '1.0.0'.
+          VERSION="${GITHUB_REF_NAME#vor-v}"
+          echo "deb version: $VERSION (from tag ${GITHUB_REF_NAME})"
           mkdir -p release-assets package/DEBIAN package/usr/local/bin package/usr/share/doc/vor
           cp vor-desktop package/usr/local/bin/vor-desktop
           cp ../LICENSE* package/usr/share/doc/vor/ 2>/dev/null || true
+          # NOTE: no debhelper substitution variables — plain dpkg-deb does not
+          # expand ${misc:Depends}; the Go binary is static, so no Depends.
           cat > package/DEBIAN/control <<EOF
           Package: vor-desktop
-          Version: ${{ github.ref_name }}
+          Version: $VERSION
           Section: net
           Priority: optional
           Architecture: amd64
@@ -166,9 +189,9 @@ jobs:
           Description: Vor Desktop - unified anti-censorship toolkit
            Vor merges SNI spoofing, DPI desync, the pattern engine, xray/
            sing-box process cores, DNS tunnels and Tor into one binary.
-          Depends: \${misc:Depends}
           EOF
-          dpkg-deb --build package release-assets/vor-desktop-${{ github.ref_name }}-amd64.deb
+          dpkg-deb --build package "release-assets/vor-desktop_${VERSION}-1_amd64.deb"
+          dpkg-deb --info "release-assets/vor-desktop_${VERSION}-1_amd64.deb" || true
           cp vor-desktop release-assets/
       - name: AppImage (script-based, no packaging deps)
         working-directory: desktop
@@ -356,6 +379,12 @@ jobs:
             -exec cp {} release/ \; -print
           # consolidate checksums
           cat all-artifacts/*/SHA256SUMS.txt 2>/dev/null > release/SHA256SUMS.txt || true
+      - name: Derive release version
+        id: rel
+        run: |
+          VERSION="${GITHUB_REF_NAME#vor-v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "name=Vor v$VERSION" >> "$GITHUB_OUTPUT"
       - name: Fail loudly if a platform artifact is missing
         run: |
           set -e
@@ -369,18 +398,29 @@ jobs:
             echo "::error::missing platform artifacts:$MISSING"
             exit 1
           fi
+          # Deep integrity gates: counts + sizes, so a green upstream job can
+          # never smuggle a skeleton or partial artifact set into the release.
+          APK_N=$(ls release/*.apk 2>/dev/null | wc -l)
+          IPK_N=$(ls release/*.ipk 2>/dev/null | wc -l)
+          IPA_SZ=$(stat -c%s release/Vor-iOS-unsigned.ipa 2>/dev/null || stat -f%z release/Vor-iOS-unsigned.ipa)
+          EXE_SZ=$(stat -c%s release/Vor-desktop.exe 2>/dev/null || stat -f%z release/Vor-desktop.exe)
+          [ "$APK_N" -ge 5 ] || { echo "::error::expected >=5 APKs (5 ABI + license manager), got $APK_N"; exit 1; }
+          [ "$IPK_N" -ge 5 ] || { echo "::error::expected >=5 .ipk packages (per-target matrix), got $IPK_N"; exit 1; }
+          [ "$IPA_SZ" -gt 50000 ] || { echo "::error::ipa implausibly small ($IPA_SZ bytes) — skeleton?"; exit 1; }
+          [ "$EXE_SZ" -gt 1000000 ] || { echo "::error::windows exe implausibly small ($EXE_SZ bytes)"; exit 1; }
+          echo "integrity: $APK_N APKs, $IPK_N ipks, ipa ${IPA_SZ}B, exe ${EXE_SZ}B — all gates passed"
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          name: "Vor ${{ github.ref_name }}"
+          name: "${{ steps.rel.outputs.name }}"
           body: |
-            # Vor ${{ github.ref_name }}
+            # Vor v${{ steps.rel.outputs.version }}
 
             Unified release: all five platform artifacts from one tag.
 
             | Platform | Artifact | Notes |
             |---|---|---|
-            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | Signed when the KEYSTORE_BASE64/PASSWORD/ALIAS secrets are set, otherwise debug-unsigned APKs (install via `adb install`); license gate on first launch |
+            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | Signed when the KEYSTORE_BASE64/PASSWORD/ALIAS secrets are set, otherwise unsigned release APKs (install via `adb install`); license gate on first launch |
             | Windows | `Vor-desktop.exe` (+ WinDivert files) | Portable single binary; default engine = Go desync; pattern (wrong-seq) engine selectable |
             | Linux | `vor-desktop` + `.deb` + AppDir archive | |
             | OpenWrt | `vor_1.0.0_<arch>.ipk` matrix | Universal package — one source, every target |
