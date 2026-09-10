@@ -1,0 +1,274 @@
+# =============================================================================
+# MICAFP-UnifiedShield-6.0 — Iranian DPI Rules (Suricata)
+#
+# Simulates FAVA (Filtering and Verification of Applications) and
+# national DPI signatures used by Iran's internet censorship apparatus.
+#
+# These rules are for TESTING ONLY — to verify that UnifiedShield can
+# evade or operate through realistic DPI inspection.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# WireGuard Detection & Block
+# -----------------------------------------------------------------------------
+# WireGuard handshake starts with type=1 (initiation) and has a fixed
+# cookie structure at offset 4-8.
+
+alert udp any any -> any any (
+    msg:"[IR-DPI] WireGuard Handshake Detected";
+    content:"|01 00 00 00|";
+    depth:4;
+    offset:0;
+    dsize:148;
+    sid:1000001;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+alert udp any any -> any any (
+    msg:"[IR-DPI] WireGuard Response Detected";
+    content:"|02 00 00 00|";
+    depth:4;
+    offset:0;
+    dsize:92;
+    sid:1000002;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+# -----------------------------------------------------------------------------
+# OpenVPN Detection & Block
+# -----------------------------------------------------------------------------
+# OpenVPN over UDP: first byte is P_CONTROL_HARD_RESET (0x38-0x40)
+# OpenVPN over TCP: same but with 2-byte length prefix
+
+alert udp any any -> any any (
+    msg:"[IR-DPI] OpenVPN Hard Reset Detected (UDP)";
+    content:"|38|";
+    depth:1;
+    offset:0;
+    sid:1000010;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+alert udp any any -> any any (
+    msg:"[IR-DPI] OpenVPN Hard Reset v2 Detected (UDP)";
+    content:"|40|";
+    depth:1;
+    offset:0;
+    sid:1000011;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+alert tcp any any -> any any (
+    msg:"[IR-DPI] OpenVPN Hard Reset Detected (TCP)";
+    flow:to_server;
+    content:"|38|";
+    depth:3;
+    offset:2;
+    sid:1000012;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+# -----------------------------------------------------------------------------
+# Shadowsocks Detection
+# -----------------------------------------------------------------------------
+# Plain Shadowsocks (AEAD): first bytes are random-looking with no
+# recognizable TLS structure. We detect by checking:
+# - No valid TLS record layer (first byte not 0x16, 0x14, 0x15, 0x17)
+# - No valid TLS version bytes at offset 1-2
+# - Consistent encrypted payload size patterns
+
+alert tcp any any -> any any (
+    msg:"[IR-DPI] Possible Shadowsocks AEAD (non-TLS encrypted stream)";
+    flow:to_server;
+    dsize:50<>1500;
+    content:!"|16|";
+    depth:1;
+    content:!"|14|";
+    depth:1;
+    content:!"|15|";
+    depth:1;
+    content:!"|17|";
+    depth:1;
+    content:!"|15 03|";
+    depth:2;
+    content:!"|16 03|";
+    depth:2;
+    sid:1000020;
+    rev:1;
+    classtype:policy-violation;
+    threshold:type both, track by_src, count 20, seconds 10;
+    metadata:kill_src;
+)
+
+# -----------------------------------------------------------------------------
+# Non-Iranian SNI on Suspicious Ports
+# -----------------------------------------------------------------------------
+# Block TLS connections with non-.ir SNIs on non-standard ports
+# (ports other than 80, 443, 53, 123)
+
+alert tcp any any -> any !$80 !$443 (
+    msg:"[IR-DPI] TLS with non-standard port detected";
+    flow:established,to_server;
+    content:"|16 03|";
+    depth:2;
+    sid:1000030;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_dst;
+)
+
+# Check SNI field in ClientHello for non-Iranian domains
+alert tcp any any -> any 443 (
+    msg:"[IR-DPI] Non-Iranian SNI in TLS ClientHello";
+    flow:established,to_server;
+    content:"|16 03|";
+    depth:2;
+    content:"|00|";
+    distance:2;
+    within:1;
+    content:"|00 00|";
+    pcre:"/SNI\x00\x00.*\.(com|net|org|io|dev|app|co|me|tv|cc|info|biz)/i";
+    sid:1000031;
+    rev:1;
+    classtype:policy-violation;
+    threshold:type both, track by_src, count 5, seconds 60;
+    metadata:kill_src;
+)
+
+# -----------------------------------------------------------------------------
+# Non-Standard TLS Blocking
+# -----------------------------------------------------------------------------
+# Block TLS connections that don't have proper ClientHello structure
+# (used to detect custom protocols wrapping TLS incorrectly)
+
+alert tcp any any -> any 443 (
+    msg:"[IR-DPI] Non-standard TLS handshake structure";
+    flow:established,to_server;
+    content:"|16 03|";
+    depth:2;
+    content:!"|01|";
+    distance:5;
+    within:1;
+    sid:1000040;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src;
+)
+
+# Block TLS 1.3 0-RTT that doesn't follow standard patterns
+alert tcp any any -> any 443 (
+    msg:"[IR-DPI] Suspicious TLS 1.3 early data";
+    flow:established,to_server;
+    content:"|16 03 03|";
+    depth:3;
+    content:"|00|";
+    distance:1;
+    within:1;
+    sid:1000041;
+    rev:1;
+    classtype:policy-violation;
+    threshold:type both, track by_src, count 10, seconds 30;
+    metadata:kill_src;
+)
+
+# -----------------------------------------------------------------------------
+# SSH / Tor Detection
+# -----------------------------------------------------------------------------
+
+alert tcp any any -> any any (
+    msg:"[IR-DPI] SSH Protocol Detected";
+    flow:to_server;
+    content:"SSH-2.0";
+    depth:8;
+    sid:1000050;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+alert tcp any any -> any any (
+    msg:"[IR-DPI] Tor Connection Detected (directory)";
+    flow:established,to_server;
+    content:"Tor";
+    nocase;
+    depth:50;
+    sid:1000051;
+    rev:1;
+    classtype:policy-violation;
+    metadata:kill_src, kill_dst;
+)
+
+# -----------------------------------------------------------------------------
+# ALLOW — Legitimate Iranian HTTPS
+# -----------------------------------------------------------------------------
+# These pass rules ensure that legitimate Iranian domestic traffic
+# is not blocked by the DPI engine.
+
+pass tcp any any -> any 443 (
+    msg:"[IR-DPI] Allow Iranian HTTPS — .ir SNI";
+    flow:established,to_server;
+    content:"|16 03|";
+    depth:2;
+    pcre:"/\.ir\x00/Ri";
+    sid:2000001;
+    rev:1;
+    classtype:pass;
+)
+
+pass tcp any any -> any 80 (
+    msg:"[IR-DPI] Allow HTTP to Iranian hosts";
+    flow:established,to_server;
+    content:"Host";
+    nocase;
+    content:".ir";
+    distance:0;
+    sid:2000002;
+    rev:1;
+    classtype:pass;
+)
+
+pass udp any any -> any 53 (
+    msg:"[IR-DPI] Allow DNS";
+    sid:2000003;
+    rev:1;
+    classtype:pass;
+)
+
+pass udp any any -> any 123 (
+    msg:"[IR-DPI] Allow NTP";
+    sid:2000004;
+    rev:1;
+    classtype:pass;
+)
+
+# Allow Arvan Cloud CDN IPs (domestic CDN)
+pass tcp any any -> 185.143.234.0/24 443 (
+    msg:"[IR-DPI] Allow Arvan Cloud CDN";
+    sid:2000010;
+    rev:1;
+    classtype:pass;
+)
+
+pass tcp any any -> 185.143.235.0/24 443 (
+    msg:"[IR-DPI] Allow Arvan Cloud CDN (2)";
+    sid:2000011;
+    rev:1;
+    classtype:pass;
+)
+
+pass tcp any any -> 94.101.184.0/22 443 (
+    msg:"[IR-DPI] Allow Iranian hosting range";
+    sid:2000012;
+    rev:1;
+    classtype:pass;
+)

@@ -1,0 +1,33 @@
+[package]
+name = "vor-core"
+version = "1.0.0"
+edition = "2021"
+license = "GPL-3.0"
+description = "Vor shared adaptive DPI-evasion / engine-selection core library (single source of truth for all platforms)"
+repository = "https://github.com/ysa-py/Vor"
+
+[lib]
+name = "vor_core"
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[features]
+default = []
+# Android JNI bindings (Java_com_vor_core_VorCoreNative_*)
+jni = ["dep:jni"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ed25519-dalek = "2"
+
+[dependencies.jni]
+version = "0.21"
+optional = true
+
+[dev-dependencies]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "description": "Carrier presets for Iranian mobile carriers — shared by every Vor platform (source: UAC-SNI-Spoofer Android/Windows tuning, MICAFP ISP profiles)",
+    "last_updated": "2026-09-10"
+  },
+  "carriers": [
+    {
+      "key": "mci",
+      "match_asns": ["AS41689", "AS197207"],
+      "name_en": "MCI (Hamrah-e Aval)",
+      "name_fa": "همراه اول",
+      "dpi": "fava-v2",
+      "default_strategy": "SNI_SPLIT",
+      "finalmask": { "packets": "tlshello", "length": 5, "delay": 0, "max_split": 2 },
+      "edges": [
+        { "ip": "104.18.1.1", "port": 443, "max_split": 2, "label": "primary" },
+        { "ip": "104.18.8.83", "port": 443, "max_split": 2, "label": "telegram-route" },
+        { "ip": "104.18.9.83", "port": 443, "max_split": 2, "label": "telegram-route-2" },
+        { "ip": "172.66.0.1", "port": 443, "max_split": 2, "label": "fallback" }
+      ],
+      "fake_sni": "www.speedtest.net",
+      "fragment_strategies": ["full5", "sni_boundary", "sni_split", "tls_record_frag", "tls_sni_records"],
+      "profile": "compatibility",
+      "keepalive": { "idle_s": 11, "interval_s": 1 },
+      "mux": { "enabled": false, "concurrency": 8 },
+      "tun": { "mtu": 1280 },
+      "alpn_force": "http/1.1",
+      "needs_traffic_shaping": true,
+      "sessions": 4,
+      "doh": "https://cloudflare-dns.com/dns-query"
+    },
+    {
+      "key": "irancell",
+      "match_asns": ["AS39074"],
+      "name_en": "Irancell (MTN)",
+      "name_fa": "ایرانسل",
+      "dpi": "fava-v1",
+      "default_strategy": "RECORD_SPLIT",
+      "finalmask": { "packets": "tlshello", "length": 5, "delay": 0, "max_split": 100 },
+      "edges": [
+        { "ip": "104.19.229.21", "port": 443, "max_split": 100, "label": "primary" },
+        { "ip": "104.19.230.21", "port": 443, "max_split": 100, "label": "secondary" },
+        { "ip": "104.18.1.1", "port": 443, "max_split": 100, "label": "fallback" }
+      ],
+      "fake_sni": "chatgpt.com",
+      "fragment_strategies": ["full10", "full20", "sni_boundary", "tls_record_frag", "multi64"],
+      "profile": "maximum",
+      "keepalive": { "idle_s": 11, "interval_s": 1 },
+      "mux": { "enabled": true, "concurrency": 8 },
+      "tun": { "mtu": 1280 },
+      "alpn_force": "http/1.1",
+      "needs_traffic_shaping": true,
+      "sessions": 8,
+      "doh": "https://cloudflare-dns.com/dns-query"
+    },
+    {
+      "key": "rightel",
+      "match_asns": ["AS48434"],
+      "name_en": "Rightel",
+      "name_fa": "رایتل",
+      "dpi": "light",
+      "default_strategy": "RECORD_SPLIT",
+      "finalmask": { "packets": "tlshello", "length": 5, "delay": 0, "max_split": 20 },
+      "edges": [
+        { "ip": "104.19.229.21", "port": 443, "max_split": 20, "label": "primary" },
+        { "ip": "104.18.1.1", "port": 443, "max_split": 20, "label": "fallback" }
+      ],
+      "fake_sni": "static.cloudflare.com",
+      "fragment_strategies": ["full10", "sni_boundary", "tls_record_frag"],
+      "profile": "balanced",
+      "keepalive": { "idle_s": 30, "interval_s": 5 },
+      "mux": { "enabled": false, "concurrency": 8 },
+      "tun": { "mtu": 1400 },
+      "alpn_force": null,
+      "needs_traffic_shaping": false,
+      "sessions": 6,
+      "doh": "https://cloudflare-dns.com/dns-query"
+    },
+    {
+      "key": "auto",
+      "match_asns": [],
+      "name_en": "Auto (cross-carrier racing)",
+      "name_fa": "خودکار (رقابت بین‌اپراتوری)",
+      "dpi": "unknown",
+      "default_strategy": "SNI_SPLIT",
+      "finalmask": { "packets": "tlshello", "length": 5, "delay": 0, "max_split": 2 },
+      "edges": [
+        { "ip": "104.18.1.1", "port": 443, "max_split": 2, "label": "mci-primary" },
+        { "ip": "104.19.229.21", "port": 443, "max_split": 100, "label": "irancell-primary" }
+      ],
+      "fake_sni": "www.speedtest.net",
+      "fragment_strategies": ["full5", "full10", "sni_boundary", "sni_split", "tls_record_frag", "tls_sni_records"],
+      "profile": "balanced",
+      "keepalive": { "idle_s": 11, "interval_s": 1 },
+      "mux": { "enabled": false, "concurrency": 8 },
+      "tun": { "mtu": 1280 },
+      "alpn_force": "http/1.1",
+      "needs_traffic_shaping": true,
+      "sessions": 8,
+      "doh": "https://cloudflare-dns.com/dns-query",
+      "cross_carrier_racing": true
+    }
+  ]
+}

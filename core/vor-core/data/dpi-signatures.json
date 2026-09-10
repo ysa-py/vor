@@ -1,0 +1,617 @@
+{
+  "metadata": {
+    "description": "Iranian Deep Packet Inspection (DPI) signatures and detection patterns",
+    "last_updated": "2025-01-15",
+    "total_signatures": 9
+  },
+  "signatures": [
+    {
+      "signature_id": "DPI-001",
+      "name": "TLS-ClientHello-Reset",
+      "description": "TCP RST injection after detecting blocked SNI in TLS ClientHello",
+      "description_fa": "تزریق RST پس از شناسایی SNI مسدود در ClientHello",
+      "detection_method": "sni_pattern_match",
+      "response_pattern": "tcp_rst_injection",
+      "timing_ms_min": 95,
+      "timing_ms_max": 320,
+      "affected_isps": [
+        "AS41689",
+        "AS197207",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS24631",
+        "AS12880",
+        "AS44244"
+      ],
+      "technical_details": {
+        "trigger": "TLS ClientHello with SNI extension matching blocklist",
+        "rst_flags": "RST+ACK",
+        "rst_sequence": "uses original packet sequence number",
+        "bypass_methods": [
+          "fragmented_client_hello",
+          "encrypted_sni_esni",
+          "domain_fronting",
+          "sni_padding",
+          "sni_split"
+        ]
+      },
+      "blocklist_sample": [
+        "twitter.com",
+        "facebook.com",
+        "youtube.com",
+        "telegram.org",
+        "instagram.com",
+        "whatsapp.com",
+        "google.com",
+        "wikipedia.org",
+        "reddit.com",
+        "signal.org",
+        "protonvpn.com",
+        "nordvpn.com",
+        "expressvpn.com",
+        "psiphon.ca",
+        "lantern.io",
+        "torproject.org"
+      ]
+    },
+    {
+      "signature_id": "DPI-002",
+      "name": "HTTP-403-FAVA",
+      "description": "HTTP 403 response with FAVA (Filtration And Violation Alert) body from Iranian filtering system",
+      "description_fa": "پاسخ HTTP 403 با بدنه فاوای سیستم فیلترینگ ایران",
+      "detection_method": "http_header_inspection",
+      "response_pattern": "http_403_fava",
+      "timing_ms_min": 50,
+      "timing_ms_max": 150,
+      "affected_isps": [
+        "AS41689",
+        "AS197207",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS25184",
+        "AS24631",
+        "AS12880",
+        "AS44244",
+        "AS48434",
+        "AS56402"
+      ],
+      "technical_details": {
+        "trigger": "HTTP request to blocked URL",
+        "response_code": 403,
+        "response_headers": {
+          "Server": "Fortinet",
+          "X-FAVA": "filtered"
+        },
+        "response_body_contains": [
+          "filternet",
+          "10.10.34.34",
+          "fava",
+          "access denied"
+        ],
+        "bypass_methods": [
+          "https_enforcement",
+          "http_over_tls",
+          "domain_fronting"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-003",
+      "name": "Null-Route",
+      "description": "Null routing / blackholing of IP addresses at the routing level",
+      "description_fa": "مسیریابی تهی / بلک‌هول کردن آدرس‌های IP در سطح مسیریابی",
+      "detection_method": "route_injection",
+      "response_pattern": "connection_timeout",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "AS12880",
+        "AS41689",
+        "AS34918",
+        "AS16322",
+        "AS24631",
+        "AS44244"
+      ],
+      "technical_details": {
+        "trigger": "Destination IP matches null-route blocklist",
+        "behavior": "Packets silently dropped, no ICMP response",
+        "detection_method": "TCP SYN goes unacknowledged, no RST received",
+        "bypass_methods": [
+          "cdn_relay",
+          "domain_fronting",
+          "proxy_chain",
+          "p2p_relay"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-004",
+      "name": "SNI-Filter",
+      "description": "Server Name Indication filtering in TLS handshake - blocks connections based on SNI value",
+      "description_fa": "فیلترینگ SNI در handshakeTLS - مسدودسازی بر اساس مقدار SNI",
+      "detection_method": "sni_deep_inspection",
+      "response_pattern": "tcp_rst_or_timeout",
+      "timing_ms_min": 80,
+      "timing_ms_max": 280,
+      "affected_isps": [
+        "AS41689",
+        "AS197207",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS25184",
+        "AS24631",
+        "AS12880",
+        "AS44244",
+        "AS48434",
+        "AS56402"
+      ],
+      "technical_details": {
+        "trigger": "SNI extension value in TLS ClientHello matches blocklist",
+        "detection_depth": "full_sni_extraction",
+        "action": "RST injection or connection timeout",
+        "bypass_methods": [
+          "encrypted_client_hello_ech",
+          "domain_fronting",
+          "sni_fragmentation",
+          "sni_padding_to_512_bytes",
+          "zero_sni"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-005",
+      "name": "DNS-Poison",
+      "description": "DNS poisoning - returns forged DNS responses pointing to 10.10.34.34 or 10.10.34.35",
+      "description_fa": "DNS مسموم - پاسخ‌های جعلی DNS به 10.10.34.34 یا 10.10.34.35",
+      "detection_method": "dns_query_interception",
+      "response_pattern": "forged_dns_response",
+      "timing_ms_min": 10,
+      "timing_ms_max": 60,
+      "affected_isps": [
+        "AS41689",
+        "AS197207",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS25184",
+        "AS24631",
+        "AS12880",
+        "AS44244",
+        "AS48434",
+        "AS56402",
+        "AS31549"
+      ],
+      "technical_details": {
+        "trigger": "DNS query for blocked domain",
+        "poisoned_responses": [
+          "10.10.34.34",
+          "10.10.34.35"
+        ],
+        "response_speed": "forged response arrives before legitimate one",
+        "query_types_affected": [
+          "A",
+          "AAAA",
+          "MX",
+          "TXT",
+          "CNAME"
+        ],
+        "bypass_methods": [
+          "dns_over_https_doh",
+          "dns_over_tls_dot",
+          "dns_over_quic_doq",
+          "dns_crypt",
+          "local_dns_resolver",
+          "chinese_dns_servers"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-006",
+      "name": "Protocol-Detect",
+      "description": "Protocol detection and fingerprinting - identifies VPN/proxy protocols by traffic patterns",
+      "description_fa": "شناسایی و اثرانگشت پروتکل - تشخیص پروتکل‌های VPN/proxy با الگوی ترافیک",
+      "detection_method": "traffic_pattern_analysis",
+      "response_pattern": "connection_throttle_or_reset",
+      "timing_ms_min": 500,
+      "timing_ms_max": 5000,
+      "affected_isps": [
+        "AS41689",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS24631",
+        "AS12880",
+        "AS44244"
+      ],
+      "technical_details": {
+        "trigger": "Traffic pattern matches known VPN/proxy protocol fingerprint",
+        "detected_protocols": {
+          "openvpn": "UDP on custom ports with TLS-like initial packet",
+          "wireguard": "UDP with specific handshake_init message format",
+          "shadowsocks": "Stream cipher patterns, fixed-length IV",
+          "trojan": "TLS with unusual certificate patterns",
+          "v2ray_vmess": "Custom protocol with UUID-based authentication",
+          "ssr": "Custom auth header patterns"
+        },
+        "detection_technique": "ML-based traffic classification + DPI rule matching",
+        "bypass_methods": [
+          "traffic_obfuscation",
+          "padding",
+          "flow_morphing",
+          "domain_fronting",
+          "meek_transport",
+          "packet_fragmentation"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-007",
+      "name": "QUIC-Block",
+      "description": "QUIC protocol blocking - drops UDP:443 traffic to prevent QUIC/HTTP3 connections",
+      "description_fa": "مسدودسازی پروتکل QUIC - حذف ترافیک UDP:443 برای جلوگیری از QUIC/HTTP3",
+      "detection_method": "udp_port_443_filter",
+      "response_pattern": "udp_drop",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "AS41689",
+        "AS197207",
+        "AS39074",
+        "AS34918",
+        "AS24631",
+        "AS12880",
+        "AS44244"
+      ],
+      "technical_details": {
+        "trigger": "UDP packets to port 443",
+        "action": "Silent drop of all UDP:443 packets",
+        "scope": "Complete UDP:443 blocking on some ISPs, partial on others",
+        "bypass_methods": [
+          "quic_over_tcp_relay",
+          "hysteria2_on_custom_port",
+          "tuic_on_custom_port",
+          "udp_over_tcp_tunnelling"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-008",
+      "name": "WireGuard-Detect",
+      "description": "WireGuard protocol detection by matching handshake initiation message structure",
+      "description_fa": "شناسایی پروتکل WireGuard با تطبیق ساختار پیام شروع handshake",
+      "detection_method": "wireguard_handshake_pattern",
+      "response_pattern": "udp_block_or_throttle",
+      "timing_ms_min": 0,
+      "timing_ms_max": 500,
+      "affected_isps": [
+        "AS41689",
+        "AS197207",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS24631",
+        "AS12880",
+        "AS44244",
+        "AS48434",
+        "AS56402",
+        "AS31549"
+      ],
+      "technical_details": {
+        "trigger": "UDP packet matching WireGuard handshake_init structure",
+        "pattern": "message_type=1, version=2, followed by 32-byte sender_index",
+        "action": "Block UDP connection, possible IP-level throttling",
+        "bypass_methods": [
+          "wireguard_over_ws",
+          "wireguard_over_quic",
+          "wireguard_obfuscated",
+          "amneziawg"
+        ]
+      }
+    },
+    {
+      "signature_id": "DPI-009",
+      "name": "TLS-Fingerprint-Detect",
+      "description": "TLS client fingerprinting (JA3/JA4) to identify proxy/VPN clients by their TLS hello fingerprint",
+      "description_fa": "اثرانگشت TLS کلاینت (JA3/JA4) برای شناسایی کلاینت‌های proxy/VPN",
+      "detection_method": "ja3_ja4_fingerprinting",
+      "response_pattern": "connection_reset_or_throttle",
+      "timing_ms_min": 100,
+      "timing_ms_max": 400,
+      "affected_isps": [
+        "AS41689",
+        "AS39074",
+        "AS34918",
+        "AS16322",
+        "AS12880",
+        "AS44244"
+      ],
+      "technical_details": {
+        "trigger": "JA3/JA4 fingerprint matches known proxy/VPN client",
+        "blocked_fingerprints": [
+          "ja3:proxy_client_pattern_1",
+          "ja3:proxy_client_pattern_2",
+          "ja4:vpn_client_fingerprint"
+        ],
+        "action": "RST injection or bandwidth throttling",
+        "bypass_methods": [
+          "ja3_randomization",
+          "uTLS_imitation",
+          "chrome_fingerprint_imitation",
+          "firefox_fingerprint_imitation",
+          "safari_fingerprint_imitation"
+        ]
+      }
+    },
+    {
+      "signature_id": "FAVA-TLS-RST-v1",
+      "description": "FAVA TLS ClientHello reset - most common DPI method in Iran",
+      "detection_method": "timing",
+      "response_pattern": "TCP RST after ClientHello",
+      "timing_ms_min": 95,
+      "timing_ms_max": 320,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "shatel",
+        "asiatech",
+        "rightel",
+        "itc"
+      ],
+      "bypass_methods": [
+        "tls_fragment",
+        "reality",
+        "shadowtls",
+        "mvless"
+      ]
+    },
+    {
+      "signature_id": "FAVA-TLS-RST-v2",
+      "description": "FAVA TLS reset variant with shorter timing window",
+      "detection_method": "timing",
+      "response_pattern": "TCP RST after ClientHello",
+      "timing_ms_min": 95,
+      "timing_ms_max": 180,
+      "affected_isps": [
+        "mci",
+        "irancell"
+      ],
+      "bypass_methods": [
+        "tls_fragment",
+        "reality",
+        "shadowtls"
+      ]
+    },
+    {
+      "signature_id": "HTTP-403-FAVA",
+      "description": "HTTP 403 block page from FAVA filtering authority",
+      "detection_method": "content",
+      "response_pattern": "HTTP 403 with FAVA redirect body",
+      "timing_ms_min": 50,
+      "timing_ms_max": 500,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "shatel",
+        "asiatech"
+      ],
+      "bypass_methods": [
+        "https_only",
+        "domain_fronting"
+      ]
+    },
+    {
+      "signature_id": "DNS-POISON-FAVA",
+      "description": "DNS poisoning with FAVA redirect IPs",
+      "detection_method": "dns",
+      "response_pattern": "DNS response pointing to 10.10.34.34 or 10.10.34.35",
+      "timing_ms_min": 10,
+      "timing_ms_max": 50,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "shatel",
+        "asiatech",
+        "rightel",
+        "itc"
+      ],
+      "bypass_methods": [
+        "doh",
+        "dot",
+        "encrypted_dns"
+      ]
+    },
+    {
+      "signature_id": "SNI-FILTER",
+      "description": "SNI-based blocking - TLS RST when blocked SNI detected",
+      "detection_method": "sni",
+      "response_pattern": "TCP RST 95-180ms after ClientHello with blocked SNI",
+      "timing_ms_min": 95,
+      "timing_ms_max": 180,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "shatel",
+        "asiatech"
+      ],
+      "bypass_methods": [
+        "reality",
+        "encrypted_sni",
+        "sni_fragment"
+      ]
+    },
+    {
+      "signature_id": "OPENVPN-DETECT",
+      "description": "OpenVPN protocol detection via TLS certificate pattern",
+      "detection_method": "protocol",
+      "response_pattern": "Connection reset or null route",
+      "timing_ms_min": 200,
+      "timing_ms_max": 500,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "shatel"
+      ],
+      "bypass_methods": [
+        "stunnel",
+        "obfs4"
+      ]
+    },
+    {
+      "signature_id": "WIREGUARD-DETECT",
+      "description": "WireGuard UDP detection via packet size and timing patterns",
+      "detection_method": "protocol",
+      "response_pattern": "UDP packets dropped, no response",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "mci",
+        "shatel",
+        "mobinnet"
+      ],
+      "bypass_methods": [
+        "amneziawg",
+        "wireguard_noise",
+        "udp_obfuscation"
+      ]
+    },
+    {
+      "signature_id": "VMESS-DETECT",
+      "description": "VMess protocol detection via initial packet analysis",
+      "detection_method": "protocol",
+      "response_pattern": "TCP RST or connection timeout",
+      "timing_ms_min": 100,
+      "timing_ms_max": 400,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "itc"
+      ],
+      "bypass_methods": [
+        "vmess_ws_tls",
+        "fragment",
+        "reality"
+      ]
+    },
+    {
+      "signature_id": "VLESS-DETECT",
+      "description": "VLESS plain protocol detection",
+      "detection_method": "protocol",
+      "response_pattern": "TCP RST",
+      "timing_ms_min": 100,
+      "timing_ms_max": 300,
+      "affected_isps": [
+        "mci",
+        "irancell"
+      ],
+      "bypass_methods": [
+        "vless_reality",
+        "vless_fragment"
+      ]
+    },
+    {
+      "signature_id": "SHADOWSOCKS-DETECT",
+      "description": "Shadowsocks detection via traffic pattern analysis",
+      "detection_method": "protocol",
+      "response_pattern": "Connection reset after data transfer",
+      "timing_ms_min": 200,
+      "timing_ms_max": 600,
+      "affected_isps": [
+        "irancell",
+        "shatel"
+      ],
+      "bypass_methods": [
+        "shadowtls_v3",
+        "ssr"
+      ]
+    },
+    {
+      "signature_id": "TOR-DETECT",
+      "description": "Tor directory authority connection detection",
+      "detection_method": "ip_list",
+      "response_pattern": "Connection refused or RST",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "shatel",
+        "asiatech"
+      ],
+      "bypass_methods": [
+        "meek",
+        "snowflake",
+        "obfs4"
+      ]
+    },
+    {
+      "signature_id": "SSH-TUNNEL-DETECT",
+      "description": "SSH tunnel detection via packet length patterns",
+      "detection_method": "protocol",
+      "response_pattern": "Connection rate-limited or reset",
+      "timing_ms_min": 500,
+      "timing_ms_max": 2000,
+      "affected_isps": [
+        "mci",
+        "irancell"
+      ],
+      "bypass_methods": [
+        "obfuscated_ssh",
+        "psiphon"
+      ]
+    },
+    {
+      "signature_id": "NULL-ROUTE",
+      "description": "Silent null routing - packets dropped with no response",
+      "detection_method": "timeout",
+      "response_pattern": "No response, connection timeout",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "mci",
+        "irancell",
+        "itc"
+      ],
+      "bypass_methods": [
+        "domain_fronting",
+        "cdn_tunnel"
+      ]
+    },
+    {
+      "signature_id": "QUIC-BLOCK",
+      "description": "QUIC/UDP protocol blocking",
+      "detection_method": "protocol",
+      "response_pattern": "All UDP to port 443 dropped",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "mci",
+        "shatel"
+      ],
+      "bypass_methods": [
+        "tcp_fallback",
+        "ws_tunnel"
+      ]
+    },
+    {
+      "signature_id": "PROTOCOL-DETECT-AI",
+      "description": "AI-powered protocol detection using machine learning",
+      "detection_method": "ml",
+      "response_pattern": "Variable - depends on AI classification",
+      "timing_ms_min": 0,
+      "timing_ms_max": 0,
+      "affected_isps": [
+        "mci",
+        "irancell"
+      ],
+      "bypass_methods": [
+        "traffic_shaping",
+        "timing_jitter",
+        "padding"
+      ]
+    }
+  ],
+  "version": "2024.1"
+}

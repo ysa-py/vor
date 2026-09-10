@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "description": "Adversarial traffic profiles for the traffic shaper — statistical targets that shaped traffic should match (source: MICAFP adversarial_traffic.rs presets)",
+    "last_updated": "2026-09-10"
+  },
+  "profiles": [
+    {
+      "name": "youtube_hd",
+      "label": "YouTube HD video stream",
+      "packet_size": { "mean": 1320.0, "stddev": 240.0, "min": 66.0, "max": 1400.0 },
+      "inter_arrival_us": { "mean": 11000.0, "stddev": 3200.0 },
+      "burst": { "packets_per_burst": 32, "gap_us": 42000.0 },
+      "byte_histogram_shape": "video",
+      "direction_ratio": 0.94
+    },
+    {
+      "name": "netflix_4k",
+      "label": "Netflix 4K video stream",
+      "packet_size": { "mean": 1380.0, "stddev": 180.0, "min": 66.0, "max": 1400.0 },
+      "inter_arrival_us": { "mean": 9000.0, "stddev": 1500.0 },
+      "burst": { "packets_per_burst": 48, "gap_us": 38000.0 },
+      "byte_histogram_shape": "video",
+      "direction_ratio": 0.96
+    },
+    {
+      "name": "large_download",
+      "label": "Large HTTPS download",
+      "packet_size": { "mean": 1400.0, "stddev": 90.0, "min": 66.0, "max": 1400.0 },
+      "inter_arrival_us": { "mean": 6800.0, "stddev": 900.0 },
+      "burst": { "packets_per_burst": 64, "gap_us": 12000.0 },
+      "byte_histogram_shape": "download",
+      "direction_ratio": 0.98
+    },
+    {
+      "name": "web_browsing",
+      "label": "Ordinary web browsing",
+      "packet_size": { "mean": 640.0, "stddev": 420.0, "min": 54.0, "max": 1400.0 },
+      "inter_arrival_us": { "mean": 42000.0, "stddev": 26000.0 },
+      "burst": { "packets_per_burst": 8, "gap_us": 90000.0 },
+      "byte_histogram_shape": "mixed",
+      "direction_ratio": 0.82
+    },
+    {
+      "name": "video_call",
+      "label": "Video conference call",
+      "packet_size": { "mean": 220.0, "stddev": 60.0, "min": 60.0, "max": 1200.0 },
+      "inter_arrival_us": { "mean": 30000.0, "stddev": 2000.0 },
+      "burst": { "packets_per_burst": 3, "gap_us": 90000.0 },
+      "byte_histogram_shape": "small-packet-periodic",
+      "direction_ratio": 0.55
+    }
+  ]
+}

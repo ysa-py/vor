@@ -1,0 +1,253 @@
+{
+  "version": "2.0.0",
+  "description": "Iranian DPI block patterns for simulation and testing",
+  "last_updated": "2024-01-01",
+
+  "tls_rst": {
+    "description": "FAVA TLS reset injection — RST sent after inspecting ClientHello SNI",
+    "timing_ms": {
+      "min": 95,
+      "max": 320,
+      "distribution": "uniform",
+      "note": "Timing correlates with DPI processing depth"
+    },
+    "triggers": {
+      "exact_sni": [
+        "youtube.com",
+        "youtu.be",
+        "googlevideo.com",
+        "twitter.com",
+        "x.com",
+        "facebook.com",
+        "instagram.com",
+        "telegram.org",
+        "t.me",
+        "whatsapp.com",
+        "reddit.com",
+        "linkedin.com",
+        "github.com",
+        "wikipedia.org",
+        "bbc.com",
+        "medium.com",
+        "netflix.com",
+        "discord.com",
+        "twitch.tv",
+        "spotify.com",
+        "soundcloud.com",
+        "stackoverflow.com",
+        "torproject.org"
+      ],
+      "keyword_sni": [
+        "youtube",
+        "googlevideo",
+        "twitter",
+        "facebook",
+        "instagram",
+        "telegram",
+        "whatsapp",
+        "reddit",
+        "tor",
+        "vpn",
+        "proxy",
+        "filternet"
+      ]
+    },
+    "rst_packet": {
+      "flags": "R",
+      "description": "TCP packet with RST flag sent from DPI middlebox IP"
+    }
+  },
+
+  "http_403": {
+    "description": "HTTP 403 response injection for blocked HTTP requests",
+    "timing_ms": {
+      "min": 0,
+      "max": 100,
+      "note": "Instant response, no real server contact"
+    },
+    "response": {
+      "status_code": 403,
+      "body_patterns": [
+        "access.denied",
+        "access.to.this.site.is.restricted",
+        "ممنوع",
+        "فیلتر",
+        "filtered.according.to.regulatory"
+      ]
+    },
+    "triggers": {
+      "host_header": [
+        "youtube.com",
+        "twitter.com",
+        "facebook.com",
+        "instagram.com",
+        "telegram.org",
+        "reddit.com",
+        "bbc.com",
+        "medium.com"
+      ],
+      "url_path_keywords": [
+        "youtube.com/watch",
+        "twitter.com/",
+        "facebook.com/",
+        "proxy",
+        "vpn"
+      ]
+    }
+  },
+
+  "dns_poison": {
+    "description": "DNS response poisoning — returns fake IP for blocked domains",
+    "poison_ips": [
+      "10.10.34.34",
+      "10.10.34.35"
+    ],
+    "timing_ms": {
+      "min": 0,
+      "max": 50,
+      "note": "Poisoned response arrives before real DNS response"
+    },
+    "triggers": {
+      "domain_list": [
+        "youtube.com",
+        "twitter.com",
+        "x.com",
+        "facebook.com",
+        "instagram.com",
+        "telegram.org",
+        "t.me",
+        "whatsapp.com",
+        "reddit.com",
+        "linkedin.com",
+        "github.com",
+        "wikipedia.org",
+        "bbc.com",
+        "medium.com",
+        "netflix.com",
+        "discord.com",
+        "twitch.tv",
+        "spotify.com",
+        "torproject.org"
+      ]
+    },
+    "response_characteristics": {
+      "ttl": 300,
+      "answer_count": 1,
+      "authoritative": true,
+      "note": "Poisoned responses have identical structure to legitimate NXDOMAIN overrides"
+    }
+  },
+
+  "sni_filter": {
+    "description": "SNI-based filtering in TLS ClientHello",
+    "method": "exact_or_keyword_match",
+    "timing_after_rst_ms": {
+      "min": 95,
+      "max": 320,
+      "note": "Same as tls_rst — SNI filter triggers RST"
+    }
+  },
+
+  "protocol_detect": {
+    "description": "Protocol detection and blocking of VPN/proxy protocols",
+    "protocols": {
+      "openvpn": {
+        "signatures": ["\\x00\\x0c\\x4e\\x6f\\x76\\x61"],
+        "detection_method": "payload_pattern",
+        "action": "rst"
+      },
+      "wireguard": {
+        "signatures": ["\\x01\\x00\\x00\\x00"],
+        "detection_method": "payload_pattern",
+        "action": "rst"
+      },
+      "shadowsocks": {
+        "detection_method": "entropy_analysis",
+        "entropy_threshold": 7.5,
+        "min_packet_length": 100,
+        "action": "throttle_or_rst"
+      },
+      "tor": {
+        "signatures": ["tor_cell_pattern"],
+        "detection_method": "payload_pattern_and_ip_list",
+        "action": "rst"
+      },
+      "v2ray_vmess": {
+        "detection_method": "entropy_and_length_analysis",
+        "action": "throttle"
+      }
+    }
+  },
+
+  "throttling": {
+    "description": "Bandwidth throttling profiles by ISP",
+    "profiles": {
+      "aggressive": {
+        "bandwidth_kbps": 128,
+        "description": "Severe throttling — MCI, DCI backbone",
+        "affected_protocols": ["all_encrypted", "vpn", "proxy"]
+      },
+      "moderate": {
+        "bandwidth_kbps": 512,
+        "description": "Moderate throttling — Irancell, Shatel, ParsOnline",
+        "affected_protocols": ["vpn", "proxy"]
+      },
+      "light": {
+        "bandwidth_kbps": 2048,
+        "description": "Light throttling — Pishgaman",
+        "affected_protocols": ["identified_vpn"]
+      }
+    }
+  },
+
+  "whitelist": {
+    "description": "Domains that are NOT blocked and go direct",
+    "domains": [
+      ".ir",
+      "digikala.com",
+      "snapp.ir",
+      "divar.ir",
+      "bankmellat.ir",
+      "sb24.ir",
+      "bpi.ir",
+      "enbank.ir",
+      "bsi.ir",
+      "shatel.ir",
+      "mci.ir",
+      "irancell.ir",
+      "rightel.ir",
+      "ac.ir",
+      "edu.ir"
+    ]
+  },
+
+  "test_scenarios": [
+    {
+      "name": "youtube_access",
+      "description": "User tries to access YouTube",
+      "domain": "youtube.com",
+      "expected_blocks": ["dns_poison", "sni_filter", "tls_rst"],
+      "expected_rst_timing_ms": [95, 320]
+    },
+    {
+      "name": "google_search",
+      "description": "User searches on Google",
+      "domain": "google.com",
+      "expected_blocks": ["sni_filter"],
+      "note": "Google search is intermittently blocked"
+    },
+    {
+      "name": "iranian_site",
+      "description": "User accesses an Iranian website",
+      "domain": "digikala.com",
+      "expected_blocks": [],
+      "note": "Iranian sites are not blocked"
+    },
+    {
+      "name": "tor_connection",
+      "description": "User attempts Tor connection",
+      "domain": "torproject.org",
+      "expected_blocks": ["dns_poison", "sni_filter", "tls_rst", "protocol_detect"]
+    }
+  ]
+}

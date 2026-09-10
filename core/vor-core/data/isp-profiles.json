@@ -1,0 +1,1903 @@
+{
+  "metadata": {
+    "description": "ISP profiles for Iranian internet service providers with censorship circumvention parameters",
+    "last_updated": "2025-01-15",
+    "total_profiles": 11
+  },
+  "profiles": [
+    {
+      "name_en": "MCI (Mobile Communication Company of Iran)",
+      "name_fa": "همراه اول",
+      "asn": "AS41689",
+      "secondary_asns": [
+        "AS197207"
+      ],
+      "dns_servers": {
+        "primary": "5.106.0.1",
+        "secondary": "5.106.0.2",
+        "ipv6_primary": "2a02:8680::1",
+        "ipv6_secondary": "2a02:8680::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-plain"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-azure"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 85,
+      "throttle_factor": 1.3,
+      "bandwidth_mbps": {
+        "4g_download": 45,
+        "4g_upload": 20,
+        "3g_download": 8,
+        "3g_upload": 3
+      },
+      "dpi_intensity": "high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": true
+      },
+      "notes_fa": "بزرگترین اپراتور موبایل ایران. فیلترینگ SNI و DNS فعال است.",
+      "notes_en": "Largest mobile operator in Iran. SNI filtering and DNS poisoning are active."
+    },
+    {
+      "name_en": "Irancell (MTN Irancell)",
+      "name_fa": "ایرانسل",
+      "asn": "AS39074",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "5.112.0.1",
+        "secondary": "5.112.0.2",
+        "ipv6_primary": "2a02:8580::1",
+        "ipv6_secondary": "2a02:8580::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-amazon"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 75,
+      "throttle_factor": 1.2,
+      "bandwidth_mbps": {
+        "4g_download": 60,
+        "4g_upload": 25,
+        "3g_download": 10,
+        "3g_upload": 4
+      },
+      "dpi_intensity": "high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": false
+      },
+      "notes_fa": "دومین اپراتور موبایل. فیلترینگ مشابه همراه اول اما IP blocking کمتر.",
+      "notes_en": "Second largest mobile operator. Similar filtering to MCI but less IP blocking."
+    },
+    {
+      "name_en": "Rightel",
+      "name_fa": "رایتل",
+      "asn": "AS48434",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "5.250.0.1",
+        "secondary": "5.250.0.2",
+        "ipv6_primary": "2a02:8880::1",
+        "ipv6_secondary": "2a02:8880::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "naiveproxy",
+        "meek-azure",
+        "meek-amazon"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 95,
+      "throttle_factor": 1.5,
+      "bandwidth_mbps": {
+        "4g_download": 30,
+        "4g_upload": 15,
+        "3g_download": 5,
+        "3g_upload": 2
+      },
+      "dpi_intensity": "medium",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": false,
+        "quic_blocking": false,
+        "ip_blocking": false
+      },
+      "notes_fa": "سومین اپراتور موبایل. پوشش کمتر اما فیلترینگ سبک‌تر.",
+      "notes_en": "Third mobile operator. Less coverage but lighter filtering."
+    },
+    {
+      "name_en": "Shatel (Pishgaman Touseeh Ertebatat)",
+      "name_fa": "شاتل (پیشگامان توسعه ارتباط)",
+      "asn": "AS34918",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "62.60.128.1",
+        "secondary": "62.60.128.2",
+        "ipv6_primary": "2a01:8780::1",
+        "ipv6_secondary": "2a01:8780::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-alibaba"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 60,
+      "throttle_factor": 1.1,
+      "bandwidth_mbps": {
+        "fiber_download": 100,
+        "fiber_upload": 50,
+        "adsl_download": 8,
+        "adsl_upload": 1
+      },
+      "dpi_intensity": "high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": true
+      },
+      "notes_fa": "یکی از بزرگترین ISPهای ثابت. فیلترینگ شدید SNI و DNS.",
+      "notes_en": "One of the largest fixed-line ISPs. Heavy SNI and DNS filtering."
+    },
+    {
+      "name_en": "Asiatech (Asre Dadeh Haye Bartar)",
+      "name_fa": "آسیاتک (عصر داده‌های برتر)",
+      "asn": "AS56402",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "79.127.0.1",
+        "secondary": "79.127.0.2",
+        "ipv6_primary": "2a02:8980::1",
+        "ipv6_secondary": "2a02:8980::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-tencent"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 55,
+      "throttle_factor": 1.0,
+      "bandwidth_mbps": {
+        "fiber_download": 120,
+        "fiber_upload": 60,
+        "adsl_download": 8,
+        "adsl_upload": 1
+      },
+      "dpi_intensity": "medium",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": false,
+        "quic_blocking": false,
+        "ip_blocking": false
+      },
+      "notes_fa": "ISP فیبر نوری با سرعت بالا. فیلترینگ متوسط.",
+      "notes_en": "Fiber ISP with high speed. Medium filtering intensity."
+    },
+    {
+      "name_en": "ParsOnline",
+      "name_fa": "پارس آنلاین",
+      "asn": "AS16322",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "91.108.128.1",
+        "secondary": "91.108.128.2",
+        "ipv6_primary": "2a01:9080::1",
+        "ipv6_secondary": "2a01:9080::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-baidu"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 65,
+      "throttle_factor": 1.15,
+      "bandwidth_mbps": {
+        "fiber_download": 80,
+        "fiber_upload": 40,
+        "adsl_download": 8,
+        "adsl_upload": 1
+      },
+      "dpi_intensity": "high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": false
+      },
+      "notes_fa": "ISP بزرگ با فیلترینگ SNI فعال. DNS poisoning شدید.",
+      "notes_en": "Large ISP with active SNI filtering. Heavy DNS poisoning."
+    },
+    {
+      "name_en": "Afranet",
+      "name_fa": "آفرانت",
+      "asn": "AS25184",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "80.191.0.1",
+        "secondary": "80.191.0.2",
+        "ipv6_primary": "2a02:8280::1",
+        "ipv6_secondary": "2a02:8280::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-huawei"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 70,
+      "throttle_factor": 1.2,
+      "bandwidth_mbps": {
+        "fiber_download": 90,
+        "fiber_upload": 45,
+        "adsl_download": 8,
+        "adsl_upload": 1
+      },
+      "dpi_intensity": "medium",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": false,
+        "quic_blocking": false,
+        "ip_blocking": false
+      },
+      "notes_fa": "ISP متوسط با فیلترینگ متوسط. مناسب برای domain fronting.",
+      "notes_en": "Medium ISP with moderate filtering. Good for domain fronting."
+    },
+    {
+      "name_en": "Mobinnet",
+      "name_fa": "مبین‌نت",
+      "asn": "AS31549",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "5.106.0.1",
+        "secondary": "37.27.0.1",
+        "ipv6_primary": "2a02:8380::1",
+        "ipv6_secondary": "2a02:8380::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "naiveproxy",
+        "meek-alibaba"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 110,
+      "throttle_factor": 1.8,
+      "bandwidth_mbps": {
+        "4g_download": 25,
+        "4g_upload": 10,
+        "3g_download": 4,
+        "3g_upload": 1
+      },
+      "dpi_intensity": "medium",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": false,
+        "quic_blocking": false,
+        "ip_blocking": false
+      },
+      "notes_fa": "ارائه‌دهنده اینترنت بی‌سیم. سرعت پایین‌تر اما فیلترینگ سبک‌تر.",
+      "notes_en": "Wireless internet provider. Lower speed but lighter filtering."
+    },
+    {
+      "name_en": "Fanava Group",
+      "name_fa": "فناوا",
+      "asn": "AS24631",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "5.200.128.1",
+        "secondary": "5.200.128.2",
+        "ipv6_primary": "2a01:8f80::1",
+        "ipv6_secondary": "2a01:8f80::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy",
+        "meek-tencent"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 80,
+      "throttle_factor": 1.3,
+      "bandwidth_mbps": {
+        "fiber_download": 70,
+        "fiber_upload": 35,
+        "adsl_download": 8,
+        "adsl_upload": 1
+      },
+      "dpi_intensity": "high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": false
+      },
+      "notes_fa": "گروه فناوا با فیلترینگ شدید. DNS poisoning فعال.",
+      "notes_en": "Fanava Group with heavy filtering. Active DNS poisoning."
+    },
+    {
+      "name_en": "ITC/DCI (Information Technology Company)",
+      "name_fa": "شرکت فناوری اطلاعات (دیتا",
+      "asn": "AS12880",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "217.218.155.155",
+        "secondary": "217.218.127.127",
+        "ipv6_primary": "2001:1af8::1",
+        "ipv6_secondary": "2001:1af8::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct",
+        "ssr"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "tuic-v5",
+        "naiveproxy"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 90,
+      "throttle_factor": 1.4,
+      "bandwidth_mbps": {
+        "adsl_download": 8,
+        "adsl_upload": 1
+      },
+      "dpi_intensity": "very_high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": true
+      },
+      "notes_fa": "زیرساخت اصلی اینترنت ایران. فیلترینگ بسیار شدید. همه روش‌ها مسدود.",
+      "notes_en": "Iran's core internet infrastructure. Very heavy filtering. All methods blocked."
+    },
+    {
+      "name_en": "IRIB (Islamic Republic of Iran Broadcasting)",
+      "name_fa": "صدا و سیمای جمهوری اسلامی ایران",
+      "asn": "AS44244",
+      "secondary_asns": [],
+      "dns_servers": {
+        "primary": "5.200.200.1",
+        "secondary": "5.200.200.2",
+        "ipv6_primary": "2a02:8780::1",
+        "ipv6_secondary": "2a02:8780::2"
+      },
+      "blocked_protocols": [
+        "wireguard",
+        "openvpn-udp",
+        "shadowsocks-plain",
+        "trojan-direct",
+        "ssr"
+      ],
+      "working_protocols": [
+        "vless-ws-tls",
+        "vmess-ws-tls",
+        "trojan-ws-tls",
+        "hysteria2",
+        "naiveproxy"
+      ],
+      "preferred_cores": [
+        "xray",
+        "sing-box",
+        "clash-meta"
+      ],
+      "typical_latency_ms": 100,
+      "throttle_factor": 1.6,
+      "bandwidth_mbps": {
+        "fiber_download": 50,
+        "fiber_upload": 25
+      },
+      "dpi_intensity": "high",
+      "known_blocking": {
+        "sni_filtering": true,
+        "tls_client_hello_inspection": true,
+        "dns_poisoning": true,
+        "http_filtering": true,
+        "protocol_detection": true,
+        "quic_blocking": true,
+        "ip_blocking": true
+      },
+      "notes_fa": "شبکه صدا و سیما. فیلترینگ شدید مشابه ITC.",
+      "notes_en": "Broadcasting network. Heavy filtering similar to ITC."
+    },
+    {
+      "id": "mci",
+      "name": "Hamrahe Aval (MCI)",
+      "name_fa": "همراه اول",
+      "asn": [
+        41689,
+        197207
+      ],
+      "dns_servers": [
+        "217.218.155.155",
+        "217.218.127.127"
+      ],
+      "blocked_protocols": [
+        "VMess_plain",
+        "VLESS_plain",
+        "Shadowsocks_plain"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "AmneziaWG",
+        "Hysteria2",
+        "MVLESS"
+      ],
+      "core_preference": [
+        "mahsang",
+        "amneziavpn",
+        "hiddify",
+        "xray-gfw",
+        "psiphon"
+      ],
+      "typical_latency_ms": 180,
+      "throttling_factor": 0.3,
+      "dpi_aggressiveness": "high",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "irancell",
+      "name": "Irancell (MTN)",
+      "name_fa": "ایرانسل",
+      "asn": [
+        39074
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "Shadowsocks_plain"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "Hysteria2",
+        "TUIC_v5"
+      ],
+      "core_preference": [
+        "hiddify",
+        "defyxvpn",
+        "xray-gfw",
+        "psiphon"
+      ],
+      "typical_latency_ms": 200,
+      "throttling_factor": 0.4,
+      "dpi_aggressiveness": "high",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "rightel",
+      "name": "Rightel",
+      "name_fa": "رایتل",
+      "asn": [
+        48434
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [],
+      "working_protocols": [
+        "VLESS_Reality",
+        "Hysteria2",
+        "DefyxVPN"
+      ],
+      "core_preference": [
+        "defyxvpn",
+        "hiddify",
+        "mahsang"
+      ],
+      "typical_latency_ms": 220,
+      "throttling_factor": 0.5,
+      "dpi_aggressiveness": "medium",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "shatel",
+      "name": "Shatel",
+      "name_fa": "شتل",
+      "asn": [
+        34918
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "WireGuard_plain"
+      ],
+      "working_protocols": [
+        "AmneziaWG",
+        "VLESS_Reality",
+        "VLESS_Fragment"
+      ],
+      "core_preference": [
+        "amneziavpn",
+        "psiphon",
+        "hiddify",
+        "xray-gfw"
+      ],
+      "typical_latency_ms": 190,
+      "throttling_factor": 0.35,
+      "dpi_aggressiveness": "high",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "asiatech",
+      "name": "Asiatech",
+      "name_fa": "آسیاتک",
+      "asn": [
+        56402
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "HTTP_plain",
+        "SOCKS5"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "Hysteria2",
+        "MVLESS"
+      ],
+      "core_preference": [
+        "mahsang",
+        "hiddify",
+        "xray-gfw"
+      ],
+      "typical_latency_ms": 170,
+      "throttling_factor": 0.3,
+      "dpi_aggressiveness": "medium",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "parsonline",
+      "name": "ParsOnline",
+      "name_fa": "پارس آنلاین",
+      "asn": [
+        16322
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "VMess_plain"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "AmneziaWG"
+      ],
+      "core_preference": [
+        "hiddify",
+        "amneziavpn",
+        "psiphon"
+      ],
+      "typical_latency_ms": 160,
+      "throttling_factor": 0.25,
+      "dpi_aggressiveness": "medium",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "afranet",
+      "name": "Afranet",
+      "name_fa": "آفرانت",
+      "asn": [
+        25184
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "OpenVPN"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "Hysteria2"
+      ],
+      "core_preference": [
+        "hiddify",
+        "xray-gfw",
+        "psiphon"
+      ],
+      "typical_latency_ms": 175,
+      "throttling_factor": 0.3,
+      "dpi_aggressiveness": "medium",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "mobinnet",
+      "name": "Mobinnet",
+      "name_fa": "مبین‌نت",
+      "asn": [
+        31549
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "WireGuard_plain"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "AmneziaWG"
+      ],
+      "core_preference": [
+        "amneziavpn",
+        "hiddify"
+      ],
+      "typical_latency_ms": 210,
+      "throttling_factor": 0.45,
+      "dpi_aggressiveness": "medium",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "fanava",
+      "name": "Fanava",
+      "name_fa": "فناوا",
+      "asn": [
+        24631
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "Shadowsocks_plain"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "MVLESS"
+      ],
+      "core_preference": [
+        "mahsang",
+        "hiddify",
+        "xray-gfw"
+      ],
+      "typical_latency_ms": 165,
+      "throttling_factor": 0.25,
+      "dpi_aggressiveness": "low",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "itc",
+      "name": "ITC/DCI",
+      "name_fa": "ITC/DCI",
+      "asn": [
+        12880
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [
+        "VMess_plain",
+        "VLESS_plain"
+      ],
+      "working_protocols": [
+        "VLESS_Reality",
+        "AmneziaWG",
+        "Psiphon"
+      ],
+      "core_preference": [
+        "psiphon",
+        "amneziavpn",
+        "hiddify"
+      ],
+      "typical_latency_ms": 195,
+      "throttling_factor": 0.35,
+      "dpi_aggressiveness": "high",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    },
+    {
+      "id": "irib",
+      "name": "IRIB",
+      "name_fa": "صدا و سیمای",
+      "asn": [
+        44244
+      ],
+      "dns_servers": [
+        "217.218.155.155"
+      ],
+      "blocked_protocols": [],
+      "working_protocols": [
+        "VLESS_Reality"
+      ],
+      "core_preference": [
+        "hiddify",
+        "psiphon"
+      ],
+      "typical_latency_ms": 150,
+      "throttling_factor": 0.2,
+      "dpi_aggressiveness": "low",
+      "chinese_cdn_works": true,
+      "cloudflare_works": false
+    }
+  ],
+  "version": "6.0.0",
+  "updated": "2025-01-15T00:00:00Z",
+  "description": "Iranian ISP profiles with DPI behavior, SNI strategies, and fragmentation configs",
+  "isp_profiles": [
+    {
+      "id": "mci",
+      "name": "MCI (Hamrah-e-Aval)",
+      "asn_range": [
+        "197207/32",
+        "43754/32",
+        "5618/32"
+      ],
+      "description": "Largest Iranian mobile operator. Uses FAVA v3 with moderate DPI capabilities.",
+      "sni_domains": [
+        "api.my.irancell.ir",
+        "shop.mci.ir",
+        "selfcare.mci.ir",
+        "mci.ir",
+        "app.mci.ir",
+        "pay.mci.ir",
+        "charge.mci.ir",
+        "my.mci.ir",
+        "billing.mci.ir",
+        "support.mci.ir"
+      ],
+      "fragment_strategy": {
+        "type": "SniSplit",
+        "description": "Split TLS ClientHello at SNI extension boundary to prevent DPI fingerprinting of destination domain",
+        "split_position": "after_sni_ext_type",
+        "min_fragment_size": 2,
+        "max_fragment_size": 5,
+        "inter_fragment_delay_ms": 1,
+        "retry_on_failure": true,
+        "fallback_strategy": "RecordSplit"
+      },
+      "dns_servers": [
+        "5.200.200.200",
+        "5.200.200.201",
+        "91.92.154.22",
+        "91.92.155.22"
+      ],
+      "ntp_servers": [
+        "ntp1.mci.ir",
+        "ntp2.mci.ir",
+        "5.200.200.200"
+      ],
+      "blocked_ports": [
+        22,
+        23,
+        25,
+        1080,
+        1194,
+        1723,
+        3389,
+        4443,
+        5000,
+        5001,
+        5060,
+        5061,
+        51820,
+        8080,
+        8443,
+        8888,
+        9050,
+        9051
+      ],
+      "dpi_fingerprint": {
+        "fava_version": "3.2",
+        "capabilities": [
+          "sni_inspection",
+          "packet_size_fingerprinting",
+          "flow_duration_analysis",
+          "tls_version_filtering",
+          "certificate_validation",
+          "entropy_analysis"
+        ],
+        "detection_threshold": {
+          "min_packets_for_classification": 7,
+          "entropy_threshold": 4.2,
+          "flow_timeout_seconds": 30
+        },
+        "known_signatures": [
+          "openvpn_tls",
+          "wireguard_udp",
+          "shadowsocks_stream",
+          "v2ray_vmess",
+          "trojan_grpc"
+        ],
+        "bypass_difficulty": "medium",
+        "update_frequency": "weekly"
+      },
+      "throttling": {
+        "vpn_traffic_kbps": 128,
+        "https_traffic_kbps": 0,
+        "domestic_traffic_kbps": 0,
+        "bandwidth_cap_mb": 500
+      }
+    },
+    {
+      "id": "irancell",
+      "name": "Irancell (MTN)",
+      "asn_range": [
+        "43235/32",
+        "44400/32",
+        "49581/32"
+      ],
+      "description": "Second largest mobile operator. Aggressive DPI with FAVA v4 and machine learning classification.",
+      "sni_domains": [
+        "my.irancell.ir",
+        "shop.irancell.ir",
+        "api.irancell.ir",
+        "selfcare.irancell.ir",
+        "irancell.ir",
+        "app.irancell.ir",
+        "pay.irancell.ir",
+        "charge.irancell.ir",
+        "data.irancell.ir",
+        "support.irancell.ir"
+      ],
+      "fragment_strategy": {
+        "type": "RecordSplit",
+        "description": "Split TLS records at random positions within the record to prevent flow reconstruction. More aggressive than SniSplit to counter ML-based DPI.",
+        "split_position": "random_within_record",
+        "min_fragment_size": 1,
+        "max_fragment_size": 3,
+        "inter_fragment_delay_ms": 2,
+        "retry_on_failure": true,
+        "fallback_strategy": "RandomSplit",
+        "record_padding": true,
+        "pad_to_nearest": 8
+      },
+      "dns_servers": [
+        "91.92.154.22",
+        "91.92.155.22",
+        "5.200.200.200",
+        "178.22.122.100"
+      ],
+      "ntp_servers": [
+        "ntp.irancell.ir",
+        "5.200.200.200",
+        "178.22.122.100"
+      ],
+      "blocked_ports": [
+        22,
+        23,
+        25,
+        1080,
+        1194,
+        1433,
+        1723,
+        3389,
+        4443,
+        5000,
+        5060,
+        51820,
+        6379,
+        8080,
+        8443,
+        8888,
+        9050,
+        9051,
+        27017
+      ],
+      "dpi_fingerprint": {
+        "fava_version": "4.0",
+        "capabilities": [
+          "sni_inspection",
+          "packet_size_fingerprinting",
+          "flow_duration_analysis",
+          "tls_version_filtering",
+          "certificate_validation",
+          "entropy_analysis",
+          "ml_traffic_classification",
+          "statistical_flow_analysis",
+          "quic_inspection",
+          "dns_query_interception"
+        ],
+        "detection_threshold": {
+          "min_packets_for_classification": 5,
+          "entropy_threshold": 3.8,
+          "flow_timeout_seconds": 60
+        },
+        "known_signatures": [
+          "openvpn_tls",
+          "openvpn_udp",
+          "wireguard_udp",
+          "shadowsocks_stream",
+          "shadowsocks_aead",
+          "v2ray_vmess",
+          "v2ray_vless",
+          "trojan_grpc",
+          "trojan_ws",
+          "hysteria2",
+          "naiveproxy"
+        ],
+        "bypass_difficulty": "high",
+        "update_frequency": "daily"
+      },
+      "throttling": {
+        "vpn_traffic_kbps": 64,
+        "https_traffic_kbps": 0,
+        "domestic_traffic_kbps": 0,
+        "bandwidth_cap_mb": 300
+      }
+    },
+    {
+      "id": "rightel",
+      "name": "Rightel",
+      "asn_range": [
+        "49581/32",
+        "51074/32",
+        "52193/32"
+      ],
+      "description": "Third mobile operator. Moderate DPI with FAVA v2, less aggressive filtering.",
+      "sni_domains": [
+        "selfcare.rightel.ir",
+        "shop.rightel.ir",
+        "rightel.ir",
+        "my.rightel.ir",
+        "api.rightel.ir",
+        "pay.rightel.ir",
+        "charge.rightel.ir",
+        "support.rightel.ir",
+        "app.rightel.ir",
+        "data.rightel.ir"
+      ],
+      "fragment_strategy": {
+        "type": "SniSplit",
+        "description": "Simple SNI split sufficient for Rightel's FAVA v2 DPI which does not perform reassembly",
+        "split_position": "after_sni_ext_type",
+        "min_fragment_size": 2,
+        "max_fragment_size": 5,
+        "inter_fragment_delay_ms": 0,
+        "retry_on_failure": true,
+        "fallback_strategy": "RecordSplit"
+      },
+      "dns_servers": [
+        "5.200.200.200",
+        "91.92.154.22",
+        "5.202.202.202"
+      ],
+      "ntp_servers": [
+        "5.200.200.200",
+        "ntp.rightel.ir"
+      ],
+      "blocked_ports": [
+        22,
+        25,
+        1080,
+        1194,
+        1723,
+        3389,
+        51820,
+        8080,
+        9050
+      ],
+      "dpi_fingerprint": {
+        "fava_version": "2.1",
+        "capabilities": [
+          "sni_inspection",
+          "packet_size_fingerprinting",
+          "tls_version_filtering"
+        ],
+        "detection_threshold": {
+          "min_packets_for_classification": 10,
+          "entropy_threshold": 4.5,
+          "flow_timeout_seconds": 15
+        },
+        "known_signatures": [
+          "openvpn_tls",
+          "wireguard_udp",
+          "shadowsocks_stream"
+        ],
+        "bypass_difficulty": "low",
+        "update_frequency": "monthly"
+      },
+      "throttling": {
+        "vpn_traffic_kbps": 256,
+        "https_traffic_kbps": 0,
+        "domestic_traffic_kbps": 0,
+        "bandwidth_cap_mb": 0
+      }
+    },
+    {
+      "id": "shatel",
+      "name": "Shatel",
+      "asn_range": [
+        "31549/32",
+        "49581/32",
+        "57218/32"
+      ],
+      "description": "Major fixed-line ISP. Uses FAVA v3 with deep flow analysis on fixed-line connections.",
+      "sni_domains": [
+        "my.shatel.ir",
+        "portal.shatel.ir",
+        "pay.shatel.ir",
+        "support.shatel.ir",
+        "shatel.ir",
+        "speedtest.shatel.ir",
+        "account.shatel.ir",
+        "bill.shatel.ir",
+        "shop.shatel.ir",
+        "api.shatel.ir"
+      ],
+      "fragment_strategy": {
+        "type": "RandomSplit",
+        "description": "Random TLS record splitting to defeat flow-level DPI analysis used on fixed-line connections with higher bandwidth",
+        "split_position": "random",
+        "min_fragment_size": 1,
+        "max_fragment_size": 4,
+        "inter_fragment_delay_ms": 3,
+        "retry_on_failure": true,
+        "fallback_strategy": "SniSplit",
+        "jitter_ms": 5,
+        "burst_patterns": true
+      },
+      "dns_servers": [
+        "5.200.200.200",
+        "5.202.202.202",
+        "178.22.122.100",
+        "91.92.154.22"
+      ],
+      "ntp_servers": [
+        "ntp.shatel.ir",
+        "5.200.200.200",
+        "178.22.122.100"
+      ],
+      "blocked_ports": [
+        22,
+        23,
+        25,
+        1080,
+        1194,
+        1723,
+        3389,
+        4443,
+        5000,
+        5060,
+        51820,
+        6379,
+        8080,
+        8443,
+        9050,
+        27017
+      ],
+      "dpi_fingerprint": {
+        "fava_version": "3.5",
+        "capabilities": [
+          "sni_inspection",
+          "packet_size_fingerprinting",
+          "flow_duration_analysis",
+          "tls_version_filtering",
+          "certificate_validation",
+          "entropy_analysis",
+          "statistical_flow_analysis"
+        ],
+        "detection_threshold": {
+          "min_packets_for_classification": 6,
+          "entropy_threshold": 4.0,
+          "flow_timeout_seconds": 45
+        },
+        "known_signatures": [
+          "openvpn_tls",
+          "openvpn_udp",
+          "wireguard_udp",
+          "shadowsocks_stream",
+          "v2ray_vmess",
+          "trojan_ws",
+          "hysteria2"
+        ],
+        "bypass_difficulty": "medium-high",
+        "update_frequency": "biweekly"
+      },
+      "throttling": {
+        "vpn_traffic_kbps": 100,
+        "https_traffic_kbps": 0,
+        "domestic_traffic_kbps": 0,
+        "bandwidth_cap_mb": 0
+      }
+    },
+    {
+      "id": "pars_online",
+      "name": "Pars Online",
+      "asn_range": [
+        "16322/32",
+        "24631/32",
+        "42337/32"
+      ],
+      "description": "Major fixed-line ISP with enterprise-grade DPI. FAVA v4 with active probing.",
+      "sni_domains": [
+        "my.parsonline.net",
+        "portal.parsonline.net",
+        "pay.parsonline.net",
+        "support.parsonline.net",
+        "parsonline.net",
+        "speedtest.parsonline.net",
+        "account.parsonline.net",
+        "bill.parsonline.net",
+        "shop.parsonline.net",
+        "api.parsonline.net"
+      ],
+      "fragment_strategy": {
+        "type": "RecordSplit",
+        "description": "Record-level splitting with padding to counter active probing and statistical analysis. Includes decoy traffic generation.",
+        "split_position": "random_within_record",
+        "min_fragment_size": 1,
+        "max_fragment_size": 2,
+        "inter_fragment_delay_ms": 4,
+        "retry_on_failure": true,
+        "fallback_strategy": "RandomSplit",
+        "record_padding": true,
+        "pad_to_nearest": 16,
+        "decoy_traffic": true,
+        "decoy_interval_ms": 500,
+        "active_probing_defense": true
+      },
+      "dns_servers": [
+        "91.92.154.22",
+        "91.92.155.22",
+        "5.200.200.200",
+        "178.22.122.100"
+      ],
+      "ntp_servers": [
+        "ntp.parsonline.net",
+        "5.200.200.200",
+        "91.92.154.22"
+      ],
+      "blocked_ports": [
+        22,
+        23,
+        25,
+        1080,
+        1194,
+        1433,
+        1723,
+        3389,
+        4443,
+        5000,
+        5060,
+        51820,
+        6379,
+        8080,
+        8443,
+        8888,
+        9050,
+        9051,
+        27017
+      ],
+      "dpi_fingerprint": {
+        "fava_version": "4.1",
+        "capabilities": [
+          "sni_inspection",
+          "packet_size_fingerprinting",
+          "flow_duration_analysis",
+          "tls_version_filtering",
+          "certificate_validation",
+          "entropy_analysis",
+          "ml_traffic_classification",
+          "statistical_flow_analysis",
+          "active_probing",
+          "dns_query_interception",
+          "esni_filtering"
+        ],
+        "detection_threshold": {
+          "min_packets_for_classification": 4,
+          "entropy_threshold": 3.5,
+          "flow_timeout_seconds": 90
+        },
+        "known_signatures": [
+          "openvpn_tls",
+          "openvpn_udp",
+          "wireguard_udp",
+          "shadowsocks_stream",
+          "shadowsocks_aead",
+          "v2ray_vmess",
+          "v2ray_vless",
+          "trojan_grpc",
+          "trojan_ws",
+          "hysteria2",
+          "naiveproxy",
+          "psiphon",
+          "lantern"
+        ],
+        "bypass_difficulty": "very_high",
+        "update_frequency": "daily",
+        "active_probing": {
+          "enabled": true,
+          "probe_interval_seconds": 300,
+          "probe_types": [
+            "tcp_handshake",
+            "tls_client_hello",
+            "http_get"
+          ],
+          "probe_timeout_ms": 5000
+        }
+      },
+      "throttling": {
+        "vpn_traffic_kbps": 32,
+        "https_traffic_kbps": 0,
+        "domestic_traffic_kbps": 0,
+        "bandwidth_cap_mb": 0
+      }
+    },
+    {
+      "id": "mokhaberat",
+      "name": "Mokhaberat (Telecommunication Company of Iran)",
+      "asn_range": [
+        "12880/32",
+        "44889/32",
+        "47262/32",
+        "5618/32"
+      ],
+      "description": "National telecom provider. FAVA v2 with nationwide infrastructure. Primary backbone for other ISPs. Implements national intranet mode during disruptions.",
+      "sni_domains": [
+        "portal.tci.ir",
+        "my.tci.ir",
+        "pay.tci.ir",
+        "support.tci.ir",
+        "tci.ir",
+        "adsl.tci.ir",
+        "bill.tci.ir",
+        "speedtest.tci.ir",
+        "shop.tci.ir",
+        "api.tci.ir"
+      ],
+      "fragment_strategy": {
+        "type": "SniSplit",
+        "description": "SNI split with national intranet fallback. During intranet-only mode, switches to domestic CDN endpoints and Arvan peers exclusively.",
+        "split_position": "after_sni_ext_type",
+        "min_fragment_size": 2,
+        "max_fragment_size": 5,
+        "inter_fragment_delay_ms": 1,
+        "retry_on_failure": true,
+        "fallback_strategy": "RecordSplit",
+        "national_intranet_mode": {
+          "enabled": true,
+          "trigger": "international_route_withdrawal",
+          "fallback_endpoints": "arvan_cloud_only",
+          "fallback_peers": "national_intranet_yggdrasil",
+          "fallback_dns": [
+            "5.200.200.200",
+            "5.202.202.202"
+          ],
+          "circuit_duration_minutes": 10
+        }
+      },
+      "dns_servers": [
+        "5.200.200.200",
+        "5.202.202.202",
+        "217.218.155.155",
+        "217.218.127.127"
+      ],
+      "ntp_servers": [
+        "ntp.tci.ir",
+        "5.200.200.200",
+        "217.218.155.155"
+      ],
+      "blocked_ports": [
+        22,
+        23,
+        25,
+        1080,
+        1194,
+        1433,
+        1723,
+        3389,
+        4443,
+        5000,
+        5060,
+        51820,
+        6379,
+        8080,
+        8443,
+        8888,
+        9050,
+        9051,
+        27017
+      ],
+      "dpi_fingerprint": {
+        "fava_version": "2.5",
+        "capabilities": [
+          "sni_inspection",
+          "packet_size_fingerprinting",
+          "tls_version_filtering",
+          "national_intranet_switching",
+          "bgp_route_manipulation",
+          "dns_hijacking"
+        ],
+        "detection_threshold": {
+          "min_packets_for_classification": 8,
+          "entropy_threshold": 4.3,
+          "flow_timeout_seconds": 20
+        },
+        "known_signatures": [
+          "openvpn_tls",
+          "wireguard_udp",
+          "shadowsocks_stream",
+          "v2ray_vmess"
+        ],
+        "bypass_difficulty": "medium",
+        "update_frequency": "monthly",
+        "national_intranet": {
+          "capable": true,
+          "trigger_conditions": [
+            "government_directive",
+            "protest_period",
+            "election_period",
+            "national_security_event"
+          ],
+          "behavior": "withdraw_international_bgp_routes",
+          "domestic_only": true,
+          "whitelisted_domains": [
+            ".ir",
+            "arvan.run",
+            "deno.dev"
+          ]
+        }
+      },
+      "throttling": {
+        "vpn_traffic_kbps": 200,
+        "https_traffic_kbps": 0,
+        "domestic_traffic_kbps": 0,
+        "bandwidth_cap_mb": 0
+      }
+    }
+  ],
+  "default_profile": {
+    "description": "Fallback profile used when ISP cannot be identified",
+    "fragment_strategy": {
+      "type": "RecordSplit",
+      "split_position": "random_within_record",
+      "min_fragment_size": 1,
+      "max_fragment_size": 3,
+      "inter_fragment_delay_ms": 2,
+      "retry_on_failure": true,
+      "fallback_strategy": "SniSplit"
+    },
+    "dns_servers": [
+      "5.200.200.200",
+      "5.202.202.202",
+      "91.92.154.22"
+    ],
+    "ntp_servers": [
+      "5.200.200.200"
+    ],
+    "blocked_ports": [
+      22,
+      25,
+      1080,
+      1194,
+      1723,
+      3389,
+      51820,
+      8080,
+      9050
+    ],
+    "dpi_fingerprint": {
+      "fava_version": "3.0",
+      "bypass_difficulty": "medium"
+    }
+  },
+  "isp_detection": {
+    "method": "asn_lookup",
+    "fallback_method": "dns_suffix",
+    "dns_suffixes": {
+      "mci": [
+        ".mci.ir"
+      ],
+      "irancell": [
+        ".irancell.ir",
+        ".mtnirancell.ir"
+      ],
+      "rightel": [
+        ".rightel.ir"
+      ],
+      "shatel": [
+        ".shatel.ir"
+      ],
+      "pars_online": [
+        ".parsonline.net",
+        ".parsdata.com"
+      ],
+      "mokhaberat": [
+        ".tci.ir",
+        ".mokhaberat.ir"
+      ]
+    },
+    "auto_update_url": "https://cdn.shield.ir/isp-profiles/v6/latest.json",
+    "update_interval_hours": 24
+  },
+  "isps": [
+    {
+      "id": "mci",
+      "name": "Mobile Communication Company of Iran (MCI/Hamrah-e-Aval)",
+      "asn": "197207",
+      "ip_ranges": [
+        "5.106.0.0/16",
+        "5.107.0.0/16",
+        "5.108.0.0/16"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "api.arvancloud.ir",
+        "static.arvancloud.ir",
+        "portal.mci.ir",
+        "mci.ir"
+      ],
+      "fragmentation": {
+        "strategy": "tls_client_hello_split",
+        "split_position": 4,
+        "delay_ms": 5,
+        "ttl_range": [
+          32,
+          64
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": true,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          25,
+          1080,
+          1194,
+          4443,
+          8080
+        ],
+        "tls_fingerprinting": true,
+        "detection_sensitivity": "high",
+        "reset_attack": true,
+        "reset_threshold_packets": 50,
+        "probing_interval_minutes": 30
+      }
+    },
+    {
+      "id": "irancell",
+      "name": "MTN Irancell",
+      "asn": "44400",
+      "ip_ranges": [
+        "5.112.0.0/14",
+        "5.116.0.0/16"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "api.arvancloud.ir",
+        "mtnirancell.ir",
+        "irancell.ir"
+      ],
+      "fragmentation": {
+        "strategy": "tls_client_hello_split",
+        "split_position": 5,
+        "delay_ms": 3,
+        "ttl_range": [
+          32,
+          48
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": true,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          25,
+          1080,
+          1194,
+          4443
+        ],
+        "tls_fingerprinting": true,
+        "detection_sensitivity": "high",
+        "reset_attack": true,
+        "reset_threshold_packets": 30,
+        "probing_interval_minutes": 20
+      }
+    },
+    {
+      "id": "rightel",
+      "name": "Rightel",
+      "asn": "49501",
+      "ip_ranges": [
+        "5.200.0.0/16"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "rightel.ir",
+        "my.rightel.ir"
+      ],
+      "fragmentation": {
+        "strategy": "tls_fragmentation_2split",
+        "split_position": 3,
+        "delay_ms": 8,
+        "ttl_range": [
+          32,
+          48
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": false,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          1080,
+          1194,
+          4443
+        ],
+        "tls_fingerprinting": false,
+        "detection_sensitivity": "medium",
+        "reset_attack": true,
+        "reset_threshold_packets": 100,
+        "probing_interval_minutes": 60
+      }
+    },
+    {
+      "id": "shatel",
+      "name": "Shatel (Aria Shatel)",
+      "asn": "31549",
+      "ip_ranges": [
+        "5.160.0.0/16",
+        "5.161.0.0/16"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "shatel.ir",
+        "my.shatel.ir"
+      ],
+      "fragmentation": {
+        "strategy": "tls_client_hello_split",
+        "split_position": 4,
+        "delay_ms": 5,
+        "ttl_range": [
+          32,
+          64
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": true,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          25,
+          1080,
+          1194,
+          8080
+        ],
+        "tls_fingerprinting": true,
+        "detection_sensitivity": "high",
+        "reset_attack": true,
+        "reset_threshold_packets": 40,
+        "probing_interval_minutes": 25
+      }
+    },
+    {
+      "id": "pars_online",
+      "name": "Pars Online (Pishgaman Toseeh Ertebatat)",
+      "asn": "16322",
+      "ip_ranges": [
+        "91.92.0.0/16",
+        "91.93.0.0/16"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "parsonline.net",
+        "my.parsonline.net"
+      ],
+      "fragmentation": {
+        "strategy": "tls_fragmentation_3split",
+        "split_positions": [
+          3,
+          6
+        ],
+        "delay_ms": 3,
+        "ttl_range": [
+          32,
+          48
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": true,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          25,
+          1080,
+          1194,
+          4443,
+          8080
+        ],
+        "tls_fingerprinting": true,
+        "detection_sensitivity": "high",
+        "reset_attack": true,
+        "reset_threshold_packets": 35,
+        "probing_interval_minutes": 20
+      }
+    },
+    {
+      "id": "mokhaberat",
+      "name": "Telecommunication Company of Iran (TCI/Mokhaberat)",
+      "asn": "58224",
+      "ip_ranges": [
+        "217.218.0.0/15",
+        "217.220.0.0/16"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "tci.ir",
+        "my.tci.ir",
+        "adsl.tci.ir"
+      ],
+      "fragmentation": {
+        "strategy": "tls_client_hello_split",
+        "split_position": 5,
+        "delay_ms": 10,
+        "ttl_range": [
+          32,
+          64
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": true,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          25,
+          1080,
+          1194,
+          4443,
+          8080,
+          8443
+        ],
+        "tls_fingerprinting": true,
+        "detection_sensitivity": "very_high",
+        "reset_attack": true,
+        "reset_threshold_packets": 20,
+        "probing_interval_minutes": 15
+      }
+    },
+    {
+      "id": "afranet",
+      "name": "AfraNet",
+      "asn": "25184",
+      "ip_ranges": [
+        "78.109.192.0/20"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "afranet.ir"
+      ],
+      "fragmentation": {
+        "strategy": "tls_client_hello_split",
+        "split_position": 4,
+        "delay_ms": 5,
+        "ttl_range": [
+          32,
+          48
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": false,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          1080,
+          1194,
+          4443
+        ],
+        "tls_fingerprinting": false,
+        "detection_sensitivity": "medium",
+        "reset_attack": true,
+        "reset_threshold_packets": 80,
+        "probing_interval_minutes": 45
+      }
+    },
+    {
+      "id": "pishgaman",
+      "name": "Pishgaman Kavir (Pishgaman)",
+      "asn": "42337",
+      "ip_ranges": [
+        "185.2.12.0/22"
+      ],
+      "sni_domains": [
+        "cdn.arvancloud.ir",
+        "pishgaman.net",
+        "my.pishgaman.net"
+      ],
+      "fragmentation": {
+        "strategy": "tls_fragmentation_2split",
+        "split_position": 4,
+        "delay_ms": 6,
+        "ttl_range": [
+          32,
+          48
+        ]
+      },
+      "dpi_behavior": {
+        "active_probing": true,
+        "sni_filtering": true,
+        "ip_blocking": true,
+        "port_blocking": [
+          1080,
+          1194,
+          4443
+        ],
+        "tls_fingerprinting": false,
+        "detection_sensitivity": "medium",
+        "reset_attack": true,
+        "reset_threshold_packets": 60,
+        "probing_interval_minutes": 30
+      }
+    }
+  ]
+}

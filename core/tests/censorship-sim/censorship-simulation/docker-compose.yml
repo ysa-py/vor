@@ -1,0 +1,102 @@
+# MICAFP-UnifiedShield-6.0 — Censorship Simulation Environment
+#
+# Three-service Docker Compose that simulates Iran's national firewall:
+#   1. dpi-simulator         — Suricata with Iranian DPI signatures (FAVA)
+#   2. iran-firewall          — iptables-based firewall mimicking IR rules
+#   3. national-intranet-mock — nginx on Iranian IP range serving .ir content
+#
+# Usage:
+#   docker compose up --build
+#
+# Then run the UnifiedShield client and verify it can tunnel through.
+
+services:
+  # -------------------------------------------------------------------------
+  # DPI Simulator — Suricata with Iranian DPI rules
+  # -------------------------------------------------------------------------
+  dpi-simulator:
+    image: jasonish/suricata:latest
+    container_name: shield-dpi
+    restart: unless-stopped
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - SYS_NICE
+      - NET_RAW
+    volumes:
+      - ./dpi-rules:/rules:ro
+      - suricata-log:/var/log/suricata
+      - suricata-config:/etc/suricata
+    command: >
+      -i eth0
+      --set default-rule-path=/rules
+      --set classification-file=/etc/suricata/classification.config
+      --set reference-config-file=/etc/suricata/reference.config
+      --set threshold-file=/etc/suricata/threshold.config
+    healthcheck:
+      test: ["CMD", "suricata", "--build-info"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # -------------------------------------------------------------------------
+  # Iran Firewall — iptables rules mimicking the national firewall
+  # -------------------------------------------------------------------------
+  iran-firewall:
+    build:
+      context: .
+      dockerfile: Dockerfile.firewall
+    container_name: shield-firewall
+    restart: unless-stopped
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    networks:
+      shield-net:
+        ipv4_address: 10.200.0.1
+    volumes:
+      - ./firewall-rules.sh:/firewall-rules.sh:ro
+    entrypoint: ["/bin/bash", "/firewall-rules.sh"]
+    healthcheck:
+      test: ["CMD", "iptables", "-L", "-n"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # -------------------------------------------------------------------------
+  # National Intranet Mock — nginx on "Iranian" IP range
+  # -------------------------------------------------------------------------
+  national-intranet-mock:
+    image: nginx:alpine
+    container_name: shield-intranet
+    restart: unless-stopped
+    networks:
+      shield-net:
+        ipv4_address: 10.202.0.10  # Simulated IR-range IP
+    volumes:
+      - ./intranet-content:/usr/share/nginx/html:ro
+      - ./nginx-intranet.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  shield-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.200.0.0/16
+          gateway: 10.200.0.254
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  suricata-log:
+  suricata-config:
