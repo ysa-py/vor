@@ -488,6 +488,24 @@ jobs:
             | OpenWrt | `vor_1.0.0_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
 
+            ## How to install on Android (Play Protect)
+
+            1. Download the APK that matches your phone: **`Vor-v1.0.0-android-arm64-v8a-release.apk`** for any modern 64-bit phone (2016+); `armeabi-v7a` for old 32-bit devices.
+            2. Open the downloaded file. Android may show **"Blocked by Play Protect"** — this is Google's generic warning for EVERY app sideloaded from outside Google Play (Vor is not published there); it is not a defect in this app:
+               - Tap **More details** → **Install anyway** (on some Android versions: *Install this unsafe app*).
+               - Or temporarily disable scanning: Play Store → profile icon → Play Protect → settings gear → turn off **"Scan apps with Play Protect"**, install, turn it back on.
+            3. All APKs in this release are **signed** (APK Signature Scheme v2) with the Vor release certificate and that signature is verified in CI before publishing — if Android installs it, the file is exactly what CI built.
+            4. First launch shows the license gate: paste your license token (issued by this repo's `Issue License` workflow — Actions tab → "Issue License" → Run workflow, then download the artifact). Verification is fully offline.
+
+            ## نصب روی اندروید (راهنمای فارسی)
+
+            ۱. فایل **`Vor-v1.0.0-android-arm64-v8a-release.apk`** را دانلود کنید (مناسب همهٔ گوشی‌های ۶۴بیتی امروزی؛ برای گوشی‌های قدیمی ۳۲بیتی فایل `armeabi-v7a`).
+            ۲. موقع نصب ممکن است پیام **«Blocked by Play Protect»** ببینید — این هشدارِ عمومی گوگل برای هر اپی است که بیرون از گوگل‌پلی نصب می‌شود، نه مشکلِ این اپ:
+               - روی **جزئیات بیشتر (More details)** و بعد **نصب در هر صورت (Install anyway)** بزنید.
+               - یا موقتاً اسکن را خاموش کنید: Play Store → آیکون پروفایل → Play Protect → تنظیمات → **Scan apps with Play Protect** را خاموش کنید، نصب را انجام دهید، بعد دوباره روشن کنید.
+            ۳. همهٔ فایل‌های APK این ریلیز **امضاشده** هستند (طرح امضای v2) و امضای آن‌ها قبل از انتشار در CI تأیید می‌شود.
+            ۴. در اجرای اول، صفحهٔ فعال‌سازی لایسنس باز می‌شود: توکن لایسنس را جای‌گذاری کنید (توکن از ورک‌فلوی «Issue License» در تب Actions همین مخزن صادر می‌شود). تأیید لایسنس کاملاً آفلاین است.
+
             ## iOS accuracy statement (read before installing on iOS)
 
             TrollStore only works on iOS versions with an unpatched persistence
