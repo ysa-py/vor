@@ -161,4 +161,77 @@ o = s:option(Value, "priority", translate("Priority"))
 o.datatype = "uinteger"
 o.default = "2"
 
+
+-- ---------------------------------------------------------------------
+-- Transport engines (SlipNet-equivalent coverage, router side)
+-- ---------------------------------------------------------------------
+
+local s2 = m:section(TypedSection, "engine", translate("Transport Engine"),
+    translate("Select the transport engine (or Auto). The SNI relay strategies " ..
+              "run in the C daemon; the DNS-tunnel client ships per-architecture " ..
+              "in the same release; process cores install separately."))
+s2.anonymous = true
+s2.addremove = false
+
+o = s2:option(ListValue, "selection", translate("Engine"))
+o:value("auto", translate("Auto (adaptive)"))
+o:value("sni-tunnel", translate("SNI relay (this package)"))
+o:value("dns-tunnel-masterdns", translate("DNS tunnel (MasterDns)"))
+o:value("dns-tunnel-dnstt", translate("DNS tunnel (DNSTT)"))
+o:value("ssh-chain", translate("SSH chain (TLS/WS/CONNECT)"))
+o:value("naive-https", translate("Padded HTTPS (naive)"))
+o:value("tor", translate("Tor"))
+o:value("xray", translate("Xray core"))
+o:value("singbox", translate("sing-box core"))
+o.default = "auto"
+o.rmempty = false
+
+local s3 = m:section(TypedSection, "ssh_chain", translate("SSH Chain Tunnel"))
+s3.anonymous = true
+s3.addremove = false
+o = s3:option(Flag, "enabled", translate("Enabled"))
+o = s3:option(Value, "listen_port", translate("Local SOCKS port"))
+o.datatype = "port"
+o.placeholder = "11080"
+o = s3:option(Value, "addr", translate("SSH server"), translate("host:port"))
+o.placeholder = "tunnel.example.com:22"
+o = s3:option(Value, "user", translate("SSH user"))
+o.placeholder = "vor"
+o = s3:option(ListValue, "auth", translate("Authentication"))
+o:value("password", translate("Password"))
+o:value("key", translate("Private key"))
+o = s3:option(ListValue, "wrap", translate("Transport wrap"))
+o:value("none", translate("Plain TCP"))
+o:value("tls", translate("TLS (custom SNI)"))
+o:value("ws", translate("WebSocket (CDN)"))
+o:value("wss", translate("WebSocket over TLS"))
+o:value("http-connect", translate("HTTP CONNECT"))
+o = s3:option(Value, "tls_sni", translate("TLS SNI"))
+o = s3:option(Value, "ws_path", translate("WebSocket path"))
+o = s3:option(Value, "ciphers", translate("Ciphers (comma list)"))
+
+local s4 = m:section(TypedSection, "naive_https", translate("Padded HTTPS Tunnel"))
+s4.anonymous = true
+s4.addremove = false
+o = s4:option(Flag, "enabled", translate("Enabled"))
+o = s4:option(Value, "listen_port", translate("Local SOCKS port"))
+o.datatype = "port"
+o.placeholder = "11081"
+o = s4:option(Value, "proxy_addr", translate("HTTPS proxy"), translate("host:port"))
+o = s4:option(Value, "padding_bytes", translate("Padding bytes (max)"))
+o.datatype = "range(0,65535)"
+o.placeholder = "128"
+
+local s5 = m:section(TypedSection, "dns_transport", translate("DNS Transport"))
+s5.anonymous = true
+s5.addremove = false
+o = s5:option(ListValue, "transport", translate("Resolution transport"))
+o:value("udp", translate("UDP"))
+o:value("dot", translate("DNS over TLS"))
+o:value("doh", translate("DNS over HTTPS"))
+o = s5:option(Value, "resolver", translate("Resolver"))
+o.placeholder = "1.1.1.1"
+o = s5:option(Value, "doh_url", translate("DoH URL"))
+o.placeholder = "https://cloudflare-dns.com/dns-query"
+
 return m

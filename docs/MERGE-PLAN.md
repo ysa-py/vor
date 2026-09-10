@@ -468,3 +468,34 @@ lint and fails the release loudly.
 - **AI: "models" that don't exist vs real adaptive logic** — resolved honestly:
   ship the real adaptive engine; carry the training pipeline as tooling; state
   plainly that no neural-net binaries exist upstream.
+
+---
+
+## SlipNet-inspired capability merge (session 3)
+
+| SlipNet feature | Where it ended up | Status |
+|---|---|---|
+| DNSTT tunnel | pre-existing dnstt addon (V2RayEZ lineage) | ported (already) |
+| NoizDNS (cover traffic, stealth labels, fan-out) | concepts reimplemented in Vor's DNS tunnels; wire compat NOT claimed | adapted (ideas only — AGPL source not copied) |
+| VayDNS | equivalent coverage via MasterDns (own, richer) | equivalent |
+| Slipstream / QUIC | via Xray QUIC transport (process core) | equivalent (flagged: no native interop) |
+| SSH standalone + chained over DNSTT/Noiz/Vay/Slip/Naive | desktop `internal/sshchain` (ssh-chain engine) | ported (new, from scratch) |
+| SSH-over-TLS (custom SNI) | sshchain wrap=tls | ported (new) |
+| SSH-over-WebSocket (CDN) | sshchain wrap=ws/wss (RFC 6455 client) | ported (new) |
+| SSH-over-HTTP-CONNECT | sshchain wrap=http-connect | ported (new) |
+| SSH payload injection (pre-handshake) | sshchain inject_hex | ported (new) |
+| SSH cipher selection | sshchain ciphers (3 presets) | ported (new) |
+| NaiveProxy HTTPS tunnel | desktop `internal/naive` (naive-https) | adapted (protocol from docs; uTLS fingerprint flagged) |
+| DoH (RFC 8484) | desktop dnsprobe + iOS DoHResolver + selectable transports | ported (new) |
+| DoT (RFC 7858) | desktop dnsprobe + Android ResolverScanner | ported (new) |
+| DNS-resolver scanner/scorer (EDNS, NXDOMAIN hijack, latency) | desktop dnsprobe + Android ResolverScanner/DnsScannerScreen + OpenWrt UCI schema | ported (new, both UIs native to their platforms) |
+| Tor bridges (Snowflake/obfs4/meek) | existing Tor engine; bridge-line config | partial (PT binaries flagged) |
+| Engine selector entries for all of the above | KNOWN_ENGINES extended in Go+Rust+Kotlin (vector-pinned); LuCI engine section; desktop dashboard endpoints | ported (new) |
+
+**Flagged as not portable / not done this session** (never silently dropped):
+- meek-mobile / snowflake-mobile as bundled in SlipNet (no license files in that tree)
+- lyrebird PT binary integration
+- byte-perfect Chromium TLS fingerprint (uTLS) for naive-https
+- native Slipstream (Rust) interop
+- Go tunnel binaries inside the OpenWrt .ipk (they ship as per-arch release artifacts; ipk packaging is the follow-up)
+- iOS PacketTunnelProvider full-device VPN (entitlement requires signing; documented in ios/README.md)

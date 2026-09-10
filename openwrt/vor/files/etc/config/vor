@@ -13,3 +13,46 @@ config vor 'vor'
 	option strategy 'sni_split'
 	option fragment_delay_ms '5'
 	option max_sessions '64'
+
+# -----------------------------------------------------------------------
+# Transport engine selection (the router-side view of Vor's unified
+# engine selector; see ENGINES.md at the repo root).
+#
+# The C daemon in this package implements the SNI-relay strategies above
+# (sni_split, record_split, tls_record_frag, ...). The full engine set is
+# provided by the per-architecture release artifacts: the MasterDns
+# DNS-tunnel client (dns-tunnel/, Go, static) ships per target arch in the
+# same release; process-core engines (xray/sing-box) install from their
+# own packages. Sections below carry the UCI schema for those engines so
+# profiles stay unified across platforms.
+# -----------------------------------------------------------------------
+
+config engine 'engine'
+	# auto | sni-tunnel | dns-tunnel-masterdns | dns-tunnel-dnstt |
+	#   ssh-chain | naive-https | tor | xray | singbox
+	option selection 'auto'
+
+config ssh_chain 'ssh_chain'
+	option enabled '0'
+	option listen_port '11080'
+	option addr 'tunnel.example.com:22'
+	option user 'vor'
+	option auth 'password'
+	# none | tls | ws | wss | http-connect
+	option wrap 'tls'
+	option tls_sni 'front.example.com'
+	option ws_path '/tunnel'
+	option ciphers 'aes128-gcm@openssh.com,chacha20-poly1305@openssh.com'
+
+config naive_https 'naive_https'
+	option enabled '0'
+	option listen_port '11081'
+	option proxy_addr 'cdn.example.com:443'
+	option padding_bytes '128'
+
+config dns_transport 'dns_transport'
+	# udp | dot | doh — resolution transport for the tunnel's own queries
+	option transport 'udp'
+	option resolver '1.1.1.1'
+	# https://cloudflare-dns.com/dns-query when transport=doh
+	option doh_url 'https://cloudflare-dns.com/dns-query'
