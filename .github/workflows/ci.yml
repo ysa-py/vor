@@ -1,0 +1,245 @@
+name: CI
+
+# Per-platform pull-request / push validation. Fails loudly on every
+# platform-specific error. The coordinated RELEASE pipeline (release.yml)
+# requires these same jobs green on the tag.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-rust:
+    name: vor-core (Rust, shared library)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - run: cargo fmt --all -- --check
+        working-directory: core/vor-core
+      - run: cargo clippy --all-targets -- -D warnings
+        working-directory: core/vor-core
+      - run: cargo clippy --features jni -- -D warnings
+        working-directory: core/vor-core
+      - run: cargo test --all-targets
+        working-directory: core/vor-core
+      - run: cargo test --features jni
+        working-directory: core/vor-core
+
+  license-python:
+    name: license reference (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "cryptography>=41"
+      - run: python license/python/test_vectors.py
+
+  android:
+    name: Android (app + License Manager)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          working-directory: android
+      # Firebase telemetry is optional: write a placeholder config when no
+      # real project is configured (pseudonymous-maintainer-friendly).
+      - name: google-services.json
+        working-directory: android
+        run: |
+          if [ -n "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
+            printf '%s' '${{ secrets.GOOGLE_SERVICES_JSON }}' > app/google-services.json
+          else
+            cp app/google-services.json.example app/google-services.json 2>/dev/null || true
+            python3 - <<'PY'
+          import json, os
+          # keep the package-matched placeholder (com.vor.app) usable
+          if os.path.exists('app/google-services.json.example'):
+              cfg = json.load(open('app/google-services.json.example'))
+              for client in cfg.get('client', []):
+                  info = client.get('client_info', {}).get('android_client_info', {})
+                  if info.get('package_name'):
+                      info['package_name'] = 'com.vor.app'
+              json.dump(cfg, open('app/google-services.json', 'w'), indent=2)
+          PY
+          fi
+      - name: Build + test + lint
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:testDebugUnitTest :license-manager:testDebugUnitTest :app:lintDebug :license-manager:assembleDebug --stacktrace
+      - name: Debug APKs (proof of buildability)
+        working-directory: android
+        run: ./gradlew :app:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apks
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            android/license-manager/build/outputs/apk/debug/*.apk
+          retention-days: 7
+
+  desktop:
+    name: Desktop (Go — Windows/Linux)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, goos: linux, goarch: "amd64" }
+          - { os: windows-latest, goos: windows, goarch: "amd64" }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+      - name: Vet + build + test
+        working-directory: desktop
+        run: |
+          go vet ./...
+          go build ./...
+          go test ./...
+      - name: gofmt check (non-Windows)
+        if: matrix.os != 'windows-latest'
+        working-directory: desktop
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+      - name: Build binary
+        working-directory: desktop
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -trimpath -ldflags "-s -w" -o vor-desktop .
+
+  dns-tunnel:
+    name: MasterDnsVPN engine (Go)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+      - name: Vet + build + test
+        working-directory: dns-tunnel
+        run: |
+          go vet ./...
+          go build ./...
+          go test ./... -count=1
+
+  openwrt:
+    name: OpenWrt universal package (C)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Planner conformance + daemon build (strict)
+        working-directory: openwrt/vor/src
+        run: |
+          gcc -Wall -Wextra -Werror -O2 -DVOR_PLANNER_ONLY -o test_vor_planner vor_main.c test_vor_planner.c
+          ./test_vor_planner
+          gcc -Wall -Wextra -Werror -O2 -o vor_daemon vor_main.c -lpthread
+          ./vor_daemon --help
+      - name: Relay integration test (fake edge)
+        working-directory: openwrt/vor/src
+        run: |
+          mkdir -p /tmp/vor-test/etc/config
+          cat > /tmp/vor-test/etc/config/vor <<'CONF'
+          config vor 'vor'
+              option enabled '1'
+              option listen_port '19043'
+              option edge_ip '127.0.0.1'
+              option edge_port '19443'
+              option strategy 'tls_record_frag'
+              option fragment_delay_ms '2'
+              option max_sessions '4'
+          CONF
+          python3 - <<'PY'
+          import socket, struct, subprocess, threading, time, os
+          name = b"example.com"
+          ext = struct.pack(">H", 1 + 2 + len(name)) + b"\x00" + struct.pack(">H", len(name)) + name
+          trailing = b"\x00\x2B\x00\x02\x03\x04"
+          ext_total = len(ext) + 4 + len(trailing)
+          hs = b"\x03\x03" + b"\x00"*32 + b"\x00" + struct.pack(">H", 2) + b"\x13\x01" + b"\x01\x00" \
+               + struct.pack(">H", ext_total) + struct.pack(">H", 0) + struct.pack(">H", len(ext)) + ext + trailing
+          record = b"\x16\x03\x01" + struct.pack(">H", len(hs) + 4) + b"\x01" + struct.pack(">I", len(hs))[1:] + hs
+          received = []
+          def edge():
+              srv = socket.socket(); srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+              srv.bind(("127.0.0.1", 19443)); srv.listen(1)
+              received.append("listening")
+              conn, _ = srv.accept(); conn.settimeout(2)
+              data = b""
+              try:
+                  while len(data) < 200:
+                      chunk = conn.recv(4096)
+                      if not chunk: break
+                      data += chunk
+              except socket.timeout: pass
+              received.append(data); conn.close(); srv.close()
+          threading.Thread(target=edge, daemon=True).start()
+          time.sleep(0.2)
+          env = dict(os.environ, VOR_UCI_PATH="/tmp/vor-test/etc/config/vor")
+          daemon = subprocess.Popen(["./vor_daemon"], env=env)
+          time.sleep(0.4)
+          c = socket.socket(); c.connect(("127.0.0.1", 19043)); c.sendall(record)
+          c.settimeout(1.0)
+          try: c.recv(64)
+          except socket.timeout: pass
+          c.close()
+          deadline = time.time() + 3
+          while len(received) < 2 and time.time() < deadline: time.sleep(0.1)
+          daemon.terminate()
+          try: daemon.wait(timeout=2)
+          except subprocess.TimeoutExpired: daemon.kill(); raise SystemExit("daemon did not exit on SIGTERM")
+          data = received[1] if len(received) > 1 else b""
+          assert len(data) >= len(record) + 5, f"edge received {len(data)}"
+          assert data[:5] == record[:5]
+          rest = len(record) - 5
+          assert data[5] == 0x16 and data[8] == (rest >> 8) and data[9] == (rest & 0xFF)
+          assert data[10:10+rest] == record[5:]
+          print("openwrt relay integration PASS")
+          PY
+
+  ios:
+    name: iOS (TrollStore target)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen
+      - name: Build unsigned .ipa
+        working-directory: ios
+        run: |
+          xcodebuild -project Vor.xcodeproj -scheme Vor -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            -destination 'generic/platform=iOS' build | xcpretty || exit 1
+          APP="build/Build/Products/Release-iphoneos/Vor.app"
+          [ -d "$APP" ] || APP="build/Build/Products/Release-iphones/Vor.app"
+          rm -rf build/Payload build/Vor-iOS-unsigned.ipa
+          mkdir -p build/Payload && cp -R "$APP" build/Payload/
+          (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vor-ios-unsigned-ipa
+          path: ios/build/Vor-iOS-unsigned.ipa
+          retention-days: 7

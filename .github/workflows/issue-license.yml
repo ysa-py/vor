@@ -1,0 +1,133 @@
+name: Issue License
+
+# Manually-triggered license issuance. The private key NEVER ships in any
+# client binary — it lives only in the LICENSE_SIGNING_KEY secret and is
+# used here to sign tokens. Output is a workflow artifact + job summary.
+#
+# State plainly: client-side license checks are reverse-engineerable with
+# enough effort. This design raises the bar (signed, offline,
+# tamper-evident) but is not literally unbreakable.
+
+on:
+  workflow_dispatch:
+    inputs:
+      expires_at:
+        description: "Expiry (RFC 3339, e.g. 2027-01-01T00:00:00Z)"
+        required: true
+        default: "2027-01-01T00:00:00Z"
+      license_id:
+        description: "License ID (blank = random UUID)"
+        required: false
+        default: ""
+      tier:
+        description: "Entitlement tier"
+        required: false
+        default: "standard"
+      platforms:
+        description: "Comma-separated platforms (default: all five)"
+        required: false
+        default: "android,windows,linux,openwrt,ios"
+      use_dev_key:
+        description: "Sign with the committed DEV key (testing only!)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install cryptography
+        run: pip install "cryptography>=41"
+
+      - name: Resolve signing key
+        id: key
+        env:
+          LICENSE_SIGNING_KEY: ${{ secrets.LICENSE_SIGNING_KEY }}
+        run: |
+          if [ "${{ inputs.use_dev_key }}" = "true" ]; then
+            echo "dev=true" >> "$GITHUB_OUTPUT"
+            echo "Using committed DEV key (tokens verify only against dev-key debug builds)"
+          elif [ -z "$LICENSE_SIGNING_KEY" ]; then
+            echo "::error::LICENSE_SIGNING_KEY secret is not set. Generate one:"
+            echo "::error::  python3 license/python/vor_license.py keygen --out license/keys/prod"
+            echo "::error::Store the private seed (base64) in the repository secret LICENSE_SIGNING_KEY, commit the public key at license/keys/prod/ and bake it into release builds (-Pvor.licensePublicKey / -ldflags / Swift override)."
+            exit 1
+          else
+            echo "dev=false" >> "$GITHUB_OUTPUT"
+            printf '%s' "$LICENSE_SIGNING_KEY" > license/keys/prod/VOR_LICENSE_PRIVATE_KEY.txt
+          fi
+
+      - name: Issue token
+        id: issue
+        run: |
+          if [ "${{ steps.key.outputs.dev }}" = "true" ]; then
+            KEY="license/keys/dev/VOR_LICENSE_PRIVATE_KEY.txt"
+          else
+            KEY="license/keys/prod/VOR_LICENSE_PRIVATE_KEY.txt"
+          fi
+          ARGS=(--key "$KEY" --expires "${{ inputs.expires_at }}" --tier "${{ inputs.tier }}" --platforms "${{ inputs.platforms }}")
+          if [ -n "${{ inputs.license_id }}" ]; then
+            ARGS+=(--id "${{ inputs.license_id }}")
+          fi
+          TOKEN="$(python3 license/python/vor_license.py issue "${ARGS[@]}")"
+          {
+            echo "token<<VOR_EOF"
+            echo "$TOKEN"
+            echo "VOR_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Verify round-trip
+        run: |
+          if [ "${{ steps.key.outputs.dev }}" = "true" ]; then
+            PUB="license/keys/dev/VOR_LICENSE_PUBLIC_KEY.txt"
+          else
+            # extract the public key from the seed used for signing
+            python3 - <<'PY' > license/keys/prod/VOR_LICENSE_PUBLIC_KEY.txt
+          import base64, sys
+          from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+          seed = open('license/keys/prod/VOR_LICENSE_PRIVATE_KEY.txt').read().strip()
+          seed += "=" * (-len(seed) % 4)
+          key = Ed25519PrivateKey.from_private_bytes(base64.urlsafe_b64decode(seed))
+          print(base64.urlsafe_b64encode(key.public_key().public_bytes_raw()).rstrip(b'=').decode())
+          PY
+            PUB="license/keys/prod/VOR_LICENSE_PUBLIC_KEY.txt"
+          fi
+          python3 license/python/vor_license.py verify --pub "$PUB" --token "${{ steps.issue.outputs.token }}"
+
+      - name: Save token artifact
+        run: |
+          mkdir -p out
+          printf '%s\n' "${{ steps.issue.outputs.token }}" > "out/vor-license.txt"
+          ID="${{ inputs.license_id }}"
+          [ -z "$ID" ] && ID="manual"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vor-license-token
+          path: out/vor-license.txt
+          retention-days: 30
+
+      - name: Summary
+        run: |
+          {
+            echo "## Vor license issued"
+            echo ""
+            echo "- **Expires:** \`${{ inputs.expires_at }}\`"
+            echo "- **Tier:** \`${{ inputs.tier }}\`"
+            echo "- **Platforms:** \`${{ inputs.platforms }}\`"
+            echo "- **Key:** $([ "${{ steps.key.outputs.dev }}" = "true" ] && echo "DEV (test only)" || echo "production")"
+            echo ""
+            echo "The token is attached as the workflow artifact \`vor-license-token\`."
+            echo "Paste it into the app's license gate — verification is fully offline."
+          } >> "$GITHUB_STEP_SUMMARY"
