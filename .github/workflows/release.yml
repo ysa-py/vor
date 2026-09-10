@@ -130,6 +130,30 @@ jobs:
           fi
           echo "staged $staged APKs"
           (cd release-assets && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Play Protect permission audit (allowlist gate)
+        working-directory: android
+        run: |
+          # v1.0.1 hard gate, added after a real-world defect: the v1.0.0
+          # sideloaded app tripped Google Play Protect's "App blocked to
+          # protect your device" because its merged manifest carried
+          # QUERY_ALL_PACKAGES (own) + AD_ID / ACCESS_ADSERVICES_* /
+          # BIND_GET_INSTALL_REFERRER_SERVICE (injected by the
+          # firebase-analytics AAR) — a data-harvesting profile for an
+          # unknown certificate. Every STAGED (user-facing) APK must now
+          # match its module allowlist exactly, or the release fails.
+          set -euo pipefail
+          fail=0
+          for apk in release-assets/*.apk; do
+            case "$(basename "$apk")" in
+              *license-manager*) MODULE=license-manager ;;
+              *) MODULE=app ;;
+            esac
+            if ! bash ../scripts/audit-apk-permissions.sh "$apk" "$MODULE"; then
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ] || exit 1
+          echo "permission audit passed for all $(ls release-assets/*.apk | wc -l) staged APKs"
       - name: Verify APK signatures (apksigner, cert must match the release keystore)
         working-directory: android
         env:
@@ -482,16 +506,36 @@ jobs:
 
             | Platform | Artifact | Notes |
             |---|---|---|
-            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | **Signed** (v2/v3 schemes) with the Vor release certificate — install directly from the download; the CI publish gate runs `apksigner verify` + certificate-fingerprint match on every APK; license gate on first launch |
+            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | **Signed** (v2/v3 schemes) with the Vor release certificate — install directly from the download; the CI publish gate runs `apksigner verify` + certificate-fingerprint match **and a permission allowlist audit** on every APK; license gate on first launch |
             | Windows | `Vor-desktop.exe` (+ WinDivert files) | Portable single binary; default engine = Go desync; pattern (wrong-seq) engine selectable |
             | Linux | `vor-desktop` + `.deb` + AppDir archive | |
-            | OpenWrt | `vor_1.0.0_<arch>.ipk` matrix | Universal package — one source, every target |
+            | OpenWrt | `vor_1.0.1_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
+
+            ## Android permission footprint (v1.0.1 hardening)
+
+            This release removes every permission signal that made Google Play Protect's
+            unknown-app scanner flag earlier builds as risky:
+
+            - **Removed `QUERY_ALL_PACKAGES`** — the per-app split-tunneling picker now uses
+              Android's scoped package visibility (launcher-intent `<queries>`); it still lists
+              every launchable app, and saved per-app routes keep working unchanged.
+            - **Removed all advertising-identifier permissions** injected by the bundled Firebase
+              AARs (`AD_ID`, `ACCESS_ADSERVICES_AD_ID`, `ACCESS_ADSERVICES_ATTRIBUTION`, plus the
+              install-referrer binding) — a VPN APK requesting ad-tracker permissions from a new
+              certificate is a classic hidden-ads heuristic profile.
+            - A CI **allowlist gate** now fails the release if any APK ever requests a permission
+              outside the approved set (SMS, accessibility, overlays, contacts, ad-IDs, …).
+
+            The app now requests only: `INTERNET`, `ACCESS_NETWORK_STATE`,
+            `FOREGROUND_SERVICE(_SPECIAL_USE)`, `POST_NOTIFICATIONS`,
+            `RECEIVE_BOOT_COMPLETED` (the opt-in "connect on boot" setting), and `CAMERA`
+            (QR-config import, granted at runtime when you use it).
 
             ## How to install on Android (Play Protect)
 
-            1. Download the APK that matches your phone: **`Vor-v1.0.0-android-arm64-v8a-release.apk`** for any modern 64-bit phone (2016+); `armeabi-v7a` for old 32-bit devices.
-            2. Open the downloaded file. Android may show **"Blocked by Play Protect"** — this is Google's generic warning for EVERY app sideloaded from outside Google Play (Vor is not published there); it is not a defect in this app:
+            1. Download the APK that matches your phone: **`Vor-v${{ steps.rel.outputs.version }}-android-arm64-v8a-release.apk`** for any modern 64-bit phone (2016+); `armeabi-v7a` for old 32-bit devices.
+            2. Open the downloaded file. Because v${{ steps.rel.outputs.version }} removed the risky permission set above, a normal install should go straight through. If Android still shows **"Blocked by Play Protect"** (a generic warning Google shows for EVERY app sideloaded from outside Google Play — Vor is not published there), it is not a defect in this app:
                - Tap **More details** → **Install anyway** (on some Android versions: *Install this unsafe app*).
                - Or temporarily disable scanning: Play Store → profile icon → Play Protect → settings gear → turn off **"Scan apps with Play Protect"**, install, turn it back on.
             3. All APKs in this release are **signed** (APK Signature Scheme v2) with the Vor release certificate and that signature is verified in CI before publishing — if Android installs it, the file is exactly what CI built.
@@ -499,8 +543,8 @@ jobs:
 
             ## نصب روی اندروید (راهنمای فارسی)
 
-            ۱. فایل **`Vor-v1.0.0-android-arm64-v8a-release.apk`** را دانلود کنید (مناسب همهٔ گوشی‌های ۶۴بیتی امروزی؛ برای گوشی‌های قدیمی ۳۲بیتی فایل `armeabi-v7a`).
-            ۲. موقع نصب ممکن است پیام **«Blocked by Play Protect»** ببینید — این هشدارِ عمومی گوگل برای هر اپی است که بیرون از گوگل‌پلی نصب می‌شود، نه مشکلِ این اپ:
+            ۱. فایل **`Vor-v${{ steps.rel.outputs.version }}-android-arm64-v8a-release.apk`** را دانلود کنید (مناسب همهٔ گوشی‌های ۶۴بیتی امروزی؛ برای گوشی‌های قدیمی ۳۲بیتی فایل `armeabi-v7a`).
+            ۲. در نسخهٔ v${{ steps.rel.outputs.version }} مجموعه‌ی مجوزهای اپ به حداقلِ ممکن رسانده شده است (مجوز `QUERY_ALL_PACKAGES` و همهٔ مجوزهای ردیاب تبلیغاتی حذف شده‌اند) تا اسکنرِ ناشناخته‌بودنِ اپها در گوگل، اپ را مشکوک نشمارد؛ نصبِ عادی معمولاً بدون هیچ هشداری انجام می‌شود. اگر باز هم پیام **«Blocked by Play Protect»** دیدید — هشدارِ عمومی گوگل برای هر اپی است که بیرون از گوگل‌پلی نصب می‌شود، نه مشکلِ این اپ:
                - روی **جزئیات بیشتر (More details)** و بعد **نصب در هر صورت (Install anyway)** بزنید.
                - یا موقتاً اسکن را خاموش کنید: Play Store → آیکون پروفایل → Play Protect → تنظیمات → **Scan apps with Play Protect** را خاموش کنید، نصب را انجام دهید، بعد دوباره روشن کنید.
             ۳. همهٔ فایل‌های APK این ریلیز **امضاشده** هستند (طرح امضای v2) و امضای آن‌ها قبل از انتشار در CI تأیید می‌شود.

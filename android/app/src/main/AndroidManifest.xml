@@ -9,8 +9,49 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+
+    <!--
+      Play Protect risk-signal hardening (2026-09, v1.0.1).
+
+      Previously this manifest declared android.permission.QUERY_ALL_PACKAGES so the per-app
+      split-tunneling picker could enumerate every installed package. QUERY_ALL_PACKAGES is the
+      single most notorious permission for unknown sideloaded APKs: Google Play Protect's
+      cloud heuristics weigh broad package visibility + a brand-new signing certificate as a
+      strong data-harvesting / stalkerware signal, which produced the hard "App blocked to
+      protect your device" dialog for real users.
+
+      The picker only ever needs launchable apps — users proxy *apps*, not headless services —
+      and Android's scoped package visibility gives us exactly that via the <queries> intent
+      declaration below. getInstalledApplications()/getApplicationLabel()/getApplicationIcon()
+      keep working unchanged and return every launchable user + system app (the same set a
+      launcher sees). VpnService.Builder.addAllowedApplication()/addDisallowedApplication()
+      accept any package name and do not require visibility, so previously saved per-app
+      selections keep routing exactly as before.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <!--
+      Strip permissions injected by the bundled Firebase/Google Play-services AAR manifests
+      (firebase-analytics with a *placeholder* google-services.json — telemetry never actually
+      initializes at runtime). A VPN APK that requests advertising-identifier permissions from
+      an unknown certificate matches Google's "hidden ads / ad-fraud" heuristic family, so the
+      release APK must not ship any of them. tools:node="remove" deletes these entries at
+      manifest-merger time while leaving the Firebase code paths (soft-fail by design) intact
+      for a future real google-services.json.
+
+      scripts/audit-apk-permissions.sh + the release.yml permission gate fail the build if
+      any of these (or any other permission outside the approved allowlist) ever re-appear in
+      the merged manifest of a shipped APK.
+    -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
+    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" tools:node="remove" />
 
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
@@ -26,18 +67,23 @@
         android:theme="@style/Theme.V2RayEz">
 
         <!--
-          Firebase telemetry is always on for DevOps visibility. Never attach raw hosts,
-          proxy URIs, bridge lines, IPs, PEMs, or subscription bodies.
+          Telemetry collection is default-OFF. The merged build ships a placeholder
+          google-services.json (FirebaseApp never initializes, every FirebaseTelemetry call
+          soft-fails), so "collection enabled" was pure dead weight — and a phone-home-looking
+          flag on a privacy tool. Re-enable these when a real google-services.json is configured
+          via the GOOGLE_SERVICES_JSON secret. FirebaseTelemetry.enableTelemetry() still flips
+          the SDK collectors on programmatically once Firebase actually initializes.
+          Never attach raw hosts, proxy URIs, bridge lines, IPs, PEMs, or subscription bodies.
         -->
         <meta-data
             android:name="firebase_crashlytics_collection_enabled"
-            android:value="true" />
+            android:value="false" />
         <meta-data
             android:name="firebase_analytics_collection_enabled"
-            android:value="true" />
+            android:value="false" />
         <meta-data
             android:name="firebase_performance_collection_enabled"
-            android:value="true" />
+            android:value="false" />
         <meta-data
             android:name="google_analytics_default_allow_ad_personalization_signals"
             android:value="false" />
