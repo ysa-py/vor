@@ -71,7 +71,7 @@ jobs:
           keyPassword=$KEYSTORE_PASSWORD
           EOF
           else
-            echo "::warning::KEYSTORE_BASE64 not set — building UNSIGNED release APK"
+            echo "::notice::KEYSTORE_BASE64 not set — building UNSIGNED release APK (install via adb install; set the secret to sign)"
           fi
       - name: Build, test, lint
         working-directory: android
@@ -442,4 +442,4 @@ jobs:
             client-side checks raise the bar (signed, offline,
             tamper-evident) but are not literally unbreakable.
           files: release/*
-          generate-release-notes: true
+          generate_release_notes: true
