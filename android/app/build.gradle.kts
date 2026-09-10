@@ -109,6 +109,22 @@ android {
             configure<com.google.firebase.perf.plugin.FirebasePerfExtension> {
                 setInstrumentationEnabled(false)
             }
+            // Crashlytics deobfuscation-mapping upload is OFF by default: the
+            // upload only functions with a REAL Firebase project behind
+            // google-services.json. With the placeholder config (no
+            // GOOGLE_SERVICES_JSON secret) uploadCrashlyticsMappingFileRelease
+            // POSTs the R8 mapping to a non-existent Crashlytics backend and
+            // fails the release build with HTTP 400 (release-only: debug never
+            // runs R8, so CI debug builds never see it). Opt in explicitly:
+            //   ./gradlew :app:assembleRelease -Pvor.crashlyticsMappingUpload=true
+            // crashlytics-gradle 3.x registers this extension per build type
+            // (DslExtension "firebaseCrashlytics", extendBuildTypeWith).
+            (this as org.gradle.api.plugins.ExtensionAware).extensions
+                .getByName("firebaseCrashlytics")
+                .let { it as com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension }
+                .mappingFileUploadEnabled =
+                    (project.findProperty("vor.crashlyticsMappingUpload") as String?)
+                        ?.equals("true", ignoreCase = true) ?: false
         }
         debug {
             isMinifyEnabled = false
