@@ -53,3 +53,6 @@ Thumbs.db
 .vor/
 *.log
 app/google-services.json
+
+# Production license key — private seed stays ONLY in the LICENSE_SIGNING_KEY GitHub secret
+license/keys/prod/VOR_LICENSE_PRIVATE_KEY.txt
