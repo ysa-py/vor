@@ -100,10 +100,10 @@ struct MainScreen: View {
     @EnvironmentObject var license: LicenseStore
 
     var body: some View {
-        NavigationStack {
+        NavigationContainer {
             VStack(spacing: 16) {
                 Circle()
-                    .fill(proxy.isRunning ? Color.blue.gradient : Color.gray.gradient)
+                    .fill(proxy.isRunning ? Color.blue : Color.gray)
                     .frame(width: 110, height: 110)
                     .overlay(
                         Text(proxy.isRunning ? "ACTIVE" : "OFF")
@@ -137,10 +137,24 @@ struct MainScreen: View {
             }
             .navigationTitle("Vor")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Re-check license") { license.recheck() }
                 }
             }
+        }
+    }
+}
+
+/// NavigationStack is iOS 16+; TrollStore devices on iOS 15 get the
+/// NavigationView fallback (both wrap the same content).
+struct NavigationContainer<Content: View>: View {
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        if #available(iOS 16.0, *) {
+            NavigationStack { content() }
+        } else {
+            NavigationView { content() }
         }
     }
 }

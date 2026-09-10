@@ -298,18 +298,23 @@ private final class Socks5Session {
                     dial(NWEndpoint.hostPort(host: .ipv6(v6), port: NWEndpoint.Port(rawValue: port)!))
                 } else {
                     // DoH unavailable -> fall back to the system resolver.
-                    dial(NWEndpoint.hostPort(host: .name(host), port: NWEndpoint.Port(rawValue: port)!))
+                    dial(Self.nameEndpoint(host: host, port: port))
                 }
             }
         } else {
-            dial(NWEndpoint.hostPort(host: .name(host), port: NWEndpoint.Port(rawValue: port)!))
+            dial(Self.nameEndpoint(host: host, port: port))
         }
+    }
+
+    /// Hostname endpoint (Apple-documented Host string initializer).
+    private static func nameEndpoint(host: String, port: UInt16) -> NWEndpoint {
+        NWEndpoint.hostPort(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: port)!)
     }
 
     /// Bidirectional byte pump with back-pressure: the next receive only
     /// starts after the previous send completes.
     private func relay(from: NWConnection, to: NWConnection) {
-        from.receive(minimumLength: 1, maximumLength: 64 * 1024) { [weak self] data, _, isComplete, error in
+        from.receive(minimumIncompleteLength: 1, maximumLength: 64 * 1024) { [weak self] data, _, isComplete, error in
             guard let self else { return }
             if let data, !data.isEmpty {
                 to.send(content: data, completion: .contentProcessed { [weak self] _ in
@@ -339,7 +344,7 @@ private final class Socks5Session {
             next()
             return
         }
-        client.receive(minimumLength: minimum - buffer.count, maximumLength: 64 * 1024) { [weak self] data, _, isComplete, error in
+        client.receive(minimumIncompleteLength: minimum - buffer.count, maximumLength: 64 * 1024) { [weak self] data, _, isComplete, error in
             guard let self else { return }
             if let data { self.buffer += data }
             if self.buffer.count >= minimum {

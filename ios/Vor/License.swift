@@ -16,9 +16,9 @@ enum LicenseVerifier {
 
     /// Key priority: Info.plist (release-injected prod key) > dev default.
     static var configuredPublicKey: String {
-        let injected = (Bundle.main.infoDictionary?["VORLicensePublicKey"] as? String)?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        return injected.isEmpty ? devPublicKey : injected
+        let injected = (Bundle.main.infoDictionary?["VORLicensePublicKey"] as? String) ?? ""
+        let trimmed = injected.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? devPublicKey : trimmed
     }
 
     enum Status: String {
@@ -31,19 +31,19 @@ enum LicenseVerifier {
         let status: Status
         let payload: [String: Any]?
         var expiresAt: Date? {
-            (payload?["expires_at"] as? String).flatMap(Self.parseRFC3339)
+            (payload?["expires_at"] as? String).flatMap(LicenseVerifier.parseRFC3339)
         }
         var licenseId: String? { payload?["id"] as? String }
     }
 
     static func verify(_ token: String, now: Date = Date(), publicKey: String? = nil) -> Result {
-        let key = publicKey ?? configuredPublicKey
+        let selectedKey = publicKey ?? configuredPublicKey
         let parts = token.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: ".")
         guard parts.count == 3, parts[0] == "VOR1" else { return .init(status: .invalid, payload: nil) }
         guard let payload = base64urlDecode(String(parts[1])),
               let signature = base64urlDecode(String(parts[2])),
               signature.count == 64,
-              let keyBytes = base64urlDecode(publicKey.trimmingCharacters(in: .whitespacesAndNewlines)),
+              let keyBytes = base64urlDecode(selectedKey.trimmingCharacters(in: .whitespacesAndNewlines)),
               keyBytes.count == 32 else { return .init(status: .invalid, payload: nil) }
 
         let key: Curve25519.Signing.PublicKey
