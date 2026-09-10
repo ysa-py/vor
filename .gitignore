@@ -1,0 +1,54 @@
+# Build outputs
+build/
+dist/
+out/
+target/
+release/
+*.apk
+*.aab
+*.ipa
+*.ipk
+*.exe
+*.deb
+*.rpm
+*.AppImage
+!desktop/WinDivert.dll
+!desktop/WinDivert64.sys
+!desktop/repo/**
+.gradle/
+local.properties
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node
+node_modules/
+
+# Rust
+**/target/
+
+# Secrets — never commit real signing keys or keystores
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+google-services.json
+!android/app/google-services.json.example
+!extras/aethon/android/**/google-services.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Vor local artifacts
+.vor/
+*.log
