@@ -245,6 +245,9 @@ jobs:
           file "$APP/Vor" | grep -q "Mach-O" || { echo "::error::Vor.app/Vor is not Mach-O"; exit 1; }
           SIZE=$(stat -f%z "$APP/Vor")
           [ "$SIZE" -gt 500000 ] || { echo "::error::binary implausibly small ($SIZE bytes)"; exit 1; }
+          # The license-key plumbing must be live (dev key default).
+          KEY=$(plutil -extract VORLicensePublicKey raw -o - "$APP/Info.plist" 2>/dev/null || true)
+          [ -n "$KEY" ] || { echo "::error::VORLicensePublicKey missing from Info.plist"; exit 1; }
           rm -rf build/Payload build/Vor-iOS-unsigned.ipa
           mkdir -p build/Payload && cp -R "$APP" build/Payload/
           (cd build && zip -qry Vor-iOS-unsigned.ipa Payload)
