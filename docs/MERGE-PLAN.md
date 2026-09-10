@@ -358,8 +358,9 @@ MSN-GUARD is a full VPN client (superseded as an app by the V2RayEZ base); its
 `android/.../data/guard/` as an optional add-on layer ("Vor Guard"):
 
 - **Verified-connect gate** (never show "Connected" until ≥ 4 KiB real RX bytes
-  crossed the tunnel — kills "fake-connected" states) **[PORTED]** → integrated
-  into the VPN service connect sequence.
+  crossed the tunnel — kills "fake-connected" states) **[PORTED]** →
+  `android/.../data/guard/VerifiedConnectGate.kt` (upstream 4096-byte constant,
+  unit-tested) for the VPN service connect sequence.
 - **Tunnel watchdog** (30 s liveness poll of local components; deliberately not
   an HTTP probe — own-package-exclusion makes such probes meaningless) **[PORTED]**
   (replaces/augments the base's death-watchdog with local-liveness semantics).
@@ -374,7 +375,9 @@ MSN-GUARD is a full VPN client (superseded as an app by the V2RayEZ base); its
   → VPN DNS builder option.
 - **Psiphon 5-rung strategy ladder + region phase + winner memory** (fronted/
   direct/chainable protocol sets, 25 s region budget, rung attribution)
-  **[PORTED]** → wraps the existing Psiphon engine.
+  **[PORTED]** → `android/.../data/guard/PsiphonLadder.kt` (five rungs with
+  timeout budgets + remembered-winner start, unit-tested), wrapping the
+  existing Psiphon engine.
 - **Monthly traffic accounting + session stats** **[PORTED]** → statistics
   screen.
 - **Psiphon embedded server entries (429), Tor regions with relay counts,
