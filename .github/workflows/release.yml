@@ -298,7 +298,10 @@ jobs:
           }
           Write-Host "using makensis: $makensis"
           $VERSION = "${env:GITHUB_REF_NAME}" -replace '^vor-v',''
-          & $makensis -DVERSION=$VERSION installer\vor.nsi
+          # NOTE: pass the define as ONE pre-built quoted token - pwsh passed
+          # the literal string "$VERSION" when it was inline after -DVERSION=.
+          $define = '-DVERSION=' + $VERSION
+          & $makensis $define 'installer\vor.nsi'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if (-not (Test-Path "Vor-desktop-setup.exe")) {
             Write-Error "::error::NSIS installer was not produced"; exit 1

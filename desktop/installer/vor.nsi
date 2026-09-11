@@ -1,19 +1,23 @@
-; Vor Desktop — NSIS installer
+; Vor Desktop - NSIS installer
 ; ------------------------------------------------------------------
 ; Builds Vor-desktop-setup.exe (installs to Program Files, Start Menu +
 ; Desktop shortcuts, Apps & Features uninstall entry; WinDivert runtime
 ; files are copied alongside the exe and only need elevation when the
 ; desync engine actually loads the driver).
 ;
-; Build (CI / local, NSIS >= 3.08):
+; Build (CI / local, NSIS >= 3.08), from the desktop/ directory:
 ;   makensis -DVERSION=1.0.4 installer\vor.nsi
 ;
 ; Inputs:
 ;   VERSION  (required)  release version, e.g. 1.0.4
 ;
-; All paths use ${__FILEDIR__} (this script's directory) so the installer
-; builds correctly no matter which working directory makensis is invoked
-; from — the workflow runs it from desktop/.
+; Path conventions (learned the hard way, see CI run logs):
+;   - MUI_ICON / MUI_UNICON resolve relative to THIS SCRIPT's directory,
+;     so a plain "vor.ico" lands next to this file.
+;   - File / OutFile instructions resolve relative to the directory
+;     makensis is INVOKED from (desktop/ in CI), so plain names work there.
+;   - ASCII only: makensis reads the script with the ANSI codepage on
+;     windows-latest runners.
 ; ------------------------------------------------------------------
 
 !ifndef VERSION
@@ -27,17 +31,16 @@
 !define PRODUCT_PUBLISHER "Vor maintainers"
 !define PRODUCT_EXE       "Vor-desktop.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\VorDesktop"
-!define DESKTOP_ROOT      "${__FILEDIR__}\.."
 
 Name "${PRODUCT_NAME} ${VERSION}"
-OutFile "${DESKTOP_ROOT}\Vor-desktop-setup.exe"
+OutFile "Vor-desktop-setup.exe"
 Unicode True
 SetCompressor /SOLID lzma
 InstallDir "$PROGRAMFILES64\Vor"
 RequestExecutionLevel admin
 
-!define MUI_ICON   "${__FILEDIR__}\vor.ico"
-!define MUI_UNICON "${__FILEDIR__}\vor.ico"
+!define MUI_ICON   "vor.ico"
+!define MUI_UNICON "vor.ico"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -46,15 +49,15 @@ RequestExecutionLevel admin
 
 Section "Vor Desktop (required)"
   SetOutPath "$INSTDIR"
-  File "${DESKTOP_ROOT}\${PRODUCT_EXE}"
-  File /nonfatal "${DESKTOP_ROOT}\WinDivert.dll"
-  File /nonfatal "${DESKTOP_ROOT}\WinDivert64.sys"
-  File /nonfatal "${DESKTOP_ROOT}\LICENSE"
+  File "${PRODUCT_EXE}"
+  File /nonfatal "WinDivert.dll"
+  File /nonfatal "WinDivert64.sys"
+  File /nonfatal "LICENSE"
 
   ; Optional engine bundle shipped next to the exe (psiphon3 / tor zips)
   CreateDirectory "$INSTDIR\repo"
   SetOutPath "$INSTDIR\repo"
-  File /nonfatal /r "${DESKTOP_ROOT}\repo\*.*"
+  File /nonfatal /r "repo\*.*"
 
   CreateDirectory "$SMPROGRAMS\Vor"
   CreateShortcut  "$SMPROGRAMS\Vor\Vor Desktop.lnk" "$INSTDIR\${PRODUCT_EXE}"
