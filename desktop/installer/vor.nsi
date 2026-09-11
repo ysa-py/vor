@@ -11,11 +11,12 @@
 ; Inputs:
 ;   VERSION  (required)  release version, e.g. 1.0.4
 ;
-; Path conventions (learned the hard way, see CI run logs):
-;   - MUI_ICON / MUI_UNICON resolve relative to THIS SCRIPT's directory,
-;     so a plain "vor.ico" lands next to this file.
-;   - File / OutFile instructions resolve relative to the directory
-;     makensis is INVOKED from (desktop/ in CI), so plain names work there.
+; Path conventions (learned the hard way, see CI run logs: NSIS 3.x
+; resolves EVERYTHING (MUI icons, File, OutFile) relative to THIS
+; SCRIPT's directory, not the invocation CWD):
+;   - "vor.ico" sits next to this script (installer\).
+;   - Desktop-root artifacts (exe / WinDivert / repo\ / LICENSE) are one
+;     level up: "..\\..." - and the installer is written back up there too.
 ;   - ASCII only: makensis reads the script with the ANSI codepage on
 ;     windows-latest runners.
 ; ------------------------------------------------------------------
@@ -33,7 +34,7 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\VorDesktop"
 
 Name "${PRODUCT_NAME} ${VERSION}"
-OutFile "Vor-desktop-setup.exe"
+OutFile "..\Vor-desktop-setup.exe"
 Unicode True
 SetCompressor /SOLID lzma
 InstallDir "$PROGRAMFILES64\Vor"
@@ -49,15 +50,15 @@ RequestExecutionLevel admin
 
 Section "Vor Desktop (required)"
   SetOutPath "$INSTDIR"
-  File "${PRODUCT_EXE}"
-  File /nonfatal "WinDivert.dll"
-  File /nonfatal "WinDivert64.sys"
-  File /nonfatal "LICENSE"
+  File "..\${PRODUCT_EXE}"
+  File /nonfatal "..\WinDivert.dll"
+  File /nonfatal "..\WinDivert64.sys"
+  File /nonfatal "..\LICENSE"
 
   ; Optional engine bundle shipped next to the exe (psiphon3 / tor zips)
   CreateDirectory "$INSTDIR\repo"
   SetOutPath "$INSTDIR\repo"
-  File /nonfatal /r "repo\*.*"
+  File /nonfatal /r "..\repo\*.*"
 
   CreateDirectory "$SMPROGRAMS\Vor"
   CreateShortcut  "$SMPROGRAMS\Vor\Vor Desktop.lnk" "$INSTDIR\${PRODUCT_EXE}"
