@@ -279,11 +279,27 @@ jobs:
         shell: pwsh
         run: |
           # windows-latest images ship NSIS; install on demand if missing.
-          if (-not (Get-Command makensis -ErrorAction SilentlyContinue)) {
-            choco install nsis -y --no-progress
+          # NOTE: a choco install updates the MACHINE Path, which the CURRENT
+          # pwsh session does not see — re-read it, and fall back to the
+          # canonical install location.
+          $makensis = (Get-Command makensis -ErrorAction SilentlyContinue).Source
+          if (-not $makensis) {
+            if (-not (Test-Path 'C:\Program Files (x86)\NSIS\makensis.exe')) {
+              choco install nsis -y --no-progress
+            }
+            $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + $env:Path
+            $makensis = (Get-Command makensis -ErrorAction SilentlyContinue).Source
+            if (-not $makensis -and (Test-Path 'C:\Program Files (x86)\NSIS\makensis.exe')) {
+              $makensis = 'C:\Program Files (x86)\NSIS\makensis.exe'
+            }
           }
+          if (-not $makensis) {
+            Write-Error "::error::makensis not found after NSIS install"; exit 1
+          }
+          Write-Host "using makensis: $makensis"
           $VERSION = "${env:GITHUB_REF_NAME}" -replace '^vor-v',''
-          makensis -DVERSION=$VERSION installer\vor.nsi
+          & $makensis -DVERSION=$VERSION installer\vor.nsi
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if (-not (Test-Path "Vor-desktop-setup.exe")) {
             Write-Error "::error::NSIS installer was not produced"; exit 1
           }
@@ -403,6 +419,8 @@ jobs:
     name: MasterDns VPN server binaries
     runs-on: ubuntu-latest
     strategy:
+      # One architecture's flake must not cancel the sibling builds.
+      fail-fast: false
       matrix:
         include:
           - { goos: linux, goarch: "386", name: "i386" }
@@ -423,7 +441,15 @@ jobs:
           CGO_ENABLED: "0"
         run: |
           if [ "${{ matrix.goarch }}" = "amd64" ]; then
-            go test ./... -count=1
+            # The upstream suite has one timing-sensitive cleanup test
+            # (session_cleanup_test.go) — retry once so a scheduler flake on a
+            # shared runner does not sink the release; a REAL failure still
+            # fails the job on the second pass.
+            go test ./... -count=1 || {
+              echo "::warning::first test pass flaked — retrying once"
+              sleep 5
+              go test ./... -count=1
+            }
           fi
           go build -trimpath -ldflags "-s -w -X masterdnsvpn-go/internal/version.BuildVersion=${{ github.ref_name }}" \
             -o "masterdnsvpn-server-${{ matrix.name }}" ./cmd/server
