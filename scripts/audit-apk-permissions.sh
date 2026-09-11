@@ -44,7 +44,7 @@ case "$MODULE" in
       android.permission.CAMERA
       android.permission.WAKE_LOCK
     )
-    SELF_PREFIXES="com.vor.app"
+    SELF_PREFIXES="com.v2rayez.app"
     ;;
   license-manager)
     # The license manager needs NO Android permissions at all — pasting and

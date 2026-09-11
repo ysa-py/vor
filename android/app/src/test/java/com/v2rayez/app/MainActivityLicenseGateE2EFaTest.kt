@@ -33,6 +33,16 @@ import org.robolectric.annotation.Config
 @Config(sdk = [35], application = V2RayApplication::class, qualifiers = "fa")
 class MainActivityLicenseGateE2EFaTest {
 
+    /** Device-wired license clock (trusted fetch is inert in unit tests). */
+    private fun testLicenseClock(): com.v2rayez.app.data.license.LicenseClock =
+        com.v2rayez.app.data.license.LicenseClock(
+            com.v2rayez.app.data.license.DataStoreClockRatchetStore(
+                androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>(),
+            ),
+            com.v2rayez.app.data.license.TrustedTimeSource(okhttp3.OkHttpClient()),
+        )
+
+
     @get:Rule
     val compose = createAndroidComposeRule<MainActivity>()
 
@@ -53,7 +63,7 @@ class MainActivityLicenseGateE2EFaTest {
         // Release builds verify against the production key (baked via
         // -Pvor.licensePublicKey); mirror that in this debug-variant test.
         LicenseRepository.publicKeyOverride = prodPublicKey
-        val repository = LicenseRepository(app)
+        val repository = LicenseRepository(app, testLicenseClock())
         runBlocking { runCatching { repository.clear() } }
 
         // Gate is the first screen — the token field is the only editor.

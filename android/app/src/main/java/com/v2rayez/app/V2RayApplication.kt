@@ -35,6 +35,14 @@ class V2RayApplication : Application(), Configuration.Provider {
     @Inject lateinit var iranGeoAutoConfigurator: com.v2rayez.app.data.core.IranGeoAutoConfigurator
     @Inject lateinit var packInstallCoordinator: com.v2rayez.app.data.core.PackInstallCoordinator
 
+    /**
+     * License verification clock (v1.0.4 anti-clock-rollback): device clock +
+     * persisted monotonic ratchet + opportunistic trusted HTTPS time. The
+     * refresh loop below feeds the ratchet a couple of times a day; the
+     * verification itself never needs the network.
+     */
+    @Inject lateinit var licenseClock: com.v2rayez.app.data.license.LicenseClock
+
     @Inject lateinit var firebaseTelemetry: com.v2rayez.app.data.analytics.FirebaseTelemetry
     @Inject lateinit var hiltWorkerFactory: HiltWorkerFactory
 
@@ -63,6 +71,15 @@ class V2RayApplication : Application(), Configuration.Provider {
             .onFailure { Log.w("V2RayApplication", "WorkManager schedule failed", it) }
         appScope.launch { iranGeoAutoConfigurator.applyIfNeeded() }
         packInstallCoordinator.start()
+        // Trusted-time seed for the license clock (throttled internally; a
+        // filtered/offline network just makes this a no-op).
+        appScope.launch {
+            licenseClock.refreshTrustedTimeAsync()
+            while (true) {
+                kotlinx.coroutines.delay(6 * 3600_000L)
+                runCatching { licenseClock.refreshTrustedTimeAsync() }
+            }
+        }
         appScope.launch {
             runCatching {
                 var previous: AppSettings? = null

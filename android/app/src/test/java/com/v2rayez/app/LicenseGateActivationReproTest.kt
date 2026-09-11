@@ -64,6 +64,15 @@ class LicenseGateActivationReproTest {
 
     private lateinit var repository: LicenseRepository
 
+    /** Device-wired license clock (trusted fetch is inert in unit tests). */
+    private fun testLicenseClock(): com.v2rayez.app.data.license.LicenseClock =
+        com.v2rayez.app.data.license.LicenseClock(
+            com.v2rayez.app.data.license.DataStoreClockRatchetStore(
+                androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>(),
+            ),
+            com.v2rayez.app.data.license.TrustedTimeSource(okhttp3.OkHttpClient()),
+        )
+
     @After
     fun cleanStoredLicense() {
         if (::repository.isInitialized) {
@@ -78,7 +87,7 @@ class LicenseGateActivationReproTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         // Mirror a release build: verify against the production public key.
         LicenseRepository.publicKeyOverride = prodPublicKey
-        repository = LicenseRepository(context)
+        repository = LicenseRepository(context, testLicenseClock())
 
         // Precondition: the exact class of token the workflow issues verifies
         // as VALID through the repository (proves the token + key wiring).

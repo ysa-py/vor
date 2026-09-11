@@ -1,0 +1,5 @@
+{
+  "version": "1.0.4",
+  "url": "https://github.com/ysa-py/Vor/releases/latest",
+  "notes": "Vor Desktop updates resolve from github.com/ysa-py/Vor releases (tag scheme vor-v<semver>). This manifest is the fallback used only when the releases page cannot be reached."
+}

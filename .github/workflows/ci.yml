@@ -21,7 +21,7 @@ jobs:
     name: vor-core (Rust, shared library)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -40,7 +40,7 @@ jobs:
     name: license reference (Python)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -51,13 +51,13 @@ jobs:
     name: Android (app + License Manager)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
       - uses: android-actions/setup-android@v4
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       # (setup-gradle has no working-directory input; the Gradle cache
       # auto-discovers the android/ project root)
       # Firebase telemetry is optional: write a placeholder config when no
@@ -71,13 +71,13 @@ jobs:
             cp app/google-services.json.example app/google-services.json 2>/dev/null || true
             python3 - <<'PY'
           import json, os
-          # keep the package-matched placeholder (com.vor.app) usable
+          # keep the package-matched placeholder (com.v2rayez.app) usable
           if os.path.exists('app/google-services.json.example'):
               cfg = json.load(open('app/google-services.json.example'))
               for client in cfg.get('client', []):
                   info = client.get('client_info', {}).get('android_client_info', {})
                   if info.get('package_name'):
-                      info['package_name'] = 'com.vor.app'
+                      info['package_name'] = 'com.v2rayez.app'
               json.dump(cfg, open('app/google-services.json', 'w'), indent=2)
           PY
           fi
@@ -130,8 +130,8 @@ jobs:
           - { os: windows-latest, goos: windows, goarch: "amd64" }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25"
           cache-dependency-path: desktop/go.sum
@@ -156,8 +156,8 @@ jobs:
     name: MasterDnsVPN engine (Go)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25"
           cache-dependency-path: dns-tunnel/go.sum
@@ -172,7 +172,7 @@ jobs:
     name: OpenWrt universal package (C)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Planner conformance + daemon build (strict)
         working-directory: openwrt/vor/src
         run: |
@@ -245,7 +245,7 @@ jobs:
     name: iOS (TrollStore target)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Install xcodegen
         run: brew install xcodegen
       - name: Generate Xcode project

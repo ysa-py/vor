@@ -252,7 +252,8 @@ mod tests {
     fn version_string_is_static() {
         let version = vor_core_version();
         let text = unsafe { CStr::from_ptr(version).to_str().unwrap() };
-        assert_eq!(text, "1.0.0");
+        // Must always match the crate version — never a stale hardcode.
+        assert_eq!(text, env!("CARGO_PKG_VERSION"));
     }
 
     #[test]

@@ -36,10 +36,17 @@ class LicenseExpiryEnforcementTest {
 
     private lateinit var repository: LicenseRepository
 
+    /** Device-wired license clock (trusted fetch is inert in unit tests). */
+    private fun testLicenseClock(): com.v2rayez.app.data.license.LicenseClock =
+        com.v2rayez.app.data.license.LicenseClock(
+            com.v2rayez.app.data.license.DataStoreClockRatchetStore(ApplicationProvider.getApplicationContext<Context>()),
+            com.v2rayez.app.data.license.TrustedTimeSource(okhttp3.OkHttpClient()),
+        )
+
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        repository = LicenseRepository(context)
+        repository = LicenseRepository(context, testLicenseClock())
         runBlocking { runCatching { repository.clear() } }
     }
 

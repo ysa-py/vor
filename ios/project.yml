@@ -16,9 +16,12 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.vor.app
-        MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "1"
+        MARKETING_VERSION: "1.0.4"
+        CURRENT_PROJECT_VERSION: "104"
         INFOPLIST_FILE: Vor/Info.plist
+        # Compile the asset catalog (AppIcon — the shield/gem-"V" brand mark)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         # Embedded license public key (dev default). Release builds override
         # on the xcodebuild command line:
         #   xcodebuild ... VOR_LICENSE_PUBLIC_KEY=<prod b64url>

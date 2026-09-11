@@ -11,17 +11,27 @@ import (
 	"ezsni/internal/ghdl"
 )
 
-// AppVersion is the current V2RayEz version.
-const AppVersion = "4.7.5"
+// AppVersion is the current Vor Desktop version.
+const AppVersion = "1.0.4"
 
-// updateRepo is the official GitHub repository for V2RayEz / EasySNI. Updates
-// are resolved from its GitHub releases via github.com (no api.github.com,
-// which is censored in some regions).
-const updateRepo = "macan-dev/EasySNI"
+// updateRepo is the official GitHub repository for Vor. Updates are resolved
+// from its GitHub releases via github.com (no api.github.com, which is
+// censored in some regions). Release tags follow the vor-v<semver> scheme.
+const updateRepo = "ysa-py/Vor"
 
 // updateManifestURL is an optional fallback used only if no GitHub release is
 // found: a small JSON file {"version","url","notes"} in the repo.
-const updateManifestURL = "https://raw.githubusercontent.com/macan-dev/EasySNI/refs/heads/main/repo/update.json"
+const updateManifestURL = "https://raw.githubusercontent.com/ysa-py/Vor/refs/heads/main/desktop/repo/update.json"
+
+// normalizeReleaseTag maps a release tag ("vor-v1.0.4", "v1.0.4", "1.0.4")
+// onto the plain semver the version comparison and UI expect.
+func normalizeReleaseTag(tag string) string {
+	v := strings.TrimSpace(tag)
+	v = strings.TrimPrefix(v, "vor-v")
+	v = strings.TrimPrefix(v, "vor-")
+	v = strings.TrimPrefix(v, "v")
+	return v
+}
 
 func (s *Server) handleAppVersion(json.RawMessage) (any, error) {
 	return map[string]any{"version": AppVersion, "repo": "https://github.com/" + updateRepo}, nil
@@ -68,9 +78,24 @@ func cmpVersions(a, b string) int {
 }
 
 // pickReleaseAsset chooses the best download for this OS/arch from a release's
-// asset list (prefer OS+arch, then OS, then a runnable file).
+// asset list (exact-name match first: Vor-desktop.exe / vor-desktop, then
+// OS+arch, then a runnable file).
 func pickReleaseAsset(assets []string) string {
 	goos, arch := runtime.GOOS, runtime.GOARCH
+	// Exact names the Vor release pipeline publishes.
+	if goos == "windows" {
+		for _, a := range assets {
+			if strings.EqualFold(a, "Vor-desktop.exe") {
+				return a
+			}
+		}
+	} else {
+		for _, a := range assets {
+			if strings.EqualFold(a, "vor-desktop") {
+				return a
+			}
+		}
+	}
 	want := []string{goos + "-" + arch, goos, ".exe"}
 	if goos == "windows" {
 		want = []string{"windows-" + arch, "windows", ".exe", ".zip"}
@@ -104,9 +129,10 @@ func (s *Server) handleAppUpdateCheck(body json.RawMessage) (any, error) {
 		if asset != "" {
 			url = ghdl.AssetURL(updateRepo, tag, asset)
 		}
+		latest := normalizeReleaseTag(tag)
 		return map[string]any{
-			"ok": true, "current": AppVersion, "latest": strings.TrimPrefix(tag, "v"),
-			"update_available": cmpVersions(tag, AppVersion) > 0,
+			"ok": true, "current": AppVersion, "latest": latest,
+			"update_available": cmpVersions(latest, AppVersion) > 0,
 			"url":              url, "asset": asset, "source": "github",
 			"notes": "https://github.com/" + updateRepo + "/releases/tag/" + tag,
 		}, nil
@@ -156,15 +182,15 @@ func (s *Server) handleAppUpdateDownload(body json.RawMessage) (any, error) {
 		if err != nil {
 			return map[string]any{"ok": false, "error": err.Error()}, nil
 		}
-		bin := ghdl.PickBinary(paths, "V2RayEz"+exeExt(), "v2rayez")
-		s.log("✓ Update extracted to "+dir+" — close V2RayEz and run the new executable.", "OK")
+		bin := ghdl.PickBinary(paths, "Vor-desktop"+exeExt(), "vor")
+		s.log("✓ Update extracted to "+dir+" — close Vor Desktop and run the new executable.", "OK")
 		return map[string]any{"ok": true, "path": bin, "dir": dir}, nil
 	}
-	dest := filepath.Join(dir, "V2RayEz-update"+exeExt())
+	dest := filepath.Join(dir, "Vor-desktop-update"+exeExt())
 	if err := os.WriteFile(dest, data, 0o755); err != nil {
 		return map[string]any{"ok": false, "error": err.Error()}, nil
 	}
-	s.log("✓ Update saved to "+dest+" — close V2RayEz and replace the old executable with it.", "OK")
+	s.log("✓ Update saved to "+dest+" — close Vor Desktop and replace the old executable with it.", "OK")
 	return map[string]any{"ok": true, "path": dest}, nil
 }
 

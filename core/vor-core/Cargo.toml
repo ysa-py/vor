@@ -1,6 +1,6 @@
 [package]
 name = "vor-core"
-version = "1.0.0"
+version = "1.0.4"
 edition = "2021"
 license = "GPL-3.0"
 description = "Vor shared adaptive DPI-evasion / engine-selection core library (single source of truth for all platforms)"

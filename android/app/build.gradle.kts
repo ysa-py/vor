@@ -23,11 +23,17 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.vor.app"
+        applicationId = "com.v2rayez.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.3"
+        // v1.0.4: versionCode scheme realigned to the historical V2RayEZ
+        // sequence (101=v1.0.1, 102=v1.0.2, …). The v1.0.x Vor releases that
+        // used codes 1–4 could never install as an UPDATE over the already-
+        // trusted com.v2rayez.app build (102) — Android treats a lower code
+        // as a downgrade and forces an uninstall/reinstall, which re-triggers
+        // the Play Protect "unknown developer" flow. 104 > 102 for good.
+        versionCode = 104
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -40,12 +46,12 @@ android {
         buildConfigField(
             "String",
             "ADDONS_GITHUB_REPO",
-            "\"${linkProp("v2rayez.addons.githubRepo", "ovld-team/V2RayEZ")}\""
+            "\"${linkProp("v2rayez.addons.githubRepo", "ysa-py/Vor")}\""
         )
         buildConfigField(
             "String",
             "ADDONS_RELEASE_TAG",
-            "\"${linkProp("v2rayez.addons.releaseTag", "V2RayEZ-v1.0.1")}\""
+            "\"${linkProp("v2rayez.addons.releaseTag", "vor-v1.0.4")}\""
         )
         // License verification public key. The committed DEV key matches
         // license/keys/dev (unit tests + debug builds); CI release builds

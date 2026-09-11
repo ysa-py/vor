@@ -29,10 +29,17 @@ private val Context.licenseDataStore: DataStore<Preferences> by preferencesDataS
  * only then does the rest of the app unlock. Re-checked on every launch and
  * at least every 24 hours while running — an expired license re-locks the
  * app automatically at the next check (no admin action, per spec).
+ *
+ * 2026-09 v1.0.4 anti-rollback: every verification now runs against
+ * [LicenseClock.nowSeconds] — max(device clock, monotonic ratchet, trusted
+ * HTTPS time) — so winding the device clock backward cannot resurrect an
+ * expired license. Trusted time refresh is opportunistic (throttled,
+ * failure-tolerant) and verification itself stays fully offline.
  */
 @Singleton
 class LicenseRepository @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val licenseClock: LicenseClock,
 ) {
     companion object {
         private val KEY_TOKEN = stringPreferencesKey("vor_license_token")
@@ -81,7 +88,7 @@ class LicenseRepository @Inject constructor(
             if (token.isNullOrBlank()) {
                 GateState(hydrated = true)
             } else {
-                val result = verifyBlocking(token, System.currentTimeMillis() / 1000)
+                val result = verifyBlocking(token, licenseClock.nowSeconds())
                 GateState(
                     hydrated = true,
                     status = result.status,
@@ -97,9 +104,13 @@ class LicenseRepository @Inject constructor(
         context.licenseDataStore.data.first()[KEY_TOKEN]
     }
 
-    /** Verify a token string; returns [LicenseResult]. Never touches the network. */
-    fun verify(token: String): LicenseResult =
-        verifyBlocking(token, System.currentTimeMillis() / 1000)
+    /** Verify a token string; returns [LicenseResult]. Never touches the network
+     *  for the verification itself (a throttled, opportunistic trusted-time
+     *  sample may be fetched in the background — see [LicenseClock]). */
+    fun verify(token: String): LicenseResult {
+        licenseClock.refreshTrustedTimeAsync()
+        return verifyBlocking(token, licenseClock.nowSeconds())
+    }
 
     private fun verifyBlocking(token: String, nowEpochSeconds: Long): LicenseResult =
         LicenseVerifier.verify(activePublicKey, token, nowEpochSeconds)

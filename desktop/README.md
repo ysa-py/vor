@@ -1,7 +1,7 @@
 <a id="top"></a>
 <div align="center">
 
-<img src="docs/banner.svg" alt="V2RayEz — DPI Bypass & CDN Toolkit" width="100%">
+<img src="docs/banner.svg" alt="Vor Desktop — Adaptive Anti-Censorship Toolkit" width="100%">
 
 <br>
 
@@ -27,7 +27,7 @@
 
 ## 🇬🇧 English
 
-V2RayEz is a **single-binary local web control panel**. You run one executable, a clean
+Vor Desktop is a **single-binary local web control panel**. You run one executable, a clean
 dashboard opens in your browser (or its own app window), and *everything* — an
 SNI-spoofing tunnel, xray/sing-box engines, scanners, a config library, a
 Google-fronted relay, and a client-side **domain-fronting** proxy — lives behind that one
@@ -35,7 +35,7 @@ page. No installer, no hidden services, no telemetry. It's Go with an embedded U
 whole app is one portable file.
 
 <div align="center">
-<img src="docs/screenshots/dashboard2.png" alt="V2RayEz dashboard" width="92%">
+<img src="docs/screenshots/dashboard2.png" alt="Vor Desktop dashboard" width="92%">
 </div>
 
 ### ✨ Features
@@ -55,8 +55,8 @@ whole app is one portable file.
 
 ```bash
 # run a release build
-./v2rayez            # Linux / macOS
-v2rayez.exe          # Windows
+./vor-desktop        # Linux / macOS
+Vor-desktop.exe      # Windows
 ```
 
 Listens on `0.0.0.0:8765` by default and opens the dashboard. If it doesn't, visit
@@ -66,15 +66,15 @@ Listens on `0.0.0.0:8765` by default and opens the dashboard. If it doesn't, vis
 <summary><b>Build from source</b> (Go 1.22+)</summary>
 
 ```bash
-git clone <your-fork-url> v2rayez
-cd v2rayez
-go build -o v2rayez .
-./v2rayez
+git clone https://github.com/ysa-py/Vor
+cd Vor/desktop
+go build -o vor-desktop .
+./vor-desktop
 
 # cross-compile
-GOOS=windows GOARCH=amd64 go build -o v2rayez.exe .
-GOOS=darwin  GOARCH=arm64 go build -o v2rayez-mac .
-GOOS=linux   GOARCH=amd64 go build -o v2rayez .
+GOOS=windows GOARCH=amd64 go build -o Vor-desktop.exe .
+GOOS=darwin  GOARCH=arm64 go build -o vor-desktop-mac .
+GOOS=linux   GOARCH=amd64 go build -o vor-desktop .
 
 # optional transports behind build tags — flags go BEFORE the dot:
 go build -tags "psiphon livekit" .        # correct
@@ -104,18 +104,18 @@ build-all.bat              # Windows - interactive: pick a tag profile (Standard
 | `-minimize` | `true` | Minimize the console window on Windows |
 
 ```bash
-./v2rayez -addr 127.0.0.1:8765 -open=false -window=false   # local only
+./vor-desktop -addr 127.0.0.1:8765 -open=false -window=false   # local only
 ```
 </details>
 
 ### 🧭 How it works
 
 <div align="center">
-<img src="docs/architecture.svg" alt="V2RayEz architecture" width="96%">
+<img src="docs/architecture.svg" alt="Vor Desktop architecture" width="96%">
 </div>
 
 Most basic DPI blocks by reading the **SNI** sent in the clear during the TLS handshake.
-V2RayEz connects to the real server but writes a *permitted* hostname into that field, so
+Vor Desktop connects to the real server but writes a *permitted* hostname into that field, so
 the filter sees an allowed domain while your real session continues. The **Domain
 Fronting** tab takes this further for CDN-hosted sites: a local MITM proxy reads the real
 Host, resolves it via fronted DoH (so poisoned DNS is never used), then reaches the CDN
@@ -179,12 +179,12 @@ edge behind an allowed front SNI — the network only sees ordinary traffic to t
 
 Built by **MacanDev** · [@EzAccess1](https://t.me/EzAccess1). The Google Tunnel concept is
 inspired by the MasterHttpRelay / mhr-cfw approach, and the client-side domain-fronting tab
-is V2RayEz's own implementation of the technique documented by **patterniha**.
+is Vor's own implementation of the technique documented by **patterniha**.
 
 
 ### 💖 Donate
 
-If V2RayEz helps you, a donation keeps development and servers alive. Thank you! 🙏
+If Vor helps you, a donation keeps development and servers alive. Thank you! 🙏
 
 | Coin | Network | Address |
 |------|---------|---------|
@@ -207,14 +207,14 @@ If V2RayEz helps you, a donation keeps development and servers alive. Thank you!
 
 ## 🇮🇷 فارسی
 
-V2RayEz یک **پنل کنترل وب محلیِ تک‌فایلی** است. یک فایل اجرایی را اجرا می‌کنید، یک داشبورد
+Vor یک **پنل کنترل وب محلیِ تک‌فایلی** است. یک فایل اجرایی را اجرا می‌کنید، یک داشبورد
 تمیز در مرورگر (یا پنجرهٔ اختصاصی خودش) باز می‌شود و *همه‌چیز* — تونل اسپوف SNI، موتورهای
 xray/sing-box، اسکنرها، کتابخانهٔ کانفیگ، رلهٔ فرانت‌شده با گوگل و یک پروکسی **دامین‌فرانتینگ**
 سمت کلاینت — پشت همان یک صفحه است. بدون نصب‌کننده، بدون سرویس مخفی و بدون تله‌متری. با Go و
 رابط تعبیه‌شده نوشته شده، پس کل برنامه یک فایل قابل‌حمل است.
 
 <div align="center">
-<img src="docs/screenshots/dashboard2.png" alt=" V2RayEz" width="92%">
+<img src="docs/screenshots/dashboard2.png" alt=" Vor" width="92%">
 </div>
 
 ### ✨ ویژگی‌ها
@@ -234,8 +234,8 @@ xray/sing-box، اسکنرها، کتابخانهٔ کانفیگ، رلهٔ فر
 
 ```bash
 # اجرای نسخهٔ آماده
-./v2rayez            # لینوکس / مک
-v2rayez.exe          # ویندوز
+./vor-desktop        # لینوکس / مک
+Vor-desktop.exe      # ویندوز
 ```
 
 به‌صورت پیش‌فرض روی `0.0.0.0:8765` گوش می‌دهد و داشبورد را باز می‌کند. اگر باز نشد،
@@ -245,18 +245,18 @@ v2rayez.exe          # ویندوز
 <summary><b>ساخت از سورس</b> (Go 1.22+)</summary>
 
 ```bash
-git clone <your-fork-url> v2rayez
-cd v2rayez
-go build -o v2rayez .
-./v2rayez
+git clone https://github.com/ysa-py/Vor
+cd Vor/desktop
+go build -o vor-desktop .
+./vor-desktop
 
 # کامپایل برای پلتفرم‌های دیگر
-GOOS=windows GOARCH=amd64 go build -o v2rayez.exe .
-GOOS=darwin  GOARCH=arm64 go build -o v2rayez-mac .
-GOOS=linux   GOARCH=amd64 go build -o v2rayez .
+GOOS=windows GOARCH=amd64 go build -o Vor-desktop.exe .
+GOOS=darwin  GOARCH=arm64 go build -o vor-desktop-mac .
+GOOS=linux   GOARCH=amd64 go build -o vor-desktop .
 
 # ترنسپورت‌های اختیاری پشت build tag
-go build -tags "livekit psiphon" -o v2rayez .
+go build -tags "livekit psiphon" -o vor-desktop .
 ```
 
 **ساخت همهٔ پلتفرم‌ها با هم** (خروجی در `dist/`، آیکون برنامه روی `.exe` ویندوز قرار می‌گیرد):
@@ -270,11 +270,11 @@ build-all.bat     # روی ویندوز
 ### 🧭 چطور کار می‌کند
 
 <div align="center">
-<img src="docs/architecture.svg" alt="معماری V2RayEz" width="96%">
+<img src="docs/architecture.svg" alt="معماری Vor" width="96%">
 </div>
 
 بیشتر DPIهای ساده با خواندن **SNI** که هنگام دست‌دادن TLS آشکار فرستاده می‌شود مسدود
-می‌کنند. V2RayEz به سرور واقعی وصل می‌شود اما یک نام میزبان *مجاز* در آن فیلد می‌نویسد. تب
+می‌کنند. Vor به سرور واقعی وصل می‌شود اما یک نام میزبان *مجاز* در آن فیلد می‌نویسد. تب
 **دامین‌فرانتینگ** این را برای سایت‌های روی CDN یک گام جلوتر می‌برد: یک پروکسی MITM محلی Host
 واقعی را می‌خواند، آن را با DoH فرانت‌شده resolve می‌کند (تا DNS مسموم استفاده نشود) و پشت یک
 SNI فرانتِ مجاز به اِج CDN می‌رسد — شبکه فقط ترافیک عادی به فرانت را می‌بیند.
@@ -292,12 +292,12 @@ SNI فرانتِ مجاز به اِج CDN می‌رسد — شبکه فقط تر
 
 ساختهٔ **MacanDev** · [@EzAccess1](https://t.me/EzAccess1). ایدهٔ تونل گوگل از رویکرد
 MasterHttpRelay / mhr-cfw الهام گرفته شده، و تب دامین‌فرانتینگ سمت کلاینت پیاده‌سازی مستقل
-V2RayEz از تکنیکی است که **patterniha** مستند کرده است.
+Vor از تکنیکی است که **patterniha** مستند کرده است.
 
 
 ### 💖 حمایت
 
-اگر V2RayEz برایتان مفید بود، یک کمک مالی به ادامهٔ توسعه و سرورها کمک می‌کند. ممنون! 🙏
+اگر Vor برایتان مفید بود، یک کمک مالی به ادامهٔ توسعه و سرورها کمک می‌کند. ممنون! 🙏
 
 | ارز | شبکه | آدرس |
 |------|---------|---------|
@@ -312,4 +312,4 @@ V2RayEz از تکنیکی است که **patterniha** مستند کرده است.
 
 </div>
 
-<div align="center"><sub>© MacanDev · V2RayEz v4.7.5</sub></div>
+<div align="center"><sub>© MacanDev · Vor v4.7.5</sub></div>

@@ -18,13 +18,13 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
       - uses: android-actions/setup-android@v4
-      - uses: gradle/actions/setup-gradle@v5
+      - uses: gradle/actions/setup-gradle@v6
       # (setup-gradle has no working-directory input; the Gradle cache
       # auto-discovers the android/ project root)
       - name: Derive version from tag
@@ -51,7 +51,7 @@ jobs:
           for client in cfg.get('client', []):
               info = client.get('client_info', {}).get('android_client_info', {})
               if info.get('package_name'):
-                  info['package_name'] = 'com.vor.app'
+                  info['package_name'] = 'com.v2rayez.app'
           json.dump(cfg, open('app/google-services.json', 'w'), indent=2)
           PY
           fi
@@ -90,9 +90,13 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew :app:testDebugUnitTest :license-manager:testDebugUnitTest :app:lintRelease --stacktrace
+          # Addon resolution is self-hosted: THIS repo + THIS tag. The release
+          # job below stages the addon zips as assets of this same release, so
+          # the in-app Core Manager resolves packs without depending on any
+          # other repository.
           ./gradlew :app:assembleRelease :license-manager:assembleRelease \
-            -Pv2rayez.addons.githubRepo=ovld-team/V2RayEZ \
-            -Pv2rayez.addons.releaseTag=V2RayEZ-v1.0.2 \
+            -Pv2rayez.addons.githubRepo=ysa-py/Vor \
+            -Pv2rayez.addons.releaseTag="${GITHUB_REF_NAME}" \
             -Pvor.licensePublicKey="${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" \
             --stacktrace
       - name: Stage artifacts
@@ -196,6 +200,57 @@ jobs:
           done
           [ "$fail" -eq 0 ] || exit 1
           echo "ALL $(ls release-assets/*.apk | wc -l) APKs are signed by the Vor release certificate"
+      - name: Stage + pack addon zips (Core Manager download source)
+        working-directory: android
+        run: |
+          set -euo pipefail
+          # 1) Fetch the checksum-pinned vendor binaries (psiphon-tunnel-core,
+          #    dnstt) per scripts/addon-vendor-sources.json into
+          #    build/vendor-addons/<abi>/<binaryName> — sha256-verified over HTTPS.
+          python3 - <<'PY'
+          import hashlib, io, json, os, urllib.request, zipfile
+          spec = json.load(open('scripts/addon-vendor-sources.json'))
+          out = 'build/vendor-addons'
+          staged = 0
+          for vendor in spec.get('vendors', []):
+              pack, bin_name = vendor['packId'], vendor['binaryName']
+              for abi, src in vendor.get('sources', {}).items():
+                  if not src:
+                      continue
+                  url, want = src['url'], src['sha256']
+                  print(f'vendor {pack}/{abi}: {url}')
+                  with urllib.request.urlopen(url, timeout=120) as r:
+                      blob = r.read()
+                  got = hashlib.sha256(blob).hexdigest()
+                  if got != want:
+                      raise SystemExit(f'::error::sha256 mismatch for {pack}/{abi}: got {got}, want {want}')
+                  dest = os.path.join(out, abi)
+                  os.makedirs(dest, exist_ok=True)
+                  if src.get('format') == 'zip':
+                      with zipfile.ZipFile(io.BytesIO(blob)) as z:
+                          members = [m for m in z.namelist() if not m.endswith('/')]
+                          match = [m for m in members if m.endswith('/' + bin_name) or m == bin_name]
+                          if not match:
+                              raise SystemExit(f'::error::{bin_name} not found in vendor zip for {pack}/{abi}')
+                          data = z.read(match[0])
+                  else:
+                      data = blob
+                  with open(os.path.join(dest, bin_name), 'wb') as f:
+                      f.write(data)
+                  staged += 1
+          print(f'staged {staged} vendor binaries (all sha256-verified)')
+          PY
+          # 2) Pack every per-addon per-ABI zip (jniLibs natives + vendor
+          #    binaries) exactly as the in-app AddonPackManager resolves them
+          #    (<packId>-<abi>.zip on THIS release, THIS tag).
+          VER="${{ steps.version.outputs.version }}"
+          bash scripts/pack-addons.sh "vor-v${VER}" release-assets/addons build/vendor-addons
+          # 3) Merge the addon checksums into the staged artifact set.
+          cat release-assets/addons/SHA256SUMS.txt >> release-assets/SHA256SUMS.addons.txt
+          rm release-assets/addons/SHA256SUMS.txt release-assets/addons/RELEASE_NOTES.md
+          n=$(ls release-assets/addons/*.zip | wc -l)
+          [ "$n" -ge 20 ] || { echo "::error::expected >=20 addon zips (5 native + 2 vendor per ABI), got $n"; exit 1; }
+          echo "staged $n addon zips"
       - uses: actions/upload-artifact@v7
         with:
           name: release-android
@@ -206,8 +261,8 @@ jobs:
     name: Windows exe (portable + installer)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25"
           cache-dependency-path: desktop/go.sum
@@ -219,16 +274,35 @@ jobs:
           # embed the production license public key when configured
           # (link-time var: desktop/internal/server/license_gate.go)
           go build -trimpath -ldflags "-s -w -X ezsni/internal/server.vorLicensePublicKey=${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" -o "Vor-desktop.exe" .
+      - name: NSIS installer
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          # windows-latest images ship NSIS; install on demand if missing.
+          if (-not (Get-Command makensis -ErrorAction SilentlyContinue)) {
+            choco install nsis -y --no-progress
+          }
+          $VERSION = "${env:GITHUB_REF_NAME}" -replace '^vor-v',''
+          makensis -DVERSION=$VERSION installer\vor.nsi
+          if (-not (Test-Path "Vor-desktop-setup.exe")) {
+            Write-Error "::error::NSIS installer was not produced"; exit 1
+          }
+          if ((Get-Item "Vor-desktop-setup.exe").Length -lt 1000000) {
+            Write-Error "::error::NSIS installer implausibly small"; exit 1
+          }
       - name: Stage portable bundle
         working-directory: desktop
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path release-assets | Out-Null
           Copy-Item "Vor-desktop.exe" release-assets/
+          Copy-Item "Vor-desktop-setup.exe" release-assets/
           Copy-Item "WinDivert.dll","WinDivert64.sys" release-assets/ -ErrorAction SilentlyContinue
           Copy-Item "repo" release-assets/repo -Recurse -ErrorAction SilentlyContinue
           $sha = Get-FileHash release-assets/Vor-desktop.exe -Algorithm SHA256
           "$($sha.Hash.ToLower())  Vor-desktop.exe" | Out-File release-assets/SHA256SUMS.txt -Append
+          $sha2 = Get-FileHash release-assets/Vor-desktop-setup.exe -Algorithm SHA256
+          "$($sha2.Hash.ToLower())  Vor-desktop-setup.exe" | Out-File release-assets/SHA256SUMS.txt -Append
       - uses: actions/upload-artifact@v7
         with:
           name: release-windows
@@ -239,8 +313,8 @@ jobs:
     name: Linux binary + deb + AppImage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25"
           cache-dependency-path: desktop/go.sum
@@ -279,24 +353,43 @@ jobs:
           dpkg-deb --build package "release-assets/vor-desktop_${VERSION}-1_amd64.deb"
           dpkg-deb --info "release-assets/vor-desktop_${VERSION}-1_amd64.deb" || true
           cp vor-desktop release-assets/
-      - name: AppImage (script-based, no packaging deps)
+      - name: AppImage (real, via appimagetool)
         working-directory: desktop
         run: |
-          mkdir -p appimage/vor-desktop.AppDir/usr/bin
-          cp vor-desktop appimage/vor-desktop.AppDir/usr/bin/
-          cat > appimage/vor-desktop.AppDir/vor-desktop.desktop <<EOF
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#vor-v}"
+          # appimagetool itself needs no FUSE with EXTRACT_AND_RUN (runners
+          # have no /dev/fuse by default).
+          curl -fL --retry 3 \
+            "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage" \
+            -o appimagetool
+          chmod +x appimagetool
+          APPDIR=appimage/vor-desktop.AppDir
+          mkdir -p "$APPDIR/usr/bin"
+          cp vor-desktop "$APPDIR/usr/bin/"
+          cp vor.png "$APPDIR/vor.png"
+          cat > "$APPDIR/vor-desktop.desktop" <<EOF
           [Desktop Entry]
           Type=Application
           Name=Vor Desktop
           Exec=vor-desktop
+          Icon=vor
           Terminal=true
           Categories=Network;
-          Comment=Unified anti-censorship toolkit (SNI tunnel + engines)
+          Comment=Adaptive Anti-Censorship Toolkit (SNI tunnel + engines)
           EOF
-          # Minimal AppImage: an appdir archive with run script (works with
-          # AppImageLauncher and plain extraction; documented as such).
-          (cd appimage/vor-desktop.AppDir && tar czf ../../release-assets/vor-desktop.AppDir.tar.gz .)
-          rm -rf appimage
+          cat > "$APPDIR/AppRun" <<'EOF'
+          #!/bin/sh
+          HERE="$(dirname "$(readlink -f "$0")")"
+          exec "$HERE/usr/bin/vor-desktop" "$@"
+          EOF
+          chmod +x "$APPDIR/AppRun"
+          APPIMAGE_EXTRACT_AND_RUN=1 ./appimagetool "$APPDIR" \
+            "release-assets/Vor-v${VERSION}-desktop-x86_64.AppImage"
+          test -s "release-assets/Vor-v${VERSION}-desktop-x86_64.AppImage"
+          file "release-assets/Vor-v${VERSION}-desktop-x86_64.AppImage" | grep -qi appimage \
+            || { echo "::error::produced file is not an AppImage"; exit 1; }
+          rm -rf appimage appimagetool
       - name: Checksums
         working-directory: desktop
         run: (cd release-assets && sha256sum * > SHA256SUMS.txt)
@@ -317,8 +410,8 @@ jobs:
           - { goos: linux, goarch: "arm", name: "armv7" }
           - { goos: linux, goarch: arm64, name: "arm64" }
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: "1.25"
           cache-dependency-path: dns-tunnel/go.sum
@@ -362,7 +455,7 @@ jobs:
           - { arch: "arm_cortex-a7_neon-vfpv4", target: "sunxi/cortexa7",  sdk: "openwrt-sdk-24.10.0-sunxi-cortexa7_gcc-13.3.0_musl_eabi.Linux-x86_64.tar.zst" }
           - { arch: "x86_64",                   target: "x86/64",          sdk: "openwrt-sdk-24.10.0-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst" }
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Install SDK build dependencies
         run: sudo apt-get update && sudo apt-get install -y gawk libncurses-dev zstd
       - name: Download the target SDK
@@ -408,7 +501,7 @@ jobs:
     name: iOS unsigned .ipa (TrollStore)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: brew install xcodegen
       - name: Generate project + build ipa
         working-directory: ios
@@ -452,7 +545,7 @@ jobs:
     needs: [android, desktop-windows, desktop-linux, dns-tunnel-server, openwrt, ios]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           path: all-artifacts
@@ -460,11 +553,11 @@ jobs:
         run: |
           mkdir -p release
           find all-artifacts -type f \( -name "*.apk" -o -name "*.exe" -o -name "*.deb" \
-            -o -name "*.ipk" -o -name "*.ipa" -o -name "*.tar.gz" -o -name "SHA256SUMS.txt" \
-            -o -name "vor-*" -o -name "masterdnsvpn-*" -o -name "vor-desktop" \) \
+            -o -name "*.ipk" -o -name "*.ipa" -o -name "*.tar.gz" -o -name "*.zip" -o -name "SHA256SUMS.txt" \
+            -o -name "vor-*" -o -name "masterdnsvpn-*" -o -name "vor-desktop" -o -name "SHA256SUMS.addons.txt" \) \
             -exec cp {} release/ \; -print
-          # consolidate checksums
-          cat all-artifacts/*/SHA256SUMS.txt 2>/dev/null > release/SHA256SUMS.txt || true
+          # consolidate checksums (APK/exe/ipk/ipa sums + the addon pack sums)
+          cat all-artifacts/*/SHA256SUMS.txt all-artifacts/*/SHA256SUMS.addons.txt 2>/dev/null > release/SHA256SUMS.txt || true
       - name: Derive release version
         id: rel
         run: |
@@ -488,13 +581,15 @@ jobs:
           # never smuggle a skeleton or partial artifact set into the release.
           APK_N=$(ls release/*.apk 2>/dev/null | wc -l)
           IPK_N=$(ls release/*.ipk 2>/dev/null | wc -l)
+          ADDON_N=$(ls release/*-arm64-v8a.zip 2>/dev/null | wc -l)
           IPA_SZ=$(stat -c%s release/Vor-iOS-unsigned.ipa 2>/dev/null || stat -f%z release/Vor-iOS-unsigned.ipa)
           EXE_SZ=$(stat -c%s release/Vor-desktop.exe 2>/dev/null || stat -f%z release/Vor-desktop.exe)
           [ "$APK_N" -ge 5 ] || { echo "::error::expected >=5 APKs (5 ABI + license manager), got $APK_N"; exit 1; }
           [ "$IPK_N" -ge 5 ] || { echo "::error::expected >=5 .ipk packages (per-target matrix), got $IPK_N"; exit 1; }
           [ "$IPA_SZ" -gt 50000 ] || { echo "::error::ipa implausibly small ($IPA_SZ bytes) — skeleton?"; exit 1; }
           [ "$EXE_SZ" -gt 1000000 ] || { echo "::error::windows exe implausibly small ($EXE_SZ bytes)"; exit 1; }
-          echo "integrity: $APK_N APKs, $IPK_N ipks, ipa ${IPA_SZ}B, exe ${EXE_SZ}B — all gates passed"
+          [ "$ADDON_N" -ge 5 ] || { echo "::error::expected >=5 arm64 addon zips (tor/lyrebird/snowflake/webtunnel/byedpi), got $ADDON_N"; exit 1; }
+          echo "integrity: $APK_N APKs, $IPK_N ipks, $ADDON_N addon packs (arm64), ipa ${IPA_SZ}B, exe ${EXE_SZ}B — all gates passed"
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
@@ -507,86 +602,81 @@ jobs:
             | Platform | Artifact | Notes |
             |---|---|---|
             | Android | `Vor-*-android-*-release.apk` (+ License Manager) | **Signed** (APK Signature Scheme v2) with the Vor release certificate — install directly from the download; the CI publish gate runs `apksigner verify` + certificate-fingerprint match **and a permission allowlist audit** on every APK; license gate on first launch |
-            | Windows | `Vor-desktop.exe` (+ WinDivert files) | Portable single binary; default engine = Go desync; pattern (wrong-seq) engine selectable |
-            | Linux | `vor-desktop` + `.deb` + AppDir archive | |
+            | Windows | `Vor-desktop.exe` + `Vor-desktop-setup.exe` (installer) + WinDivert files | Portable single binary **and** a real NSIS installer; default engine = Go desync; pattern (wrong-seq) engine selectable |
+            | Linux | `vor-desktop` + `.deb` + real `.AppImage` | |
             | OpenWrt | `vor_${{ steps.rel.outputs.version }}-r1_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
+            | Addon packs | `tor/lyrebird/snowflake/webtunnel/byedpi/psiphon/dnstt-<abi>.zip` | On-demand engine binaries for the in-app Core Manager — resolved from **this** repo, **this** tag |
 
-            ## v1.0.3 — mid-session expiry enforcement
+            ## v1.0.4 — one identity, one repo, everything self-hosted
 
-            - **The active VPN now stops by itself when the license expires
-              mid-session.** v1.0.2 blocks NEW connections and re-locks the gate
-              at launch/foreground; v1.0.3 adds a throw-free license watchdog to
-              the running tunnel: while connected, the signed expiry claim is
-              re-verified against the device clock at most once a minute — fully
-              offline — and the moment it no longer verifies, the tunnel tears
-              down with the same user-visible error as the connect gate. Turning
-              the device clock past the expiry now disconnects the VPN
-              automatically, no network and no manual step involved.
-            - **License Manager is verified against REAL workflow-issued
-              production tokens** (the same licenses shipped to users), closing
-              the both-apps criterion: a production license now has automated
-              test coverage in the main app AND the License Manager, including
-              the offline status flip to expired and dev/prod key separation.
+            - **The Android app keeps the package identity `com.v2rayez.app`.** v1.0.x builds
+              that switched to `com.vor.app` split the install base in two and re-triggered
+              Google Play Protect's *"hasn't seen an app from this developer before"* block for
+              every existing user — a new package name is a brand-new app as far as Android and
+              Play Protect are concerned. Vor now installs as a **pure update** over your
+              existing app (same package, `versionCode 104` > the previously installed `102`),
+              keeping your data, settings and trust state. The display name stays **Vor**.
+            - **Clock-rollback protection for licenses (offline, spec §3).** Verification time
+              is now `max(device clock, monotonic ratchet)` where the ratchet persists the
+              highest time ever observed — plus an opportunistic trusted-time check (majority
+              vote over the `Date` headers of several independent HTTPS endpoints) whenever
+              connectivity exists. Winding the device clock backward can no longer resurrect
+              an expired license; fully offline devices still verify normally against the
+              signed expiry. Documentation states the honest limits.
+            - **Addon pipeline is self-hosted.** Every engine addon zip (tor, lyrebird,
+              snowflake, webtunnel, byedpi, psiphon, dnstt — all four ABIs, sha256-verified) is
+              built by this repo's release workflow and attached to this release; the in-app
+              Core Manager resolves them from `ysa-py/Vor` at this tag. No dependency on any
+              other repository.
+            - **New brand icon everywhere.** The shield / faceted-gem "V" mark (cyan + violet,
+              navy plate) is now the launcher icon on Android (adaptive + Android 13 themed
+              monochrome), the License Manager icon, the iOS AppIcon (previously iconless),
+              and the desktop installer/AppImage icon.
+            - **Desktop updater fixed and rebranded.** "Check for updates" previously resolved
+              binaries from a different, defunct project repo; it now resolves `Vor-desktop.exe`
+              / `vor-desktop` from this repo's releases (`vor-v*` tags) with a correct
+              version comparison, and the whole panel is rebranded Vor. Windows also ships a
+              real NSIS installer (`Vor-desktop-setup.exe`) and Linux a real AppImage.
+            - **License activation crash-proofing verified end-to-end** (the v1.0.2 fix): every
+              path from paste → verify → persist is failure-tolerant and covered by tests.
 
-            ## v1.0.2 — activation crash fix + automatic expiry enforcement
+            ## v1.0.3 — mid-session expiry enforcement (condensed)
 
-            - **Fixed the license-activation crash** reported on a real device: the
-              activation path is now crash-proof by construction — every possible
-              failure (device-specific or otherwise) degrades to a clean error state
-              instead of killing the app. The full activation path (paste a REAL
-              production token -> tap "Check / Activate License" -> unlock -> first
-              launch of the main UI) is now covered by automated end-to-end tests that
-              run the real Activity, the real Hilt graph and the Persian/RTL locale.
-            - **Automatic expiry revocation**: the license verdict is re-verified at
-              every app launch, every return to foreground, and before EVERY VPN
-              connection attempt — purely offline against the signed expiry claim vs.
-              the device clock. An expired license re-locks the app and blocks the
-              tunnel with no manual step and no network call.
-            - **Vor License Manager 1.0.2**: stores MULTIPLE licenses with live
-              valid/expired/invalid status, expiry shown in local time and a
-              countdown for licenses nearing expiry; QR-code import (from an image —
-              no permissions needed) and QR export to hand a license to another
-              device without transmitting text; copy-token and clear-all. All fully
-              offline.
+            While connected, the signed expiry claim is re-verified at most once a minute —
+            fully offline — and the tunnel tears down automatically the moment it stops
+            verifying. License Manager is tested against real workflow-issued production
+            tokens.
 
-            ## Android permission footprint (v1.0.1 hardening, unchanged in v1.0.2)
+            ## Android permission footprint (unchanged since v1.0.1 hardening)
 
-            This release removes every permission signal that made Google Play Protect's
-            unknown-app scanner flag earlier builds as risky:
-
-            - **Removed `QUERY_ALL_PACKAGES`** — the per-app split-tunneling picker now uses
-              Android's scoped package visibility (launcher-intent `<queries>`); it still lists
-              every launchable app, and saved per-app routes keep working unchanged.
-            - **Removed all advertising-identifier permissions** injected by the bundled Firebase
-              AARs (`AD_ID`, `ACCESS_ADSERVICES_AD_ID`, `ACCESS_ADSERVICES_ATTRIBUTION`, plus the
-              install-referrer binding) — a VPN APK requesting ad-tracker permissions from a new
-              certificate is a classic hidden-ads heuristic profile.
-            - A CI **allowlist gate** now fails the release if any APK ever requests a permission
-              outside the approved set (SMS, accessibility, overlays, contacts, ad-IDs, …).
-
-            The app now requests only: `INTERNET`, `ACCESS_NETWORK_STATE`,
-            `FOREGROUND_SERVICE(_SPECIAL_USE)`, `POST_NOTIFICATIONS`,
-            `RECEIVE_BOOT_COMPLETED` (the opt-in "connect on boot" setting), and `CAMERA`
-            (QR-config import, granted at runtime when you use it).
+            This release keeps the permission set at the minimum: no
+            `QUERY_ALL_PACKAGES` (scoped package visibility instead), no advertising
+            identifiers, and a CI allowlist gate that fails the release if any APK ever
+            requests a permission outside the approved set. The app requests only:
+            `INTERNET`, `ACCESS_NETWORK_STATE`, `FOREGROUND_SERVICE(_SPECIAL_USE)`,
+            `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED` (opt-in), and `CAMERA`
+            (QR import, granted at runtime).
 
             ## How to install on Android (Play Protect)
 
             1. Download the APK that matches your phone: **`Vor-v${{ steps.rel.outputs.version }}-android-arm64-v8a-release.apk`** for any modern 64-bit phone (2016+); `armeabi-v7a` for old 32-bit devices.
-            2. Open the downloaded file. Because v${{ steps.rel.outputs.version }} removed the risky permission set above, a normal install should go straight through. If Android still shows **"Blocked by Play Protect"** (a generic warning Google shows for EVERY app sideloaded from outside Google Play — Vor is not published there), it is not a defect in this app:
+            2. **Already have the app installed (any 1.0.x build)?** This version installs as a normal **update** — same package identity, same signing certificate, higher version code. Your settings and imported servers are preserved. Expect no warning beyond Android's usual "install update?" prompt.
+            3. **Fresh install?** Because Vor is not published on Google Play, Play Protect may show its generic **"Blocked by Play Protect"** screen for ANY sideloaded app — that is not a defect in this app:
                - Tap **More details** → **Install anyway** (on some Android versions: *Install this unsafe app*).
                - Or temporarily disable scanning: Play Store → profile icon → Play Protect → settings gear → turn off **"Scan apps with Play Protect"**, install, turn it back on.
-            3. All APKs in this release are **signed** (APK Signature Scheme v2) with the Vor release certificate and that signature is verified in CI before publishing — if Android installs it, the file is exactly what CI built.
-            4. First launch shows the license gate: paste your license token (issued by this repo's `Issue License` workflow — Actions tab → "Issue License" → Run workflow, then download the artifact). Verification is fully offline.
+            4. All APKs in this release are **signed** (APK Signature Scheme v2) with the Vor release certificate and that signature is verified in CI before publishing — if Android installs it, the file is exactly what CI built.
+            5. First launch shows the license gate: paste your license token (issued by this repo's `Issue License` workflow — Actions tab → "Issue License" → Run workflow, then download the artifact). Verification is fully offline.
 
             ## نصب روی اندروید (راهنمای فارسی)
 
             ۱. فایل **`Vor-v${{ steps.rel.outputs.version }}-android-arm64-v8a-release.apk`** را دانلود کنید (مناسب همهٔ گوشی‌های ۶۴بیتی امروزی؛ برای گوشی‌های قدیمی ۳۲بیتی فایل `armeabi-v7a`).
-            ۲. در نسخهٔ v${{ steps.rel.outputs.version }} مجموعه‌ی مجوزهای اپ به حداقلِ ممکن رسانده شده است (مجوز `QUERY_ALL_PACKAGES` و همهٔ مجوزهای ردیاب تبلیغاتی حذف شده‌اند) تا اسکنرِ ناشناخته‌بودنِ اپها در گوگل، اپ را مشکوک نشمارد؛ نصبِ عادی معمولاً بدون هیچ هشداری انجام می‌شود. اگر باز هم پیام **«Blocked by Play Protect»** دیدید — هشدارِ عمومی گوگل برای هر اپی است که بیرون از گوگل‌پلی نصب می‌شود، نه مشکلِ این اپ:
+            ۲. **اگر از قبل اپ را نصب کرده‌اید** (هر نسخهٔ 1.0.x)، این نسخه به‌صورت یک **بروزرسانیِ عادی** نصب می‌شود — همان شناسهٔ بسته، همان گواهی امضا، شماره نسخهٔ بالاتر. تنظیمات و سرورهای شما حفظ می‌شود و انتظار هیچ هشدار خاصی نیست.
+            ۳. **نصب تازه؟** چون وور در گوگل‌پلی منتشر نشده، ممکن است پیام عمومی **«Blocked by Play Protect»** را ببینید — این هشدارِ عمومیِ گوگل برای هر اپی است که بیرون از گوگل‌پلی نصب می‌شود، نه مشکلِ این اپ:
                - روی **جزئیات بیشتر (More details)** و بعد **نصب در هر صورت (Install anyway)** بزنید.
                - یا موقتاً اسکن را خاموش کنید: Play Store → آیکون پروفایل → Play Protect → تنظیمات → **Scan apps with Play Protect** را خاموش کنید، نصب را انجام دهید، بعد دوباره روشن کنید.
-            ۳. همهٔ فایل‌های APK این ریلیز **امضاشده** هستند (طرح امضای v2) و امضای آن‌ها قبل از انتشار در CI تأیید می‌شود.
-            ۴. در اجرای اول، صفحهٔ فعال‌سازی لایسنس باز می‌شود: توکن لایسنس را جای‌گذاری کنید (توکن از ورک‌فلوی «Issue License» در تب Actions همین مخزن صادر می‌شود). تأیید لایسنس کاملاً آفلاین است.
+            ۴. همهٔ فایل‌های APK این ریلیز **امضاشده** هستند (طرح امضای v2) و امضای آن‌ها قبل از انتشار در CI تأیید می‌شود.
+            ۵. در اجرای اول، صفحهٔ فعال‌سازی لایسنس باز می‌شود: توکن لایسنس را جای‌گذاری کنید (توکن از ورک‌فلوی «Issue License» در تب Actions همین مخزن صادر می‌شود). تأیید لایسنس کاملاً آفلاین است.
 
             ## iOS accuracy statement (read before installing on iOS)
 
@@ -602,6 +692,7 @@ jobs:
             Licenses are issued offline by the `Issue License` workflow
             (workflow_dispatch). See `license/SPEC.md`. Honest limits:
             client-side checks raise the bar (signed, offline,
-            tamper-evident) but are not literally unbreakable.
+            tamper-evident, clock-rollback-resistant) but are not literally
+            unbreakable.
           files: release/*
           generate_release_notes: true

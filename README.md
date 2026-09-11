@@ -7,10 +7,11 @@ product, built to keep working under Iran-grade DPI.
 | Platform | Artifact | Where |
 |---|---|---|
 | Android | signed APK + License Manager companion app | [`android/`](android/) |
-| Windows | single portable `.exe` (+ WinDivert files) | [`desktop/`](desktop/) |
-| Linux | binary + `.deb` + AppDir archive | [`desktop/`](desktop/) |
+| Windows | single portable `.exe` + NSIS installer (+ WinDivert files) | [`desktop/`](desktop/) |
+| Linux | binary + `.deb` + `.AppImage` | [`desktop/`](desktop/) |
 | OpenWrt | **universal** `.ipk` (arch matrix) | [`openwrt/`](openwrt/) |
 | iOS | unsigned `.ipa` for **TrollStore** (see [ios/README.md](ios/README.md) for the honest compatibility statement) | [`ios/`](ios/) |
+| Addons | per-engine `.zip` packs (tor / lyrebird / snowflake / webtunnel / byedpi / psiphon / dnstt) resolved from this repo's own releases | [`android/scripts/pack-addons.sh`](android/scripts/pack-addons.sh) |
 
 > **Merge provenance:** every feature of all 8 source repos (V2RayEZ,
 > MICAFP, AetherGUI/Aethon, EasySNI, UAC-SNI-Spoofer-Android,
@@ -73,9 +74,10 @@ ports in Kotlin and Go. All ports run the *same* shared conformance vectors
 (`core/vor-core/tests/vectors/decision-vectors.json`,
 `license/vectors.json`) in CI, so they provably agree — the honest way to
 share one brain across five platforms without forking it into drifting
-copies. When the native `libvor_core.so` is present (Android CI builds it),
-the JNI path is the production fast path; otherwise the pure interpreter
-runs (unit-testable everywhere).
+copies. On Android today the pure-Kotlin interpreter is the runtime port
+(the JNI surface `jni.rs` is built and tested in CI for the day the native
+fast path is switched on); the OpenWrt daemon carries a conformance-tested
+C port of the fragment planner, and the desktop embeds the Go port.
 
 ### The Windows engine conflict — resolved, not hidden
 
@@ -100,11 +102,15 @@ Ed25519-signed tokens, verified **offline** on every platform with the
 same shared conformance vectors; issuance via a manually-triggered GitHub
 Actions workflow (private key only in encrypted secrets); a dedicated
 License Manager Android app; the main app's **first screen is the license
-gate** and expiry re-locks automatically. Spec:
-[license/SPEC.md](license/SPEC.md).
+gate** and expiry re-locks automatically. Verification time is
+rollback-resistant (`max(device clock, persisted monotonic ratchet,
+trusted HTTPS time)`), so winding the device clock backward cannot
+resurrect an expired license. Spec: [license/SPEC.md](license/SPEC.md).
 
 Stated plainly: client-side checks are reverse-engineerable with enough
-effort. This raises the bar; it is not "unbreakable".
+effort. This raises the bar; it is not "unbreakable". The OpenWrt C daemon
+currently runs without a license gate (open item — see
+[docs/MERGE-PLAN.md](docs/MERGE-PLAN.md)); every client platform gates.
 
 ### CI/CD
 

@@ -1,4 +1,4 @@
-// Command ezsni launches the local web control panel — EzSNI, a DPI-bypass
+// Command ezsni launches the local web control panel — Vor Desktop (the
 // tunnel toolkit. It binds to a loopback address and serves a single-page UI.
 package main
 
@@ -118,7 +118,7 @@ func main() {
 }
 
 func banner(bus interface{ Log(string, string) }, url, port string) {
-	bus.Log("V2RayEz — DPI Bypass & CDN Toolkit · by MacanDev · @EzAccess1", "ACCENT")
+	bus.Log("Vor — Adaptive Anti-Censorship Toolkit · github.com/ysa-py/Vor", "ACCENT")
 	bus.Log("Control panel: "+url, "OK")
 	lanURLs := lanAddresses(port)
 	for _, u := range lanURLs {
@@ -128,7 +128,7 @@ func banner(bus interface{ Log(string, string) }, url, port string) {
 	bus.Log("Note: the SPlus tunnel needs a LiveKit build — see README (go build -tags livekit).", "DIM")
 	fmt.Println()
 	fmt.Println("  ┌──────────────────────────────────────────────────────┐")
-	fmt.Println("  │   V2RayEz  ·  DPI Bypass & CDN Toolkit  ·  MacanDev     │")
+	fmt.Println("  │   Vor  ·  Adaptive Anti-Censorship Toolkit  ·  ysa-py   │")
 	fmt.Println("  ├──────────────────────────────────────────────────────┤")
 	fmt.Printf("  │   Open: %-46s│\n", url)
 	for _, u := range lanURLs {
@@ -189,7 +189,7 @@ func openAppWindow(url string) {
 		openBrowser(url)
 		return
 	}
-	profile := filepath.Join(os.TempDir(), "v2rayez-window")
+	profile := filepath.Join(os.TempDir(), "vor-window")
 	args := []string{
 		"--app=" + url,
 		"--user-data-dir=" + profile,
