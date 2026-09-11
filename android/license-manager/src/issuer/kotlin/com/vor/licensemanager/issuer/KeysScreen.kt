@@ -4,7 +4,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +41,9 @@ import com.vor.licensemanager.R
  * restore, self-test against the embedded public key, and wipe. Every
  * destructive action asks for explicit confirmation; every fact stated here
  * is honest (embedded-key mismatch is a WARNING, not a hidden failure).
+ * Action buttons wrap (FlowRow) so long localized labels never clip.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun KeysScreen(
     ops: IssuerOps,
@@ -135,12 +138,12 @@ fun KeysScreen(
         }
 
         Spacer(Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.widthIn(max = 560.dp),
+        ) {
             Button(onClick = { confirmGenerate = true }) { Text(stringResource(R.string.issuer_generate_key)) }
             OutlinedButton(onClick = { showImport = true }) { Text(stringResource(R.string.issuer_import_key)) }
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(
                 onClick = { backupPicker.launch("vor-issuer-key-backup.json") },
                 enabled = keyInfo != null && !busy,
@@ -149,9 +152,6 @@ fun KeysScreen(
                 onClick = { restorePicker.launch("*/*") },
                 enabled = !busy,
             ) { Text(stringResource(R.string.issuer_restore)) }
-        }
-        Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(
                 onClick = {
                     selfTestResult = null

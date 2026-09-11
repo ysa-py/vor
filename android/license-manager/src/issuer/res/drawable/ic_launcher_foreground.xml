@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ISSUER variant foreground: the Vector Shield with a
+     gold key badge pinned over the shield's bottom-right corner, so the
+     maintainer can tell the private issuer APK apart from the public
+     verifier at a glance. Only ships in the issuer flavor (src/issuer). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M28,36 L80,36 L80,56 C80,71 68,80.5 54,86.5 C40,80.5 28,71 28,56 Z M37,44 L46,44 L54,64.5 L62,44 L71,44 L54,79 Z"
+        android:fillType="evenOdd">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="28"
+                android:startY="36"
+                android:endX="80"
+                android:endY="86.5"
+                android:startColor="#FF8B5CF6"
+                android:endColor="#FF38BDF8" />
+        </aapt:attr>
+    </path>
+    <!-- navy ring separating the badge from the shield -->
+    <path
+        android:fillColor="#FF0B0F1E"
+        android:pathData="M58.5,69.5 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0 Z" />
+    <!-- gold disc with the key silhouette knocked out -->
+    <path
+        android:pathData="M60,69.5 a9.5,9.5 0 1,0 19,0 a9.5,9.5 0 1,0 -19,0 Z
+            M67.6,66.9 a1.9,1.9 0 1,0 3.8,0 a1.9,1.9 0 1,0 -3.8,0 Z
+            M68.6,66.9 L70.4,66.9 L70.4,74.4 L68.6,74.4 Z
+            M70.4,69.3 L72.2,69.3 L72.2,70.3 L70.4,70.3 Z
+            M70.4,71.7 L72.2,71.7 L72.2,72.7 L70.4,72.7 Z"
+        android:fillType="evenOdd">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="60"
+                android:startY="60"
+                android:endX="79"
+                android:endY="79"
+                android:startColor="#FFFBBF24"
+                android:endColor="#FFF59E0B" />
+        </aapt:attr>
+    </path>
+</vector>

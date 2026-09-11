@@ -4,10 +4,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -43,6 +45,7 @@ import java.time.ZoneId
  * a plain text file and/or a ZIP of per-license QR PNGs — both written via
  * the system file picker, never to shared storage, never over any network.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BatchScreen(
     onSignBatch: (
@@ -113,6 +116,7 @@ fun BatchScreen(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
+            .imePadding()
             .padding(horizontal = 24.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -129,7 +133,7 @@ fun BatchScreen(
             textStyle = androidx.compose.material3.LocalTextStyle.current.copy(fontFamily = FontFamily.Monospace),
             modifier = Modifier.fillMaxWidth().widthIn(max = 560.dp),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { fileImporter.launch("*/*") }) {
                 Text(stringResource(R.string.issuer_batch_import))
             }
@@ -146,7 +150,10 @@ fun BatchScreen(
             singleLine = true,
             modifier = Modifier.widthIn(max = 560.dp),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.widthIn(max = 560.dp),
+        ) {
             listOf(7, 30, 90, 365).forEach { days ->
                 androidx.compose.material3.FilterChip(
                     selected = defaultDays == days,
@@ -220,7 +227,7 @@ fun BatchScreen(
                 Column {
                     Text(stringResource(R.string.issuer_batch_done_body, tokens.size))
                     Spacer(Modifier.height(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedButton(onClick = {
                             txtSaver.launch("vor-licenses.txt")
                         }) { Text(stringResource(R.string.issuer_batch_save_txt)) }

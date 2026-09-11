@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Vor lettermark: gradient V matching the launcher icon. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="64dp"
     android:height="64dp"
     android:viewportWidth="64"
     android:viewportHeight="64">
-    <path
-        android:fillColor="#8B5CF6"
-        android:pathData="M14,16 L26,16 L32,38 L38,16 L50,16 L38,48 L26,48 Z" />
-    <path
-        android:fillColor="#A78BFA"
-        android:pathData="M32,38 L38,16 L50,16 L38,48 L34,48 Z" />
+    <path android:pathData="M10,10 L21.5,10 L32,36.5 L42.5,10 L54,10 L32,55 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="10"
+                android:startY="10"
+                android:endX="54"
+                android:endY="55"
+                android:startColor="#FF8B5CF6"
+                android:endColor="#FF38BDF8" />
+        </aapt:attr>
+    </path>
 </vector>

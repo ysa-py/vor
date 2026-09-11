@@ -3,9 +3,13 @@ package com.vor.licensemanager.issuer
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +45,11 @@ import com.vor.licensemanager.R
  * Shared result dialog for a freshly issued (or recalled) token:
  * selectable token text, copy, on-screen QR, share sheet, and PNG export
  * through the system file picker. Zero network, zero permissions.
+ *
+ * Responsive: the QR scales to the available dialog width (capped at
+ * 280dp), the action buttons wrap via FlowRow, and the QR reveal animates.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TokenResultDialog(
     token: String,
@@ -67,7 +75,7 @@ fun TokenResultDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.issuer_token_title)) },
         text = {
-            Column {
+            Column(Modifier.animateContentSize()) {
                 Text(
                     stringResource(R.string.issuer_token_hint),
                     style = MaterialTheme.typography.bodySmall,
@@ -86,11 +94,17 @@ fun TokenResultDialog(
                     Spacer(Modifier.height(12.dp))
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         QrCodec.encode(token)?.let { bitmap ->
-                            Image(
-                                bitmap = bitmap.asImageBitmap(),
-                                contentDescription = stringResource(R.string.issuer_show_qr),
-                                modifier = Modifier.size(280.dp),
-                            )
+                            // Fit the QR to the dialog: never wider than the
+                            // available width, capped at 280dp so it stays
+                            // comfortably scannable on larger screens.
+                            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                                val qrSize = maxWidth.coerceAtMost(280.dp)
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = stringResource(R.string.issuer_show_qr),
+                                    modifier = Modifier.size(qrSize),
+                                )
+                            }
                         } ?: Text(
                             stringResource(R.string.issuer_qr_error),
                             style = MaterialTheme.typography.bodySmall,
@@ -110,7 +124,7 @@ fun TokenResultDialog(
             }
         },
         dismissButton = {
-            Row {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 TextButton(onClick = { clipboard.setText(AnnotatedString(token)) }) {
                     Text(stringResource(R.string.issuer_copy))
                 }

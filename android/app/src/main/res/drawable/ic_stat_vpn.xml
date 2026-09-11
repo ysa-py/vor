@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Monochrome white V lettermark for status-bar / notification (from ic_logo_v). -->
+<!-- Monochrome white Vor lettermark for status-bar / notification. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -8,5 +8,5 @@
     android:tint="#FFFFFF">
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M14,16 L26,16 L32,38 L38,16 L50,16 L38,48 L26,48 Z" />
+        android:pathData="M10,10 L21.5,10 L32,36.5 L42.5,10 L54,10 L32,55 Z" />
 </vector>

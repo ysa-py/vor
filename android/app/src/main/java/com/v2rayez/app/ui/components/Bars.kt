@@ -19,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -136,6 +138,53 @@ fun V2BottomBar(
                 label = androidx.compose.ui.res.stringResource(dest.labelRes),
                 selected = dest == current,
                 onClick = { onSelect(dest) }
+            )
+        }
+    }
+}
+
+/**
+ * Adaptive side rail for medium/expanded widths (>= 600dp): tablets,
+ * foldables unfolded, landscape phones. Unlike the compact bottom bar
+ * (which hides on detail screens), the rail stays pinned so top-level
+ * navigation is always one tap away on large canvases.
+ *
+ * Pads the start edge for display cutouts in landscape; vertical insets
+ * come from the Scaffold's safeDrawing contentWindowInsets.
+ */
+@Composable
+fun V2NavRail(
+    current: BottomDestination?,
+    onSelect: (BottomDestination) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    NavigationRail(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        BottomDestination.entries.forEach { dest ->
+            val selected = dest == current
+            val color = if (selected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant
+            NavigationRailItem(
+                selected = selected,
+                onClick = { onSelect(dest) },
+                icon = {
+                    Icon(
+                        dest.icon,
+                        contentDescription = stringResource(dest.labelRes),
+                        tint = color,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                label = {
+                    Text(
+                        stringResource(dest.labelRes),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = color,
+                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+                    )
+                }
             )
         }
     }

@@ -7,13 +7,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.biometric.BiometricManager
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -22,17 +34,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -229,81 +242,57 @@ private fun IssuerApp(
     val tiers = remember(tiersVersion) { IssuerStore.loadTiers(context) }
     val history = remember(historyVersion) { IssuerStore.loadHistory(context) }
 
-    Scaffold(
-        topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = { Text(stringResource(R.string.issuer_app_title)) },
-                actions = {
-                    TextButton(onClick = { openVerifier = true }) {
-                        Text(stringResource(R.string.issuer_verify_action))
+    // Adaptive shell: phones keep the Material bottom bar; medium/expanded
+    // widths (landscape phones, tablets, foldables unfolded, desktops) get a
+    // side navigation rail instead, so content keeps the full screen height.
+    BoxWithConstraints {
+        val expanded = maxWidth >= 600.dp
+        if (expanded) {
+            Scaffold(
+                topBar = { IssuerTopBar(onOpenVerifier = { openVerifier = true }, onOpenAbout = { showAbout = true }) },
+            ) { padding ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .imePadding(),
+                ) {
+                    IssuerNavRail(tab = tab, onSelect = { tab = it })
+                    Box(Modifier.weight(1f)) {
+                        IssuerTabContent(
+                            tab = tab,
+                            tiers = tiers,
+                            history = history,
+                            ops = ops,
+                            keyVersion = keyVersion,
+                            onKeyChanged = onKeyChanged,
+                            onHistoryChanged = { historyVersion++ },
+                            onOpenTiers = { showTiers = true },
+                        )
                     }
-                    TextButton(onClick = { showAbout = true }) {
-                        Text(stringResource(R.string.issuer_about_action))
-                    }
-                },
-            )
-        },
-        bottomBar = {
-            NavigationBar {
-                TABS.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = tab == index,
-                        onClick = { tab = index },
-                        icon = {
-                            if (item.icon != null) {
-                                Icon(item.icon, contentDescription = stringResource(item.labelRes))
-                            } else {
-                                Icon(
-                                    androidx.compose.ui.res.painterResource(item.iconRes),
-                                    contentDescription = stringResource(item.labelRes),
-                                )
-                            }
-                        },
-                        label = { Text(stringResource(item.labelRes)) },
-                    )
                 }
             }
-        },
-    ) { padding ->
-        androidx.compose.foundation.layout.Box(Modifier.padding(padding)) {
-            when (tab) {
-                0 -> IssueFormScreen(
-                    localTiers = tiers,
-                    onSign = { request, onDone ->
-                        ops.sign(request) { issued ->
-                            if (issued != null) historyVersion++
-                            onDone(issued)
-                        }
-                    },
-                    onOpenTiers = { showTiers = true },
-                )
-                1 -> BatchScreen(
-                    onSignBatch = { rows, onDone ->
-                        ops.signBatch(rows) { issued ->
-                            if (issued != null) historyVersion++
-                            onDone(issued)
-                        }
-                    },
-                )
-                2 -> HistoryScreen(
-                    history = history,
-                    onDelete = { entry ->
-                        IssuerStore.removeHistoryEntry(context, entry)
-                        historyVersion++
-                    },
-                    onClearAll = {
-                        IssuerStore.clearHistory(context)
-                        historyVersion++
-                    },
-                )
-                else -> KeysScreen(
-                    ops = ops,
-                    keyVersion = keyVersion,
-                    onKeyChanged = {
-                        onKeyChanged()
-                        historyVersion++
-                    },
-                )
+        } else {
+            Scaffold(
+                topBar = { IssuerTopBar(onOpenVerifier = { openVerifier = true }, onOpenAbout = { showAbout = true }) },
+                bottomBar = { IssuerBottomBar(tab = tab, onSelect = { tab = it }) },
+            ) { padding ->
+                Box(
+                    Modifier
+                        .padding(padding)
+                        .imePadding(),
+                ) {
+                    IssuerTabContent(
+                        tab = tab,
+                        tiers = tiers,
+                        history = history,
+                        ops = ops,
+                        keyVersion = keyVersion,
+                        onKeyChanged = onKeyChanged,
+                        onHistoryChanged = { historyVersion++ },
+                        onOpenTiers = { showTiers = true },
+                    )
+                }
             }
         }
     }
@@ -346,6 +335,128 @@ private fun IssuerApp(
     }
 }
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun IssuerTopBar(onOpenVerifier: () -> Unit, onOpenAbout: () -> Unit) {
+    TopAppBar(
+        title = { Text(stringResource(R.string.issuer_app_title), maxLines = 1) },
+        actions = {
+            TextButton(onClick = onOpenVerifier) {
+                Text(stringResource(R.string.issuer_verify_action), maxLines = 1)
+            }
+            TextButton(onClick = onOpenAbout) {
+                Text(stringResource(R.string.issuer_about_action), maxLines = 1)
+            }
+        },
+    )
+}
+
+@Composable
+private fun IssuerBottomBar(tab: Int, onSelect: (Int) -> Unit) {
+    NavigationBar {
+        TABS.forEachIndexed { index, item ->
+            NavigationBarItem(
+                selected = tab == index,
+                onClick = { onSelect(index) },
+                icon = { IssuerTabIcon(item) },
+                label = { Text(stringResource(item.labelRes), maxLines = 1) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun IssuerNavRail(tab: Int, onSelect: (Int) -> Unit) {
+    NavigationRail {
+        TABS.forEachIndexed { index, item ->
+            NavigationRailItem(
+                selected = tab == index,
+                onClick = { onSelect(index) },
+                icon = { IssuerTabIcon(item) },
+                label = { Text(stringResource(item.labelRes)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun IssuerTabIcon(item: IssuerTab) {
+    if (item.icon != null) {
+        Icon(item.icon, contentDescription = stringResource(item.labelRes))
+    } else {
+        Icon(
+            androidx.compose.ui.res.painterResource(item.iconRes),
+            contentDescription = stringResource(item.labelRes),
+        )
+    }
+}
+
+/** Tab body with a light cross-fade/slide so tab switches feel alive. */
+@Composable
+private fun IssuerTabContent(
+    tab: Int,
+    tiers: List<String>,
+    history: List<IssuerStore.IssuedEntry>,
+    ops: IssuerOps,
+    keyVersion: Int,
+    onKeyChanged: () -> Unit,
+    onHistoryChanged: () -> Unit,
+    onOpenTiers: () -> Unit,
+) {
+    // Captured ONCE in a composable context; the callbacks below are plain
+    // (non-composable) lambdas invoked after user actions.
+    val context = androidx.compose.ui.platform.LocalContext.current
+    AnimatedContent(
+        targetState = tab,
+        transitionSpec = {
+            (fadeIn(animationSpec = tween(200)) +
+                slideInHorizontally(animationSpec = tween(200)) { it / 16 })
+                .togetherWith(fadeOut(animationSpec = tween(140)))
+        },
+        label = "issuer-tab",
+    ) { currentTab ->
+        when (currentTab) {
+            0 -> IssueFormScreen(
+                localTiers = tiers,
+                onSign = { request, onDone ->
+                    ops.sign(request) { issued ->
+                        if (issued != null) onHistoryChanged()
+                        onDone(issued)
+                    }
+                },
+                onOpenTiers = onOpenTiers,
+            )
+            1 -> BatchScreen(
+                onSignBatch = { rows, onDone ->
+                    ops.signBatch(rows) { issued ->
+                        if (issued != null) onHistoryChanged()
+                        onDone(issued)
+                    }
+                },
+            )
+            2 -> HistoryScreen(
+                history = history,
+                onDelete = { entry ->
+                    IssuerStore.removeHistoryEntry(context, entry)
+                    onHistoryChanged()
+                },
+                onClearAll = {
+                    IssuerStore.clearHistory(context)
+                    onHistoryChanged()
+                },
+            )
+            else -> KeysScreen(
+                ops = ops,
+                keyVersion = keyVersion,
+                onKeyChanged = {
+                    onKeyChanged()
+                    onHistoryChanged()
+                },
+            )
+        }
+    }
+}
+
 @Composable
 private fun TiersDialog(tiers: List<String>, onDismiss: () -> Unit, onSave: (List<String>) -> Unit) {
     var working by remember { mutableStateOf(tiers) }
@@ -354,17 +465,23 @@ private fun TiersDialog(tiers: List<String>, onDismiss: () -> Unit, onSave: (Lis
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.issuer_tiers_dialog_title)) },
         text = {
-            Column {
+            Column(Modifier.heightIn(max = 420.dp)) {
                 Text(stringResource(R.string.issuer_tiers_dialog_hint), style = MaterialTheme.typography.bodySmall)
                 Spacer(Modifier.height(8.dp))
-                working.forEach { tier ->
-                    androidx.compose.foundation.layout.Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(tier, Modifier.weight(1f))
-                        TextButton(onClick = { working = working - tier }) {
-                            Text(stringResource(R.string.issuer_tiers_remove), color = MaterialTheme.colorScheme.error)
+                Column(
+                    Modifier
+                        .weight(1f, fill = false)
+                        .verticalScroll(rememberScrollState()),
+                ) {
+                    working.forEach { tier ->
+                        androidx.compose.foundation.layout.Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(tier, Modifier.weight(1f))
+                            TextButton(onClick = { working = working - tier }) {
+                                Text(stringResource(R.string.issuer_tiers_remove), color = MaterialTheme.colorScheme.error)
+                            }
                         }
                     }
                 }

@@ -52,6 +52,9 @@ The app resolves them from `ysa-py/Vor` at the release tag being installed (over
 ### License Manager release notes — v1.1.0
 
 - **On-device offline issuer** (`issuer` product flavor, private maintainer build): sign Vor licenses on the phone with no GitHub Actions, no server, no network. Keystore-wrapped seed + BiometricPrompt gate on every open; byte-compatible with the reference issuance tool; batch CSV to tokens/QR ZIP; Argon2id passphrase backups; build-time purity gate keeps issuer code out of the public APK (details: `docs/ISSUER-ON-DEVICE.md`).
+- **Vector Shield brand icon:** the launcher mark is redrawn — a violet-to-cyan gradient shield with a knocked-out V on deep navy, shipped as vector adaptive-icon layers (crisp at every density, ~400 KB smaller APKs than the old PNG farms) plus a themed-icon monochrome layer for Android 13+ and regenerated legacy PNGs. The `issuer` variant adds a gold key badge over the shield's corner so the private signing APK is instantly distinguishable from the public verifier when both are installed. In-app lettermarks (`ic_logo_v`, widget, status bar) now share the same V silhouette.
+- **Responsive/adaptive UI:** both apps switch from the Material bottom bar to a side navigation rail at >= 600 dp width (landscape phones, tablets, foldables); the issuer's issue form goes two-pane on wide screens; chip groups and dialog action rows wrap via `FlowRow` so narrow screens, large font scales, and RTL never clip; the QR result dialog sizes its QR to the available width; forms pad for the on-screen keyboard (`imePadding`); tab switches animate. The verifier keeps byte-identical functionality — layout polish only.
+- Fixed a layout bug in the issuer history screen (header overlapped the ledger list on short screens).
 
 ### Release notes — v1.0.3
 

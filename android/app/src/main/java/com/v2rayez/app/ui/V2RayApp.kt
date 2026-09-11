@@ -9,6 +9,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.AnimatedVisibility
 import com.v2rayez.app.ui.theme.MotionTokens
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,6 +35,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.v2rayez.app.ui.components.V2BottomBar
+import com.v2rayez.app.ui.components.V2NavRail
 import com.v2rayez.app.ui.navigation.BottomDestination
 import com.v2rayez.app.ui.navigation.Routes
 import com.v2rayez.app.ui.screens.about.AboutScreen
@@ -108,34 +111,43 @@ fun V2RayApp(
         onInitialRouteConsumed()
     }
 
+    // Adaptive navigation shell: compact widths keep the animated bottom
+    // bar; medium/expanded widths (>= 600dp — landscape phones, tablets,
+    // foldables) get a pinned side rail instead, freeing the full screen
+    // height for content.
+    BoxWithConstraints {
+        val expanded = maxWidth >= 600.dp
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         // Safe drawing insets (status + nav + cutout). When the bottom bar is visible it
         // consumes the nav-bar inset itself; when hidden (detail screens), content still pads.
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
-            AnimatedVisibility(
-                visible = bottomDestination != null,
-                enter = slideInVertically { it },
-                exit = slideOutVertically { it }
-            ) {
-                // Surface paints under the system nav / home indicator; V2BottomBar pads content up.
-                Surface(color = MaterialTheme.colorScheme.surface) {
-                    V2BottomBar(
-                        current = bottomDestination ?: BottomDestination.HOME,
-                        onSelect = { dest ->
-                            if (dest.route != currentRoute) {
-                                navController.navigate(dest.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    // Restoring the start destination's saved back stack would
-                                    // re-show whichever tab was on top of Home, so skip restore
-                                    // when returning to Home (the start destination).
-                                    restoreState = dest.route != Routes.HOME
+            if (!expanded) {
+                AnimatedVisibility(
+                    visible = bottomDestination != null,
+                    enter = slideInVertically { it },
+                    exit = slideOutVertically { it }
+                ) {
+                    // Surface paints under the system nav / home indicator; V2BottomBar pads content up.
+                    Surface(color = MaterialTheme.colorScheme.surface) {
+                        V2BottomBar(
+                            current = bottomDestination ?: BottomDestination.HOME,
+                            onSelect = { dest ->
+                                if (dest.route != currentRoute) {
+                                    navController.navigate(dest.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        // Restoring the start destination's saved back stack would
+                                        // re-show whichever tab was on top of Home, so skip restore
+                                        // when returning to Home (the start destination).
+                                        restoreState = dest.route != Routes.HOME
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -148,12 +160,31 @@ fun V2RayApp(
                 .padding(innerPadding),
             contentAlignment = Alignment.TopCenter
         ) {
-        NavHost(
-            navController = navController,
-            startDestination = Routes.HOME,
-            modifier = Modifier
-                .fillMaxSize()
-                .widthIn(max = 720.dp),
+            Row(Modifier.fillMaxSize()) {
+                if (expanded) {
+                    // Rail stays visible on every screen at expanded widths —
+                    // standard adaptive pattern; no item is highlighted on
+                    // detail screens (bottomDestination == null).
+                    V2NavRail(
+                        current = bottomDestination,
+                        onSelect = { dest ->
+                            if (dest.route != currentRoute) {
+                                navController.navigate(dest.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = dest.route != Routes.HOME
+                                }
+                            }
+                        }
+                    )
+                }
+                NavHost(
+                    navController = navController,
+                    startDestination = Routes.HOME,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .let { if (expanded) it.weight(1f) else it }
+                        .widthIn(max = 720.dp),
             enterTransition = {
                 fadeIn(animationSpec = MotionTokens.normal()) +
                     slideInHorizontally(
@@ -294,6 +325,8 @@ fun V2RayApp(
             }
         }
         }
+        }
+    }
     }
 }
 
