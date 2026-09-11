@@ -23,8 +23,8 @@ android {
         applicationId = "com.vor.licensemanager"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
 
         // Same dev-key default + CI override as the main app.
         val licenseKey = (project.findProperty("vor.licensePublicKey") as? String)

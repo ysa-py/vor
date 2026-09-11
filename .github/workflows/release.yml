@@ -512,6 +512,23 @@ jobs:
             | OpenWrt | `vor_${{ steps.rel.outputs.version }}-r1_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
 
+            ## v1.0.3 — mid-session expiry enforcement
+
+            - **The active VPN now stops by itself when the license expires
+              mid-session.** v1.0.2 blocks NEW connections and re-locks the gate
+              at launch/foreground; v1.0.3 adds a throw-free license watchdog to
+              the running tunnel: while connected, the signed expiry claim is
+              re-verified against the device clock at most once a minute — fully
+              offline — and the moment it no longer verifies, the tunnel tears
+              down with the same user-visible error as the connect gate. Turning
+              the device clock past the expiry now disconnects the VPN
+              automatically, no network and no manual step involved.
+            - **License Manager is verified against REAL workflow-issued
+              production tokens** (the same licenses shipped to users), closing
+              the both-apps criterion: a production license now has automated
+              test coverage in the main app AND the License Manager, including
+              the offline status flip to expired and dev/prod key separation.
+
             ## v1.0.2 — activation crash fix + automatic expiry enforcement
 
             - **Fixed the license-activation crash** reported on a real device: the

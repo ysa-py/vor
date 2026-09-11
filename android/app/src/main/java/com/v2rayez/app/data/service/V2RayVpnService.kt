@@ -1489,6 +1489,13 @@ class V2RayVpnService : VpnService() {
         statsJob?.cancel()
         pingJob?.cancel()
         val intervalMs = if (batterySaver) STATS_INTERVAL_BATTERY_SAVER_MS else STATS_INTERVAL_MS
+        // LICENSE WATCHDOG (expiry mid-session, 2026-09): the connect-time gate and the
+        // ON_RESUME gate re-lock NEW activity, but an ALREADY-RUNNING tunnel must also die
+        // the moment the device clock passes the signed expiry — fully offline, automatic.
+        // Fresh watchdog per connection generation; checks at most once per minute.
+        val licenseWatchdog = com.v2rayez.app.data.license.LicenseWatchdog(
+            isLicensed = { licenseRepository.isValidNow() },
+        )
         statsJob = scope.launch {
             while (isActive && generation == connectGeneration.get() && tunnelRunning()) {
                 val (down, up) = if (usingProcessCore || standaloneEngineRunning()) {
@@ -1508,6 +1515,17 @@ class V2RayVpnService : VpnService() {
                     title = "$speedLine · $uptime",
                     text = sessionLine
                 )
+                // License re-verification (throw-free by design): STOP means the signed
+                // expiry claim no longer verifies against the current clock — tear down
+                // the active tunnel with the same user-visible error as the connect gate.
+                if (licenseWatchdog.tick() ==
+                    com.v2rayez.app.data.license.LicenseWatchdog.Decision.STOP
+                ) {
+                    Log.w(TAG, "VPN stopped: license no longer valid (expired or revoked)")
+                    stateHolder.setError(getString(R.string.vpn_error_license_expired))
+                    stopTunnel()
+                    return@launch
+                }
                 delay(intervalMs)
             }
         }
