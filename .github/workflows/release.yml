@@ -506,10 +506,10 @@ jobs:
 
             | Platform | Artifact | Notes |
             |---|---|---|
-            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | **Signed** (v2/v3 schemes) with the Vor release certificate — install directly from the download; the CI publish gate runs `apksigner verify` + certificate-fingerprint match **and a permission allowlist audit** on every APK; license gate on first launch |
+            | Android | `Vor-*-android-*-release.apk` (+ License Manager) | **Signed** (APK Signature Scheme v2) with the Vor release certificate — install directly from the download; the CI publish gate runs `apksigner verify` + certificate-fingerprint match **and a permission allowlist audit** on every APK; license gate on first launch |
             | Windows | `Vor-desktop.exe` (+ WinDivert files) | Portable single binary; default engine = Go desync; pattern (wrong-seq) engine selectable |
             | Linux | `vor-desktop` + `.deb` + AppDir archive | |
-            | OpenWrt | `vor_1.0.1_<arch>.ipk` matrix | Universal package — one source, every target |
+            | OpenWrt | `vor_${{ steps.rel.outputs.version }}-r1_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
 
             ## v1.0.2 — activation crash fix + automatic expiry enforcement
