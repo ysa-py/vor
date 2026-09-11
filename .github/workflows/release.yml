@@ -647,6 +647,33 @@ jobs:
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
             | Addon packs | `tor/lyrebird/snowflake/webtunnel/byedpi/psiphon/dnstt-<abi>.zip` | On-demand engine binaries for the in-app Core Manager — resolved from **this** repo, **this** tag |
 
+            ## v1.1.0 — on-device license issuer, new brand icon, adaptive UI
+
+            - **License Manager: on-device offline issuer capability.** The License
+              Manager now builds two capability variants from one codebase: the public
+              **verifier** (behavior unchanged — what this release ships) and a
+              maintainer-only **issuer** app: an on-device, offline Ed25519 license
+              signer behind a BiometricPrompt / device-lock gate, with
+              passphrase-protected key backup/restore (Argon2id + AES-256-GCM), batch
+              CSV issuing, QR / clipboard / share-sheet export and an honest issuance
+              ledger. The issuer APK is **never attached to public releases** — a CI
+              dex-scan gate (`verifyVerifierPurity`) structurally guarantees the public
+              verifier APK contains zero issuer code. Design + threat model:
+              `docs/ISSUER-ON-DEVICE.md`.
+            - **New brand icon.** The "Vector Shield" mark (navy plate, cyan/violet
+              faceted V) is the new launcher icon on Android as a fully adaptive icon
+              with an Android 13+ themed monochrome layer, plus matching in-app
+              lettermarks and a status-bar icon. The issuer build variant carries a
+              small gold key badge so the maintainer can tell the private signing APK
+              from the public verifier at a glance.
+            - **Adaptive responsive layouts.** Navigation switches from a bottom bar
+              to a navigation rail on wide screens (>= 600dp), the issuer form
+              reflows into a two-pane layout on tablets, chip rows wrap instead of
+              clipping, and every form survives large system fonts, RTL locales and
+              small displays.
+            - Same package identity, `versionCode 105` — installs as a normal in-place
+              update over any 1.0.x build (settings and trust state preserved).
+
             ## v1.0.4 — one identity, one repo, everything self-hosted
 
             - **The Android app keeps the package identity `com.v2rayez.app`.** v1.0.x builds

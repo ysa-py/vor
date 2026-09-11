@@ -32,8 +32,11 @@ android {
         // trusted com.v2rayez.app build (102) — Android treats a lower code
         // as a downgrade and forces an uninstall/reinstall, which re-triggers
         // the Play Protect "unknown developer" flow. 104 > 102 for good.
-        versionCode = 104
-        versionName = "1.0.4"
+        // v1.1.0 (105): Vector Shield brand icon + adaptive responsive
+        // layouts + License Manager on-device issuer variant — still a pure
+        // in-place update over any 1.0.x install.
+        versionCode = 105
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -51,7 +54,7 @@ android {
         buildConfigField(
             "String",
             "ADDONS_RELEASE_TAG",
-            "\"${linkProp("v2rayez.addons.releaseTag", "vor-v1.0.4")}\""
+            "\"${linkProp("v2rayez.addons.releaseTag", "vor-v1.1.0")}\""
         )
         // License verification public key. The committed DEV key matches
         // license/keys/dev (unit tests + debug builds); CI release builds
