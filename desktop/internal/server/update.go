@@ -81,19 +81,22 @@ func cmpVersions(a, b string) int {
 // asset list (exact-name match first: Vor-desktop.exe / vor-desktop, then
 // OS+arch, then a runnable file).
 func pickReleaseAsset(assets []string) string {
-	goos, arch := runtime.GOOS, runtime.GOARCH
+	return pickReleaseAssetFor(runtime.GOOS, runtime.GOARCH, assets)
+}
+
+// pickReleaseAssetFor is the OS-parameterized core of [pickReleaseAsset] so
+// the selection rules are unit-testable on any build platform (the release
+// pipeline publishes "Vor-desktop.exe" for Windows and "vor-desktop" for
+// Linux from the same asset list).
+func pickReleaseAssetFor(goos, arch string, assets []string) string {
 	// Exact names the Vor release pipeline publishes.
+	exact := "vor-desktop"
 	if goos == "windows" {
-		for _, a := range assets {
-			if strings.EqualFold(a, "Vor-desktop.exe") {
-				return a
-			}
-		}
-	} else {
-		for _, a := range assets {
-			if strings.EqualFold(a, "vor-desktop") {
-				return a
-			}
+		exact = "Vor-desktop.exe"
+	}
+	for _, a := range assets {
+		if strings.EqualFold(a, exact) {
+			return a
 		}
 	}
 	want := []string{goos + "-" + arch, goos, ".exe"}

@@ -6,7 +6,10 @@ import "testing"
 // binaries from a different, defunct project (macan-dev/EasySNI, tag "v4.x",
 // asset "V2RayEz.exe"), which "updated" Vor Desktop into another product.
 // These tests pin the current contract: Vor's own repo, vor-v* tags, and
-// Vor-desktop / vor-desktop asset names.
+// Vor-desktop / vor-desktop asset names. All tests are OS-parameterized via
+// pickReleaseAssetFor so they behave identically on Linux, macOS and Windows
+// runners (the first CI run failed on the Windows runner exactly because the
+// original tests depended on runtime.GOOS).
 
 func TestNormalizeReleaseTag(t *testing.T) {
 	cases := map[string]string{
@@ -39,9 +42,8 @@ func TestCmpVersionsWithVorTags(t *testing.T) {
 	}
 }
 
-func TestPickReleaseAssetPrefersVorDesktopNames(t *testing.T) {
-	// On Linux: exact vor-desktop beats unrelated assets.
-	got := pickReleaseAsset([]string{
+func TestPickReleaseAssetLinuxPrefersVorDesktop(t *testing.T) {
+	got := pickReleaseAssetFor("linux", "amd64", []string{
 		"Vor-v1.0.4-android-arm64-v8a-release.apk",
 		"vor-desktop_1.0.4-1_amd64.deb",
 		"SHA256SUMS.txt",
@@ -52,18 +54,39 @@ func TestPickReleaseAssetPrefersVorDesktopNames(t *testing.T) {
 	}
 }
 
-func TestPickReleaseAssetWindows(t *testing.T) {
-	// On Windows the test process is not windows; exercise the exact-name
-	// branch by checking that a "Vor-desktop.exe" round-trip through the
-	// want-list logic still matches when the exact pass is skipped.
-	assets := []string{
-		"Vor-iOS-unsigned.ipa",
-		"vor-desktop",
+func TestPickReleaseAssetWindowsPrefersVorDesktopExe(t *testing.T) {
+	got := pickReleaseAssetFor("windows", "amd64", []string{
 		"Vor-v1.0.4-android-universal-release.apk",
+		"Vor-iOS-unsigned.ipa",
+		"Vor-desktop.exe",
+		"vor-desktop_1.0.4-1_amd64.deb",
+		"SHA256SUMS.txt",
+	})
+	if got != "Vor-desktop.exe" {
+		t.Errorf("windows pick = %q, want %q", got, "Vor-desktop.exe")
 	}
-	got := pickReleaseAsset(assets)
-	if got != "vor-desktop" {
-		t.Errorf("fallback pick = %q, want %q", got, "vor-desktop")
+}
+
+func TestPickReleaseAssetWindowsFallbacks(t *testing.T) {
+	// No exact-name asset: the windows want-list (windows-amd64 / windows /
+	// .exe / .zip) must pick the archived windows binary, never an APK/ipa.
+	got := pickReleaseAssetFor("windows", "amd64", []string{
+		"Vor-v1.0.4-android-universal-release.apk",
+		"Vor-iOS-unsigned.ipa",
+		"Vor-v1.0.4-windows-amd64.zip",
+	})
+	if got != "Vor-v1.0.4-windows-amd64.zip" {
+		t.Errorf("windows fallback pick = %q, want the windows zip", got)
+	}
+}
+
+func TestPickReleaseAssetLinuxFallbackPrefersPlatformName(t *testing.T) {
+	got := pickReleaseAssetFor("linux", "arm64", []string{
+		"Vor-v1.0.4-android-universal-release.apk",
+		"Vor-v1.0.4-linux-arm64.tar.gz",
+	})
+	if got != "Vor-v1.0.4-linux-arm64.tar.gz" {
+		t.Errorf("linux arm64 fallback pick = %q, want the linux-arm64 archive", got)
 	}
 }
 
