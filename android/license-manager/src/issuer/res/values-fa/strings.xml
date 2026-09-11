@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمهٔ فارسی رابط صادرکننده (فقط در نسخهٔ issuer ادغام می‌شود). -->
+<resources>
+    <!-- دروازه -->
+    <string name="issuer_app_title">صادرکنندهٔ Vor</string>
+    <string name="issuer_gate_title">باز کردن صادرکننده</string>
+    <string name="issuer_gate_subtitle">برای صدور لایسنس، قفل صفحه را تأیید کنید</string>
+    <string name="issuer_gate_locked_body">این دستگاه کلید امضای لایسنس را نگه می‌دارد. اثر انگشت، چهره یا PIN دستگاه خود را تأیید کنید.</string>
+    <string name="issuer_unlock">باز کردن</string>
+    <string name="issuer_need_lock_title">قفل صفحه لازم است</string>
+    <string name="issuer_need_lock_body">کلید امضا در Keystore اندروید محافظت می‌شود و فقط تا مدت کوتاهی پس از باز کردن قفل دستگاه قابل استفاده است. ابتدا یک قفل صفحه (PIN، الگو یا رمز) تنظیم کنید.</string>
+    <string name="issuer_need_lock_action">باز کردن تنظیمات امنیتی</string>
+
+    <!-- زبانه‌ها / عمومی -->
+    <string name="issuer_tab_issue">صدور</string>
+    <string name="issuer_tab_batch">دسته‌ای</string>
+    <string name="issuer_tab_history">تاریخچه</string>
+    <string name="issuer_tab_keys">کلیدها</string>
+    <string name="issuer_verify_action">بررسی توکن</string>
+    <string name="issuer_verify_body">صفحهٔ بررسی باز می‌شود — دقیقاً همان چیزی که دارندهٔ لایسنس می‌بیند (همان تأیید آفلاین، همان کلید عمومی).</string>
+    <string name="issuer_about_action">دربارهٔ حالت صادرکننده</string>
+    <string name="issuer_about_title">دربارهٔ حالت صادرکننده</string>
+    <string name="issuer_about_title_clash">صادرکنندهٔ Vor</string>
+    <string name="issuer_about_body">این نسخه می‌تواند لایسنس‌ها را کاملاً آفلاین و روی همین دستگاه امضا کند.\n\nصادقانه:\n• بذر Ed25519 با Keystore اندروید رمزگذاری شده و فقط تا ۶۰ ثانیه پس از باز کردن قفل، قابل استفاده است.\n• هرکس به این دستگاه و رمز آن دسترسی داشته باشد می‌تواند لایسنس صادر کند؛ سیستم‌عامل آلوده می‌تواند عملیات امضا را ببیند.\n• لایسنس صادرشده قابل ابطال نیست — اعتبارهای کوتاه انتخاب هوشمندانه‌تری است. تاریخچه فقط دفتر محلی است، نه فهرست ابطال.\n• این اپ هیچ مجوز شبکه‌ای ندارد: هیچ‌چیز هرگز آپلود، بررسی آنلاین یا همگام‌سازی نمی‌شود.\n• بالا بردن سطح امنیت با نشکن بودن فرق دارد. دستگاه روت‌شده و کاملاً آلوده هر طرح روی‌دستگاهی را دور می‌زند.</string>
+    <string name="issuer_error_generic">خطایی رخ داد. چیزی صادر نشد — دوباره تلاش کنید.</string>
+    <string name="issuer_cancel">انصراف</string>
+    <string name="issuer_close">بستن</string>
+    <string name="issuer_close_ok">تأیید</string>
+
+    <!-- فرم صدور -->
+    <string name="issuer_form_header">صدور لایسنس</string>
+    <string name="issuer_form_sub">امضاشده روی همین دستگاه. توکن با خروجی ابزار مرجع صدور، بایت‌به‌بایت سازگار است.</string>
+    <string name="issuer_field_id">شناسهٔ لایسنس</string>
+    <string name="issuer_field_id_hint">متن آزاد؛ یک UUID تصادفی از پیش پر شده است</string>
+    <string name="issuer_new_id">شناسهٔ تصادفی جدید</string>
+    <string name="issuer_field_tier">سطح</string>
+    <string name="issuer_manage_tiers">مدیریت سطح‌ها…</string>
+    <string name="issuer_tiers_dialog_title">فهرست سطح‌های محلی</string>
+    <string name="issuer_tiers_dialog_hint">سطح‌ها متن آزاد و فقط روی همین دستگاه ذخیره می‌شوند — این فهرست برای دسترسی سریع است، نه محدودیت اجباری.</string>
+    <string name="issuer_add_tier">افزودن سطح</string>
+    <string name="issuer_tiers_add">افزودن</string>
+    <string name="issuer_tiers_remove">حذف</string>
+    <string name="issuer_expiry">تاریخ انقضا</string>
+    <string name="issuer_expiry_7d">۷روز</string>
+    <string name="issuer_expiry_30d">۳۰روز</string>
+    <string name="issuer_expiry_90d">۹۰روز</string>
+    <string name="issuer_expiry_1y">۱سال</string>
+    <string name="issuer_expiry_5y">۵سال</string>
+    <string name="issuer_expiry_custom">دلخواه…</string>
+    <string name="issuer_expiry_pick">انتخاب تاریخ</string>
+    <string name="issuer_expiry_time">ساعت (۲۴ ساعته)</string>
+    <string name="issuer_expiry_time_hint">به وقت محلی شما تفسیر و در توکن امضاشده به UTC تبدیل می‌شود</string>
+    <string name="issuer_expiry_preview">انقضای امضاشده (UTC)</string>
+    <string name="issuer_platforms">سکوها</string>
+    <string name="issuer_field_notes">یادداشت (فقط محلی)</string>
+    <string name="issuer_notes_hint">فقط در تاریخچهٔ همین دستگاه ذخیره می‌شود — هرگز داخل توکن نیست</string>
+    <string name="issuer_generate">ساخت توکن امضاشده</string>
+    <string name="issuer_generate_invalid">هنوز نمی‌توان صادر کرد: %1$s</string>
+
+    <!-- نتیجهٔ توکن -->
+    <string name="issuer_token_title">لایسنس صادر شد</string>
+    <string name="issuer_token_hint">توکن را به دارندهٔ لایسنس بدهید (جای‌گذاری، هم‌رسانی یا اسکن QR).</string>
+    <string name="issuer_show_qr">نمایش QR</string>
+    <string name="issuer_hide_qr">پنهان‌کردن QR</string>
+    <string name="issuer_copy">رونوشت</string>
+    <string name="issuer_share">هم‌رسانی</string>
+    <string name="issuer_save_png">ذخیرهٔ QR</string>
+    <string name="issuer_qr_error">نمایش کد QR ممکن نشد.</string>
+    <string name="issuer_qr_scan_hint">برای درون‌ریزی لایسنس، با دوربین دستگاه مقابل اسکن کنید.</string>
+
+    <!-- دسته‌ای -->
+    <string name="issuer_batch_header">صدور دسته‌ای</string>
+    <string name="issuer_batch_hint">هر خط یک لایسنس. همه‌چیز روی همین دستگاه و آفلاین امضا می‌شود.</string>
+    <string name="issuer_batch_input">CSV / فهرست</string>
+    <string name="issuer_batch_format">شناسه[,سطح][,انقضا] — در نبود مقدار، از پیش‌فرض‌های زیر استفاده می‌شود</string>
+    <string name="issuer_batch_import">درون‌ریزی فایل</string>
+    <string name="issuer_batch_clear">پاک‌کردن</string>
+    <string name="issuer_batch_default_tier">سطح پیش‌فرض</string>
+    <string name="issuer_batch_days">روز</string>
+    <string name="issuer_batch_parsed">%1$d لایسنس خوانده شد، %2$d خط نامعتبر</string>
+    <string name="issuer_batch_more_errors">…و %1$d خطای دیگر</string>
+    <string name="issuer_batch_generate">صدور %1$d لایسنس</string>
+    <string name="issuer_batch_done_title">دسته صادر شد</string>
+    <string name="issuer_batch_done_body">%1$d لایسنس امضا و به تاریخچه اضافه شد.</string>
+    <string name="issuer_batch_save_txt">ذخیرهٔ tokens.txt</string>
+    <string name="issuer_batch_save_zip">ذخیرهٔ ZIP کدهای QR</string>
+
+    <!-- تاریخچه -->
+    <string name="issuer_history_header">صادرشده توسط این دستگاه</string>
+    <string name="issuer_history_sub">دفتر محلی همهٔ امضاها روی این دستگاه</string>
+    <string name="issuer_history_note">این یک تاریخچهٔ محلی است، نه فهرست ابطال. حذف مدخل‌ها هیچ لایسنسی را باطل نمی‌کند — لایسنس‌های صادرشده تا انقضای امضاشده معتبر می‌مانند.</string>
+    <string name="issuer_history_empty">هنوز چیزی صادر نشده است.</string>
+    <string name="issuer_history_count">%1$d مدخل</string>
+    <string name="issuer_history_clear">پاک‌کردن تاریخچه</string>
+    <string name="issuer_history_clear_confirm_title">تاریخچهٔ صدور پاک شود؟</string>
+    <string name="issuer_history_clear_confirm_body">فقط دفتر محلی حذف می‌شود. لایسنس‌های صادرشده ابطال نمی‌شوند — تا انقضای امضاشده معتبر می‌مانند.</string>
+    <string name="issuer_delete_entry">حذف</string>
+    <string name="issuer_detail_tier">سطح</string>
+    <string name="issuer_detail_issued">تاریخ صدور</string>
+    <string name="issuer_detail_expires">تاریخ انقضا</string>
+    <string name="issuer_detail_notes">یادداشت</string>
+
+    <!-- کلیدها -->
+    <string name="issuer_keys_header">کلید امضا</string>
+    <string name="issuer_keys_sub">فقط در همین دستگاه، محافظت‌شده با Keystore اندروید</string>
+    <string name="issuer_keys_none">هنوز کلید امضایی روی این دستگاه نیست</string>
+    <string name="issuer_keys_none_hint">یک کلید تازه بسازید، یا بذر موجود (قالب همان راز LICENSE_SIGNING_KEY گیت‌هاب) را درون‌ریزی کنید تا لایسنس‌های قبلی‌مانند بماند.</string>
+    <string name="issuer_keys_present">کلید امضا نصب است</string>
+    <string name="issuer_key_pub">کلید عمومی</string>
+    <string name="issuer_key_fingerprint">اثر انگشت (sha256-8)</string>
+    <string name="issuer_key_created">نصب‌شده</string>
+    <string name="issuer_key_source">منبع</string>
+    <string name="issuer_key_matches_embedded">این همان کلیدی است که بررسی‌کنندهٔ این نسخه دارد — لایسنس‌های این‌جا در همین خانوادهٔ اپ معتبرند.</string>
+    <string name="issuer_key_differs_embedded">این کلید با کلید عمومی تعبیه‌شده در این نسخه یکی نیست — لایسنس‌های این‌جا فقط در نسخه‌هایی معتبرند که کلید عمومی متناظر را داشته باشند. برای جزئیات، خودآزمایی را ببینید.</string>
+    <string name="issuer_generate_key">ساخت کلید</string>
+    <string name="issuer_generate_confirm_title">کلید امضای جدید ساخته شود؟</string>
+    <string name="issuer_generate_confirm_body">یک جفت‌کلید Ed25519 روی همین دستگاه ساخته و با Keystore اندروید رمزگذاری می‌شود. بلافاصله از آن پشتیبان بگیرید، وگرنه جایی غیر از اینجا وجود نخواهد داشت.</string>
+    <string name="issuer_generate_confirm_overwrite">این کار جایگزین کلید نصب‌شدهٔ فعلی می‌شود. لایسنس‌های قبلی معتبر می‌مانند؛ لایسنس‌های جدید با کلید جدید امضا می‌شوند. اگر به کلید فعلی نیاز دارید، اول از آن پشتیبان بگیرید.</string>
+    <string name="issuer_import_key">درون‌ریزی بذر</string>
+    <string name="issuer_import_title">درون‌ریزی بذر امضا</string>
+    <string name="issuer_import_warning">هشدار: هرکس این بذر را داشته باشد می‌تواند لایسنس معتبر صادر کند. فقط بذری را که در اختیار دارید، روی دستگاهی که به آن اعتماد دارید درون‌ریزی کنید.</string>
+    <string name="issuer_import_placeholder">بذر base64url (۴۳ نویسه)</string>
+    <string name="issuer_import_invalid">این یک بذر base64url معتبر ۳۲ بایتی نیست.</string>
+    <string name="issuer_import_confirm">درون‌ریزی</string>
+    <string name="issuer_backup">پشتیبان</string>
+    <string name="issuer_restore">بازیابی</string>
+    <string name="issuer_restore_error">خواندن فایل انتخاب‌شده ممکن نشد.</string>
+    <string name="issuer_restore_failed">بازیابی ناموفق بود — رمز اشتباه یا پشتیبان خراب.</string>
+    <string name="issuer_self_test">خودآزمایی</string>
+    <string name="issuer_self_test_ok">قبول</string>
+    <string name="issuer_self_test_partial">قبول با هشدار</string>
+    <string name="issuer_self_test_fail">رد</string>
+    <string name="issuer_wipe">پاک‌کردن کلید</string>
+    <string name="issuer_wipe_confirm_title">کلید امضا از این دستگاه پاک شود؟</string>
+    <string name="issuer_wipe_confirm_body">بذر رمزگذاری‌شده و اطلاعات آن حذف می‌شود. لایسنس‌های صادرشده معتبر می‌مانند؛ تاریخچه باقی می‌ماند. بدون پشتیبان، کلید برای همیشه می‌رود — نمی‌توانید لایسنسی صادر کنید که با همان کلید عمومی قبلی معتبر باشد.</string>
+    <string name="issuer_passphrase">رمز پشتیبان</string>
+    <string name="issuer_passphrase_again">تکرار رمز</string>
+    <string name="issuer_passphrase_too_short">حداقل ۸ نویسه استفاده کنید.</string>
+    <string name="issuer_passphrase_mismatch">رمزها یکسان نیستند.</string>
+    <string name="issuer_passphrase_hint">این رمز فایل پشتیبان را محافظت می‌کند (Argon2id + AES-256-GCM). هرگز ذخیره نمی‌شود و قابل بازیابی نیست — گم‌کردنش یعنی گم‌شدن پشتیبان.</string>
+</resources>

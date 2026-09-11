@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ISSUER build variant strings (never merged into the public verifier
+     APK — the verifyVerifierPurity build gate checks exactly that). -->
+<resources>
+    <!-- Gate -->
+    <string name="issuer_app_title">Vor Issuer</string>
+    <string name="issuer_gate_title">Unlock the issuer</string>
+    <string name="issuer_gate_subtitle">Confirm your screen lock to issue licenses</string>
+    <string name="issuer_gate_locked_body">This device holds a license-signing key. Confirm your fingerprint, face, or device PIN to continue.</string>
+    <string name="issuer_unlock">Unlock</string>
+    <string name="issuer_need_lock_title">A screen lock is required</string>
+    <string name="issuer_need_lock_body">The signing key is protected by the Android Keystore and can only be used within a short window after you unlock the device. Set a screen lock (PIN, pattern, or password) first — biometrics alone in Settings > Security are not enough.</string>
+    <string name="issuer_need_lock_action">Open security settings</string>
+
+    <!-- Tabs / global -->
+    <string name="issuer_tab_issue">Issue</string>
+    <string name="issuer_tab_batch">Batch</string>
+    <string name="issuer_tab_history">History</string>
+    <string name="issuer_tab_keys">Keys</string>
+    <string name="issuer_verify_action">Verify a token</string>
+    <string name="issuer_verify_body">Open the verifier screen — the exact same screen license holders see (same offline verification, same public key).</string>
+    <string name="issuer_about_action">About issuer mode</string>
+    <string name="issuer_about_title">About issuer mode</string>
+    <string name="issuer_about_title_clash">Vor Issuer</string>
+    <string name="issuer_about_body">This build can sign licenses completely offline, on this device.\n\nWhat that means honestly:\n• The Ed25519 seed is stored wrapped by the Android Keystore and only unwrapped within 60 seconds of a successful unlock.\n• Anyone with this device AND its unlock can issue licenses; a compromised OS could observe a signing operation.\n• Licenses are not revocable once issued — prefer short validity windows. The History tab is only a local ledger, not a revocation list.\n• This app has no network permission at all: nothing is ever uploaded, checked online, or synchronized.\n• Raising the bar is not making it unbreakable. A rooted, fully compromised device defeats any on-device scheme.</string>
+    <string name="issuer_error_generic">Something failed. Nothing was issued — try again.</string>
+    <string name="issuer_cancel">Cancel</string>
+    <string name="issuer_close">Close</string>
+    <string name="issuer_close_ok">Confirm</string>
+
+    <!-- Issue form -->
+    <string name="issuer_form_header">Issue a license</string>
+    <string name="issuer_form_sub">Signed on this device. The token is byte-compatible with licenses from the reference issuance tool.</string>
+    <string name="issuer_field_id">License ID</string>
+    <string name="issuer_field_id_hint">Free text; a random UUID is filled in for you</string>
+    <string name="issuer_new_id">New random ID</string>
+    <string name="issuer_field_tier">Tier</string>
+    <string name="issuer_manage_tiers">Manage tiers…</string>
+    <string name="issuer_tiers_dialog_title">Local tier list</string>
+    <string name="issuer_tiers_dialog_hint">Tiers are free text stored on this device only — the list is for quick access, not an enforced enum.</string>
+    <string name="issuer_add_tier">Add tier</string>
+    <string name="issuer_tiers_add">Add</string>
+    <string name="issuer_tiers_remove">Remove</string>
+    <string name="issuer_expiry">Expiry</string>
+    <string name="issuer_expiry_7d">7d</string>
+    <string name="issuer_expiry_30d">30d</string>
+    <string name="issuer_expiry_90d">90d</string>
+    <string name="issuer_expiry_1y">1y</string>
+    <string name="issuer_expiry_5y">5y</string>
+    <string name="issuer_expiry_custom">Custom…</string>
+    <string name="issuer_expiry_pick">Pick date</string>
+    <string name="issuer_expiry_time">Time of day (24h)</string>
+    <string name="issuer_expiry_time_hint">Interpreted in your local time zone, converted to UTC in the signed token</string>
+    <string name="issuer_expiry_preview">Signed expiry (UTC)</string>
+    <string name="issuer_platforms">Platforms</string>
+    <string name="issuer_field_notes">Note (local only)</string>
+    <string name="issuer_notes_hint">Stored only in this device\'s history — never inside the token</string>
+    <string name="issuer_generate">Generate signed token</string>
+    <string name="issuer_generate_invalid">Cannot issue yet: %1$s</string>
+
+    <!-- Token result -->
+    <string name="issuer_token_title">License issued</string>
+    <string name="issuer_token_hint">Hand the token to the license holder (paste, share, or let them scan the QR).</string>
+    <string name="issuer_show_qr">Show QR</string>
+    <string name="issuer_hide_qr">Hide QR</string>
+    <string name="issuer_copy">Copy</string>
+    <string name="issuer_share">Share</string>
+    <string name="issuer_save_png">Save QR</string>
+    <string name="issuer_qr_error">Could not render the QR code.</string>
+    <string name="issuer_qr_scan_hint">Scan with the other device\'s camera to import the license.</string>
+
+    <!-- Batch -->
+    <string name="issuer_batch_header">Batch issuance</string>
+    <string name="issuer_batch_hint">One license per line. Everything is signed on this device, offline.</string>
+    <string name="issuer_batch_input">CSV / list</string>
+    <string name="issuer_batch_format">id[,tier][,expires] — tier/expires fall back to the defaults below</string>
+    <string name="issuer_batch_import">Import file</string>
+    <string name="issuer_batch_clear">Clear</string>
+    <string name="issuer_batch_default_tier">Default tier</string>
+    <string name="issuer_batch_days">d</string>
+    <string name="issuer_batch_parsed">%1$d licenses parsed, %2$d invalid lines</string>
+    <string name="issuer_batch_more_errors">…and %1$d more errors</string>
+    <string name="issuer_batch_generate">Issue %1$d licenses</string>
+    <string name="issuer_batch_done_title">Batch issued</string>
+    <string name="issuer_batch_done_body">%1$d licenses were signed and added to the history.</string>
+    <string name="issuer_batch_save_txt">Save tokens.txt</string>
+    <string name="issuer_batch_save_zip">Save QR ZIP</string>
+
+    <!-- History -->
+    <string name="issuer_history_header">Issued by this device</string>
+    <string name="issuer_history_sub">Local ledger of everything signed here</string>
+    <string name="issuer_history_note">This is a local history, not a revocation list. Deleting entries does not invalidate any license — already-issued licenses stay valid until their expiry.</string>
+    <string name="issuer_history_empty">Nothing issued yet.</string>
+    <string name="issuer_history_count">%1$d entries</string>
+    <string name="issuer_history_clear">Clear history</string>
+    <string name="issuer_history_clear_confirm_title">Clear the issuance history?</string>
+    <string name="issuer_history_clear_confirm_body">This only deletes the local ledger. Issued licenses are NOT revoked — they remain valid until their signed expiry.</string>
+    <string name="issuer_delete_entry">Delete</string>
+    <string name="issuer_detail_tier">Tier</string>
+    <string name="issuer_detail_issued">Issued</string>
+    <string name="issuer_detail_expires">Expires</string>
+    <string name="issuer_detail_notes">Note</string>
+
+    <!-- Keys -->
+    <string name="issuer_keys_header">Signing key</string>
+    <string name="issuer_keys_sub">Held only by this device, wrapped by the Android Keystore</string>
+    <string name="issuer_keys_none">No signing key on this device yet</string>
+    <string name="issuer_keys_none_hint">Generate a fresh key here, or import the existing seed (the GitHub LICENSE_SIGNING_KEY secret format) to keep issuing the same licenses as before.</string>
+    <string name="issuer_keys_present">Signing key installed</string>
+    <string name="issuer_key_pub">Public key</string>
+    <string name="issuer_key_fingerprint">Fingerprint (sha256-8)</string>
+    <string name="issuer_key_created">Installed</string>
+    <string name="issuer_key_source">Source</string>
+    <string name="issuer_key_matches_embedded">This is the SAME key this build\'s verifier embeds — licenses issued here verify in this app family.</string>
+    <string name="issuer_key_differs_embedded">This key does NOT match the public key embedded in this build — licenses issued here verify only in builds that embed the matching public key. Use the self-test for details.</string>
+    <string name="issuer_generate_key">Generate key</string>
+    <string name="issuer_generate_confirm_title">Generate a new signing key?</string>
+    <string name="issuer_generate_confirm_body">A fresh Ed25519 keypair is created on this device and wrapped by the Android Keystore. Back it up right after, or it exists nowhere else.</string>
+    <string name="issuer_generate_confirm_overwrite">This REPLACES the signing key currently installed. Already-issued licenses stay valid; new licenses will carry the new key. Back up the current key first if you might need it.</string>
+    <string name="issuer_import_key">Import seed</string>
+    <string name="issuer_import_title">Import a signing seed</string>
+    <string name="issuer_import_warning">Careful: whoever holds this seed can issue valid licenses. Only import a seed you control, on a device you trust.</string>
+    <string name="issuer_import_placeholder">base64url seed (43 characters)</string>
+    <string name="issuer_import_invalid">That is not a valid 32-byte base64url seed.</string>
+    <string name="issuer_import_confirm">Import</string>
+    <string name="issuer_backup">Backup</string>
+    <string name="issuer_restore">Restore</string>
+    <string name="issuer_restore_error">Could not read the selected file.</string>
+    <string name="issuer_restore_failed">Restore failed — wrong passphrase or corrupted backup.</string>
+    <string name="issuer_self_test">Self-test</string>
+    <string name="issuer_self_test_ok">PASS</string>
+    <string name="issuer_self_test_partial">PASS with warning</string>
+    <string name="issuer_self_test_fail">FAIL</string>
+    <string name="issuer_wipe">Wipe key</string>
+    <string name="issuer_wipe_confirm_title">Wipe the signing key from this device?</string>
+    <string name="issuer_wipe_confirm_body">The wrapped seed and its metadata are deleted. Issued licenses stay valid; the history is kept. Without a backup the key is gone — you will not be able to issue licenses that verify with the same public key.</string>
+    <string name="issuer_passphrase">Passphrase</string>
+    <string name="issuer_passphrase_again">Repeat passphrase</string>
+    <string name="issuer_passphrase_too_short">Use at least 8 characters.</string>
+    <string name="issuer_passphrase_mismatch">Passphrases do not match.</string>
+    <string name="issuer_passphrase_hint">The passphrase protects the backup file (Argon2id + AES-256-GCM). It is never stored and cannot be recovered — losing it means losing the backup.</string>
+</resources>

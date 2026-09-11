@@ -85,7 +85,16 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew :app:testDebugUnitTest :license-manager:testDebugUnitTest :app:lintDebug :license-manager:assembleDebug --stacktrace
+          # Product flavors split :license-manager unit tests per variant:
+          # verifier (the public APK) and issuer (the maintainer's private
+          # signing app). Both run here; assembleDebug builds both APKs and
+          # the verifyVerifierPurity gate fails the build if any issuer code
+          # path leaks into the public verifier APK.
+          ./gradlew :app:testDebugUnitTest \
+            :license-manager:testVerifierDebugUnitTest \
+            :license-manager:testIssuerDebugUnitTest \
+            :app:lintDebug \
+            :license-manager:assembleDebug --stacktrace
       - name: Debug APKs (proof of buildability)
         working-directory: android
         run: ./gradlew :app:assembleDebug
@@ -101,8 +110,10 @@ jobs:
           fail=0
           shopt -s nullglob
           for apk in app/build/outputs/apk/debug/*.apk \
-                     license-manager/build/outputs/apk/debug/*.apk; do
+                     license-manager/build/outputs/apk/verifier/debug/*.apk \
+                     license-manager/build/outputs/apk/issuer/debug/*.apk; do
             case "$apk" in
+              *license-manager-issuer*) MODULE=license-manager-issuer ;;
               *license-manager*) MODULE=license-manager ;;
               *) MODULE=app ;;
             esac
@@ -117,7 +128,8 @@ jobs:
           name: android-debug-apks
           path: |
             android/app/build/outputs/apk/debug/*.apk
-            android/license-manager/build/outputs/apk/debug/*.apk
+            android/license-manager/build/outputs/apk/verifier/debug/*.apk
+            android/license-manager/build/outputs/apk/issuer/debug/*.apk
           retention-days: 7
 
   desktop:

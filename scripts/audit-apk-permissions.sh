@@ -2,7 +2,7 @@
 # audit-apk-permissions.sh — Play Protect risk-signal gate for shipped Vor APKs.
 #
 # Usage: audit-apk-permissions.sh <apk-path> <module>
-#   module: "app" | "license-manager"
+#   module: "app" | "license-manager" | "license-manager-issuer"
 #
 # Background (real-world defect, 2026-09): v1.0.0's main APK shipped with
 # QUERY_ALL_PACKAGES (own declaration) plus AD_ID / ACCESS_ADSERVICES_* /
@@ -47,13 +47,25 @@ case "$MODULE" in
     SELF_PREFIXES="com.v2rayez.app"
     ;;
   license-manager)
-    # The license manager needs NO Android permissions at all — pasting and
-    # verifying an offline license token is pure local computation.
+    # The PUBLIC license manager (verifier build) needs NO Android
+    # permissions at all — pasting and verifying an offline license token
+    # is pure local computation.
     ALLOWED=()
     SELF_PREFIXES="com.vor.licensemanager"
     ;;
+  license-manager-issuer)
+    # The PRIVATE issuer build variant (maintainer's signing app). It adds
+    # exactly the biometric gate: USE_BIOMETRIC (normal permission) and
+    # USE_FINGERPRINT (the pre-API-28 fallback the androidx.biometric AAR
+    # declares for minSdk 26/27 devices). Still zero network permissions.
+    ALLOWED=(
+      android.permission.USE_BIOMETRIC
+      android.permission.USE_FINGERPRINT
+    )
+    SELF_PREFIXES="com.vor.licensemanager.issuer"
+    ;;
   *)
-    echo "::error::audit-apk-permissions: unknown module '${MODULE}' (use 'app' or 'license-manager')"
+    echo "::error::audit-apk-permissions: unknown module '${MODULE}' (use 'app', 'license-manager' or 'license-manager-issuer')"
     exit 2
     ;;
 esac

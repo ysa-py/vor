@@ -10,7 +10,13 @@
             android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
-            <intent-filter>
+            <!-- android:name is a MANIFEST-MERGER KEY ONLY (no runtime
+                 effect): it lets the issuer build variant remove this
+                 launcher intent-filter via tools:node="remove" so the
+                 biometric-gated IssuerActivity becomes the single entry
+                 point of the ISSUER apk. The public verifier build ships
+                 exactly this filter, byte-identical behavior. -->
+            <intent-filter android:name="launcher">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ISSUER build variant overlay (src/issuer). This manifest:
+     - removes the verifier's launcher intent-filter from .MainActivity (the
+       verifier UI stays available via the issuer app's "Verify a token"
+       action and the ACTION_SEND share flow, but is NOT the entry point);
+     - makes the biometric-gated .issuer.IssuerActivity the single launcher.
+     The PUBLIC verifier build (src/main + src/verifier) is untouched by
+     this file. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <!-- Remove ONLY the launcher filter (matched by android:name
+                 plus these children); the ACTION_SEND filter stays, so
+                 shared tokens still open the verifier screen. -->
+            <intent-filter
+                android:name="launcher"
+                tools:node="remove">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".issuer.IssuerActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

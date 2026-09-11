@@ -119,6 +119,44 @@ GitHub Actions workflow `.github/workflows/issue-license.yml`:
    one primary action "Check / Activate License". It shares the same public key
    and the same verification code as the main app.
 
+## On-device issuer (License Manager `issuer` build variant)
+
+Since v1.1.0 the License Manager ships TWO product flavors from one codebase:
+
+| Flavor | Who gets it | Launcher | Permissions |
+|---|---|---|---|
+| `verifier` (default) | everyone — the public APK | `MainActivity` (unchanged v1.0.x flow) | none |
+| `issuer` | the maintainer's private build | `IssuerActivity` (biometric-gated) | `USE_BIOMETRIC`, `USE_FINGERPRINT` |
+
+The issuer variant signs licenses fully offline, on the device: the same
+`VOR1` envelope, the same canonical payload bytes, the same Ed25519
+algorithm — a token issued on-device is byte-identical to one issued by the
+reference tool given the same inputs (pinned by golden-vector unit tests
+generated with `license/python/vor_license.py`).
+
+Design points, in brief (full discussion in `docs/ISSUER-ON-DEVICE.md`):
+
+- The 32-byte seed is stored ONLY as an AES-256-GCM blob wrapped by an
+  Android Keystore key created with `setUserAuthenticationRequired(true)`
+  (usable within 60 s of a successful keyguard authentication). The seed
+  never exists on disk in the clear.
+- A BiometricPrompt / device-PIN gate runs on every app open and again after
+  every backgrounding; every signing, backup and key-install operation goes
+  through the same re-authentication ladder.
+- The public APK must never contain issuer code paths: enforced at build
+  time by the `verifyVerifierPurity` Gradle task (dex/resource marker scan
+  of every assembled verifier APK) plus a per-variant classpath unit test.
+- Migration path from the GitHub Actions workflow: `Keys > Import seed`
+  accepts the exact base64url seed format of the `LICENSE_SIGNING_KEY`
+  secret, and a built-in self-test reports whether the installed key
+  matches the public key embedded in the build.
+- Backups are passphrase-protected local files (Argon2id t=3/m=64 MiB/p=1 +
+  AES-256-GCM), exported manually through the system file picker. The app
+  has no network permission at all — nothing is ever uploaded.
+- Issuance history is a local ledger, NOT revocation; the honest mitigation
+  for a mis-issued license is short validity (the form offers 7/30/90-day
+  presets before the longer ones).
+
 ## Test vectors
 
 `license/vectors.json` is generated from the reference implementation and is

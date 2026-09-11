@@ -27,6 +27,7 @@
 - Tor + pluggable transports, Psiphon, DNS-tunnel via [Core manager](#addon-packs) when packs are installed
 - Foreground notification, Quick Settings tile, boot auto-connect
 - Offline license verification with clock-rollback protection (monotonic ratchet + trusted HTTPS time)
+- License Manager: public verifier APK + a private `issuer` build variant that signs licenses fully on-device (see `docs/ISSUER-ON-DEVICE.md`)
 
 ### Install
 
@@ -47,6 +48,10 @@ The app resolves them from `ysa-py/Vor` at the release tag being installed (over
 - **Clock-rollback protection:** license verification runs against `max(device clock, persisted monotonic ratchet, trusted HTTPS time)`; winding the clock back can no longer resurrect an expired license. Verification stays fully offline.
 - **New brand icon** on Android (adaptive + themed monochrome) and the License Manager.
 - **Self-hosted addon pipeline:** engine packs resolve from this repo's own releases.
+
+### License Manager release notes — v1.1.0
+
+- **On-device offline issuer** (`issuer` product flavor, private maintainer build): sign Vor licenses on the phone with no GitHub Actions, no server, no network. Keystore-wrapped seed + BiometricPrompt gate on every open; byte-compatible with the reference issuance tool; batch CSV to tokens/QR ZIP; Argon2id passphrase backups; build-time purity gate keeps issuer code out of the public APK (details: `docs/ISSUER-ON-DEVICE.md`).
 
 ### Release notes — v1.0.3
 
