@@ -112,7 +112,12 @@ class LicenseGateActivationReproTest {
             }
         }
 
-        // 1. Paste the real token into the gate's text field.
+        // 1. Wait for the gate's text field, then paste the real token.
+        // (The gate renders blank until the license DataStore hydrates —
+        // see MainActivityLicenseGateE2EFaTest for the full rationale.)
+        compose.waitUntil(timeoutMillis = 120_000) {
+            compose.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty()
+        }
         compose.onNode(hasSetTextAction()).performTextReplacement(realProdToken)
 
         // 2. Tap "Check / Activate License".

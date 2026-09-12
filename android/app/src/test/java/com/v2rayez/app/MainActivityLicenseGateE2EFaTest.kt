@@ -67,6 +67,16 @@ class MainActivityLicenseGateE2EFaTest {
         runBlocking { runCatching { repository.clear() } }
 
         // Gate is the first screen — the token field is the only editor.
+        // WAIT for it: MainActivity renders a blank surface until BOTH the
+        // settings DataStore and the license DataStore hydrate (a fresh
+        // install always shows the gate, but the compose rule reports the
+        // blank first frame as "idle"). onNode(...) asserts immediately, so
+        // typing without waiting races the hydration — deterministically
+        // lost when the Release job's lintRelease/assemble workloads
+        // contend for CPU. A real user also waits for the field to appear.
+        compose.waitUntil(timeoutMillis = 120_000) {
+            compose.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty()
+        }
         compose.onNode(hasSetTextAction()).performTextReplacement(realProdToken)
 
         // Persian label of "Check / Activate License" (device runs in fa).
