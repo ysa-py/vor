@@ -78,7 +78,11 @@ class MainActivityLicenseGateE2EFaTest {
         // Wizard first page shows a "Continue"-equivalent button; wait on the
         // localized label of wizard_continue.
         val continueLabel = app.getString(com.v2rayez.app.R.string.wizard_continue)
-        compose.waitUntil(timeoutMillis = 15_000) {
+        // Generous CI budget: the Release workflow runs lintRelease + assembleRelease
+        // alongside this Robolectric E2E suite on one shared runner; a 15s
+        // wall-clock cap flaked there. waitUntil polls, so success still
+        // returns as soon as the wizard composes.
+        compose.waitUntil(timeoutMillis = 120_000) {
             compose.onAllNodesWithText(continueLabel).fetchSemanticsNodes().isNotEmpty()
         }
     }

@@ -123,7 +123,7 @@ class LicenseGateActivationReproTest {
         //    coroutine exception, DataStore failure, or first-composition
         //    error — propagates here and fails the test with the real stack
         //    trace, exactly as it killed the process on the phone.
-        compose.waitUntil(timeoutMillis = 10_000) {
+        compose.waitUntil(timeoutMillis = 120_000) {
             compose.onAllNodesWithText("Continue").fetchSemanticsNodes().isNotEmpty()
         }
 
