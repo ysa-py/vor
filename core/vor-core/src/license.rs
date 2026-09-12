@@ -175,7 +175,25 @@ fn parse_date(text: &str) -> Option<(i64, i64, i64)> {
     let year: i64 = parts.next()?.parse().ok()?;
     let month: i64 = parts.next()?.parse().ok()?;
     let day: i64 = parts.next()?.parse().ok()?;
-    if !(1..=12).contains(&month) || !(1..=31).contains(&day) || !(1970..=9999).contains(&year) {
+    if !(1..=12).contains(&month) || !(1970..=9999).contains(&year) {
+        return None;
+    }
+    // Real calendar validation (matches the Python/Go/iOS ports and the
+    // shared `impossible_day` conformance vector in license/vectors.json).
+    let leap = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+    let day_cap = match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 => {
+            if leap {
+                29
+            } else {
+                28
+            }
+        }
+        _ => return None,
+    };
+    if !(1..=day_cap).contains(&day) {
         return None;
     }
     Some((year, month, day))
@@ -234,6 +252,15 @@ mod tests {
         );
         assert_eq!(parse_rfc3339_epoch("garbage"), None);
         assert_eq!(parse_rfc3339_epoch("2026-13-01T00:00:00Z"), None);
+        // Impossible calendar days (shared `impossible_day` vector).
+        assert_eq!(parse_rfc3339_epoch("2026-09-31T00:00:00Z"), None);
+        assert_eq!(parse_rfc3339_epoch("2023-02-29T00:00:00Z"), None);
+        assert_eq!(parse_rfc3339_epoch("2024-02-30T00:00:00Z"), None);
+        // Real leap days still parse.
+        assert_eq!(
+            parse_rfc3339_epoch("2024-02-29T00:00:00Z"),
+            Some(1709164800)
+        );
     }
 
     #[test]
