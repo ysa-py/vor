@@ -36,6 +36,45 @@ jobs:
       - run: cargo test --features jni
         working-directory: core/vor-core
 
+  drm-rust:
+    name: vor-drm (Rust, license DRM core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      # Formatting + strict clippy across EVERY feature combination: the
+      # client and manager cores are separately shippable, so each must be
+      # warning-free on its own (no cross-feature dead code, no unused
+      # imports, no pedantic lints).
+      - run: cargo fmt --all -- --check
+        working-directory: core/vor-drm
+      - run: cargo clippy --all-targets -- -D warnings
+        working-directory: core/vor-drm
+      - run: cargo clippy --all-targets --features client -- -D warnings
+        working-directory: core/vor-drm
+      - run: cargo clippy --all-targets --features manager -- -D warnings
+        working-directory: core/vor-drm
+      - run: cargo clippy --all-targets --features "client manager" -- -D warnings
+        working-directory: core/vor-drm
+      - run: cargo clippy --features jni-client -- -D warnings
+        working-directory: core/vor-drm
+      - run: cargo clippy --features jni-manager -- -D warnings
+        working-directory: core/vor-drm
+      - run: cargo clippy --features "jni-client jni-manager" -- -D warnings
+        working-directory: core/vor-drm
+      # Unit suites for both cores + the shared conformance vectors
+      # (license/vectors.json: the same 14 verdicts as the Python reference,
+      # Kotlin verifier, iOS and desktop Go ports — including impossible-day
+      # calendar rejection).
+      - run: cargo test --features "client manager"
+        working-directory: core/vor-drm
+      - run: cargo test --features "jni-client jni-manager"
+        working-directory: core/vor-drm
+      - run: cargo test --features "client manager" --test conformance
+        working-directory: core/vor-drm
+
   license-python:
     name: license reference (Python)
     runs-on: ubuntu-latest

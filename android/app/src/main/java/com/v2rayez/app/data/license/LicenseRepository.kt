@@ -64,6 +64,15 @@ class LicenseRepository @Inject constructor(
             get() = publicKeyOverride ?: DEV_PUBLIC_KEY
     }
 
+    /**
+     * Hardware identity for the native DRM core (v1.3.0). Gathered lazily,
+     * cached for the process — the components are factory-stable by design,
+     * and the gather itself costs one MediaDrm construction.
+     */
+    private val deviceHwid: Triple<String, String, String>? by lazy {
+        runCatching { VorDeviceIdentity.gather(context) }.getOrNull()
+    }
+
     /** Gate state surfaced to the UI. */
     data class GateState(
         val hydrated: Boolean = false,
@@ -112,8 +121,25 @@ class LicenseRepository @Inject constructor(
         return verifyBlocking(token, licenseClock.nowSeconds())
     }
 
-    private fun verifyBlocking(token: String, nowEpochSeconds: Long): LicenseResult =
-        LicenseVerifier.verify(activePublicKey, token, nowEpochSeconds)
+    private fun verifyBlocking(token: String, nowEpochSeconds: Long): LicenseResult {
+        // Native DRM core first (v1.3.0): when libvor_drm.so ships with the
+        // build, it verifies BOTH generations (VOR1 + hardware-locked VOR2)
+        // with the full native ladder — signature, encrypted payload, HWID
+        // binding, anti-rollback, anti-analysis — and its verdict wins.
+        // Stock builds without the .so never even reach the identity gather
+        // (zero overhead, zero behavior change).
+        if (VorDrmClient.available) {
+            VorDrmClient.verify(
+                token = token,
+                publicKeyB64 = activePublicKey,
+                persistedRatchet = licenseClock.ratchetSecondsSnapshot(),
+                trusted = licenseClock.trustedSecondsSnapshot(),
+                deviceWall = nowEpochSeconds,
+                hwid = deviceHwid,
+            )?.let { native -> return native.asLicenseResult() }
+        }
+        return LicenseVerifier.verify(activePublicKey, token, nowEpochSeconds)
+    }
 
     /**
      * Activate a token: verifies first, persists only when valid (or
@@ -189,4 +215,29 @@ object BuildConfigLicenses {
     /** Public key for this build: dev key by default, production key when CI
      * passes -Pvor.licensePublicKey for release builds. */
     val DEV_PUBLIC_KEY: String = com.v2rayez.app.BuildConfig.VOR_LICENSE_PUBLIC_KEY
+}
+
+/**
+ * Map a native DRM verdict onto the shared [LicenseResult] shape the UI
+ * already consumes (v1.3.0). The native core returns the SAME wire status
+ * names and the SAME payload fields, so the mapping is a pure translation.
+ */
+private fun VorDrmClient.NativeVerdict.asLicenseResult(): LicenseResult {
+    val status = when (status) {
+        "VALID" -> LicenseStatus.VALID
+        "EXPIRED" -> LicenseStatus.EXPIRED
+        else -> LicenseStatus.INVALID
+    }
+    val mapped = payload?.let { native ->
+        com.vor.license.LicensePayload(
+            version = native.generation,
+            id = native.id,
+            product = "vor",
+            issuedAt = native.issuedAt,
+            expiresAt = native.expiresAt,
+            tier = native.tier,
+            platforms = native.platforms,
+        )
+    }
+    return LicenseResult(status, mapped)
 }

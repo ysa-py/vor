@@ -1,0 +1,63 @@
+[package]
+name = "vor-drm"
+version = "1.3.0"
+edition = "2021"
+license = "GPL-3.0"
+description = "Vor offline license DRM core — native Rust Manager Core (issuer) and Client Core (verifier) with hardware binding, anti-clock-rollback, string obfuscation, control-flow flattening and anti-analysis hardening"
+repository = "https://github.com/ysa-py/Vor"
+
+[lib]
+name = "vor_drm"
+crate-type = ["rlib", "cdylib"]
+
+[features]
+default = []
+# Client Core: offline token verification (VOR1 compatibility + VOR2
+# hardware-locked encrypted payloads). Required by BOTH apps (the manager
+# self-test verifies tokens it just issued).
+client = []
+# Manager Core: key generation, single + batch issuance, Argon2id vault.
+# NEVER enabled for the public verifier/client builds — the client .so is
+# built with `--features jni-client` only.
+manager = []
+# Android JNI surface for the client (object com.vor.drm.VorDrmClient).
+jni-client = ["client", "dep:jni"]
+# Android JNI surface for the manager (object com.vor.drm.VorDrmManager).
+jni-manager = ["manager", "client", "dep:jni"]
+
+[dependencies]
+# Ed25519 signatures — same curve/family as every other Vor platform port.
+ed25519-dalek = { version = "2", default-features = false, features = ["fast"] }
+# Payload confidentiality: AES-256-GCM (authenticated) over the VOR2 payload.
+aes-gcm = "0.10"
+# SHA-256 (HWID digest, HKDF) + SHA-512 (Ed25519 internal).
+sha2 = "0.10"
+# Deterministic payload-key derivation from the embedded app secret.
+hkdf = "0.12"
+# Passphrase KDF for the manager's portable key vault (air-gapped transport).
+argon2 = { version = "0.5", default-features = false, features = ["alloc"] }
+# Compile-time string obfuscation (XOR-encrypted constants, random per build).
+obfstr = "0.4"
+# Best-effort zeroization of secrets in native memory.
+zeroize = "1"
+# Constant-time comparisons (HWID binding).
+subtle = "2"
+# OS entropy for key generation / nonces / salts (no trait machinery needed).
+getrandom = "0.2"
+
+[dependencies.jni]
+version = "0.21"
+optional = true
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[dev-dependencies]
+# Conformance test builds a VerifyingKey directly from the committed vector key.
+ed25519-dalek = { version = "2", default-features = false, features = ["fast"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

@@ -71,6 +71,12 @@
       "token": "VOR1.eyJ2IjoxLCJpZCI6IjQ0NDQ0NDQ0LTU1NTUtNjY2Ni03Nzc3LTg4ODg4ODg4ODg4OCIsInByb2R1Y3QiOiJ2b3IiLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTA5LTEwVDEyOjAwOjAwWiIsImVudGl0bGVtZW50cyI6eyJ0aWVyIjoic3RhbmRhcmQiLCJwbGF0Zm9ybXMiOlsibGludXgiXX19.QlyTYbw9wFrhsVjNoRdU85QQRXfVwpwgfZTxBpemToU7BPbCcz5IOw3VrjEoDunF7PFKUSTY-OdAVbItlZ8OBw",
       "expected": "EXPIRED",
       "note": "now == expires_at counts as expired"
+    },
+    {
+      "name": "impossible_day",
+      "token": "VOR1.eyJ2IjoxLCJpZCI6IjU1NTU1NTU1LTY2NjYtNzc3Ny04ODg4LTk5OTk5OTk5OTk5OSIsInByb2R1Y3QiOiJ2b3IiLCJpc3N1ZWRfYXQiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiIsImV4cGlyZXNfYXQiOiIyMDI2LTA5LTMxVDAwOjAwOjAwWiIsImVudGl0bGVtZW50cyI6eyJ0aWVyIjoic3RhbmRhcmQiLCJwbGF0Zm9ybXMiOlsibGludXgiXX19.S5DhIOVoclQDiW6j8VaQm35gfNb2OTzHKzlyDMw6cU_pJV39hd1V40JCyZYNeKKd0P9GjE1vKpBnYVs2FvonCA",
+      "expected": "INVALID",
+      "note": "expires_at 2026-09-31 does not exist; every port must reject it"
     }
   ]
 }

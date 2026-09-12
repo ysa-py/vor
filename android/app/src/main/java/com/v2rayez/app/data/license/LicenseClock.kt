@@ -111,6 +111,9 @@ open class LicenseClockCore(
     /** Latest trusted-time sample observed (for diagnostics/UI; 0 = none). */
     fun trustedSecondsSnapshot(): Long = trustedSeconds
 
+    /** Latest monotonic ratchet value observed (for the native DRM core; 0 = none). */
+    fun ratchetSecondsSnapshot(): Long = ratchetSeconds
+
     /**
      * Opportunistic trusted-time refresh — fire-and-forget, throttled to one
      * network attempt per [FETCH_INTERVAL_MS]. Safe to call from any hot path

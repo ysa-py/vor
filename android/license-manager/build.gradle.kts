@@ -29,8 +29,8 @@ android {
         // public verifier build is unchanged in behavior, byte-for-byte the
         // same code paths as 1.0.4.
         // v1.2.0 (106): release-train alignment with the main app.
-        versionCode = 106
-        versionName = "1.2.0"
+        versionCode = 107
+        versionName = "1.3.0"
 
         // Same dev-key default + CI override as the main app.
         val licenseKey = (project.findProperty("vor.licensePublicKey") as? String)

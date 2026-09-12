@@ -90,7 +90,18 @@ object Rfc3339 {
         val year = parts[0].toLongOrNull() ?: return null
         val month = parts[1].toLongOrNull() ?: return null
         val day = parts[2].toLongOrNull() ?: return null
-        if (month !in 1..12 || day !in 1..31 || year !in 1970..9999) return null
+        if (month !in 1..12 || year !in 1970..9999) return null
+        // Real calendar validation (Python/Go/iOS ports already reject
+        // impossible dates such as 2026-09-31; pinned by the shared
+        // vectors — see license/vectors.json "impossible_day").
+        val leap = (year % 4 == 0L && year % 100 != 0L) || year % 400 == 0L
+        val dayCap = when (month) {
+            1L, 3L, 5L, 7L, 8L, 10L, 12L -> 31L
+            4L, 6L, 9L, 11L -> 30L
+            2L -> if (leap) 29L else 28L
+            else -> return null
+        }
+        if (day !in 1..dayCap) return null
         return Triple(year, month, day)
     }
 

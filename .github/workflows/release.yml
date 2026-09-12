@@ -647,6 +647,40 @@ jobs:
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
             | Addon packs | `tor/lyrebird/snowflake/webtunnel/byedpi/psiphon/dnstt-<abi>.zip` | On-demand engine binaries for the in-app Core Manager — resolved from **this** repo, **this** tag |
 
+            ## v1.3.0 — native license DRM core (vor-drm) + hardened verification everywhere
+
+            - **`core/vor-drm`: a native Rust DRM core for offline licensing.**
+              Two deliberately separated cores in one crate: a **client**
+              (verify-only) and a **manager** (issue-only, issuer flavor —
+              structurally absent from public verifier APKs). The new **VOR2**
+              token format is hardware-locked and encrypted:
+              Ed25519-signed envelope, HKDF+AES-256-GCM payload, canonical
+              binary entitlements (expiry, bandwidth cap, tier, platforms),
+              constant-time HWID binding over permission-free device identity
+              (Widevine MediaDRM id + ANDROID_ID + build fingerprint), a
+              four-source anti-clock-rollback composition (device wall,
+              BOOTTIME-projected wall, persisted ratchet, signed issued_at),
+              and an anti-analysis ladder (TracerPid, /proc maps framework
+              scan, frida port probe, dump hardening, strike escalation) —
+              all behind obfstr string encryption and a control-flow
+              flattening macro. VOR1 stays first-class: the native core
+              verifies the old format byte-for-byte compatibly, locked to the
+              shared `license/vectors.json` conformance set on every platform.
+            - **Graceful native hardening in the app (zero behavior change
+              without the .so).** `LicenseRepository` now consults the native
+              core first when `libvor_drm.so` ships with a build — it verifies
+              both token generations with the full ladder; stock builds skip
+              it entirely and keep the pure-Kotlin verifier. The Kotlin
+              bridges never throw and degrade to null on any failure.
+            - **A real calendar in every license port.** Verification now
+              rejects impossible dates (`2026-09-31`, `2023-02-29`) in Rust
+              and Kotlin — Python, Go and iOS already did — pinned forever by
+              a new shared conformance vector (`impossible_day`).
+            - **84 Rust tests + strict clippy across every feature
+              combination** (client, manager, both JNI flavors — separately
+              and combined; zero warnings anywhere), plus 464 Android unit
+              tests, lint, and the Play Protect permission audit — all green.
+
             ## v1.2.0 — on-device AI routing goes live
 
             - **On-device AI-assisted engine selection (wired, not just ported).**

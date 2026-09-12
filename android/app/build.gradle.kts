@@ -38,8 +38,8 @@ android {
         // v1.2.0 (106): on-device AI routing (UCB1 bandit wired into the
         // live connect flow — engine hints per network fingerprint) +
         // zero-deprecation-warning Kotlin build.
-        versionCode = 106
-        versionName = "1.2.0"
+        versionCode = 107
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
