@@ -35,8 +35,11 @@ android {
         // v1.1.0 (105): Vector Shield brand icon + adaptive responsive
         // layouts + License Manager on-device issuer variant — still a pure
         // in-place update over any 1.0.x install.
-        versionCode = 105
-        versionName = "1.1.0"
+        // v1.2.0 (106): on-device AI routing (UCB1 bandit wired into the
+        // live connect flow — engine hints per network fingerprint) +
+        // zero-deprecation-warning Kotlin build.
+        versionCode = 106
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

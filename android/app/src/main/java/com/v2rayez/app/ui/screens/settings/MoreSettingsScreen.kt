@@ -8,9 +8,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatterySaver
-import androidx.compose.material.icons.filled.CallMerge
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +62,7 @@ fun MoreSettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltVi
             CardSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
                 Column {
                     SettingSwitchRow(
-                        Icons.Filled.CallMerge,
+                        Icons.AutoMirrored.Filled.CallMerge,
                         stringResource(R.string.vpn_mux),
                         s.enableMux,
                         viewModel::toggleMux,

@@ -17,9 +17,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Article
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Block
@@ -1114,7 +1114,7 @@ private fun TorContent(
         }
         if (probeLog.isNotEmpty()) {
             VSpacer(12)
-            IconSectionHeader(Icons.Filled.Article, stringResource(R.string.tor_probe_log))
+            IconSectionHeader(Icons.AutoMirrored.Filled.Article, stringResource(R.string.tor_probe_log))
             CardSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     probeLog.takeLast(12).forEach { line ->

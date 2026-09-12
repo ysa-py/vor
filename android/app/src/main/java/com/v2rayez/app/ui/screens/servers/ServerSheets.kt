@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.DriveFileMove
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DriveFileMove
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.FileUpload
@@ -294,7 +294,7 @@ fun ServerActionsSheet(
                 onToggleFavorite
             )
             if (onMoveToGroup != null) {
-                ActionItem(Icons.Filled.DriveFileMove, stringResource(R.string.servers_action_move_group), onMoveToGroup)
+                ActionItem(Icons.AutoMirrored.Filled.DriveFileMove, stringResource(R.string.servers_action_move_group), onMoveToGroup)
             }
             ActionItem(Icons.Filled.ContentCopy, stringResource(R.string.sheet_duplicate_server), onDuplicate)
             ActionItem(Icons.Filled.Share, stringResource(R.string.sheet_share_server), onShare)

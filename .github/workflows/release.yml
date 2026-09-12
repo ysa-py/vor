@@ -647,6 +647,29 @@ jobs:
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
             | Addon packs | `tor/lyrebird/snowflake/webtunnel/byedpi/psiphon/dnstt-<abi>.zip` | On-demand engine binaries for the in-app Core Manager — resolved from **this** repo, **this** tag |
 
+            ## v1.2.0 — on-device AI routing goes live
+
+            - **On-device AI-assisted engine selection (wired, not just ported).**
+              The shared Vor decision model (UCB1 bandit + per-network champion
+              cache, the same `core/vor-core` algorithm as every other platform)
+              is now wired into the live connect flow: every connect attempt's
+              real outcome — engine actually used, success/failure, measured
+              connect latency — is recorded per network fingerprint (transport
+              type + country + carrier), persisted on-device, and used to rank
+              the engine hint for the next connect on that same network.
+              Honest by design: a fresh install never claims a hint (no data,
+              no recommendation), user-pinned per-server cores are never
+              overridden, protocol constraints (WireGuard/SSH -> sing-box,
+              Tor -> Xray) always win, and an engine with no observations is
+              never recommended. Fully offline — nothing leaves the device.
+            - **Zero Kotlin deprecation warnings.** The app module now compiles
+              with a clean `w:`-free log (ClickableText and AutoMirrored icon
+              migrations) — warnings are treated as fixable debt, not noise.
+            - **`scripts/setup-github-secrets.sh`** — one-shot, re-runnable
+              bootstrap that pushes every secret/variable the CI and release
+              workflows actually read (keystore, google-services, license
+              public key, ADDONS_REPO) via the GitHub CLI.
+
             ## v1.1.0 — on-device license issuer, new brand icon, adaptive UI
 
             - **License Manager: on-device offline issuer capability.** The License

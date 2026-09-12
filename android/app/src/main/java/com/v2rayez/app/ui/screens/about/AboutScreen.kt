@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,15 +34,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.text.ClickableText
 import com.v2rayez.app.BuildConfig
 import com.v2rayez.app.R
 import com.v2rayez.app.ui.components.CardSurface
@@ -96,7 +93,7 @@ fun AboutScreen(onBack: () -> Unit, onDonate: () -> Unit) {
                 Column {
                     LinkRow(Icons.Filled.Language, stringResource(R.string.about_website)) { openUrl(context, BuildConfig.LINK_WEBSITE) }
                     Divider()
-                    LinkRow(Icons.Filled.Send, stringResource(R.string.about_telegram)) { openUrl(context, BuildConfig.LINK_TELEGRAM) }
+                    LinkRow(Icons.AutoMirrored.Filled.Send, stringResource(R.string.about_telegram)) { openUrl(context, BuildConfig.LINK_TELEGRAM) }
                     Divider()
                     LinkRow(Icons.Filled.PlayCircle, stringResource(R.string.about_youtube)) { openUrl(context, BuildConfig.LINK_YOUTUBE) }
                 }
@@ -163,21 +160,6 @@ private fun DevelopersRow(
 ) {
     val linkColor = MaterialTheme.colorScheme.primary
     val bodyColor = MaterialTheme.colorScheme.onSurface
-    val annotated = buildAnnotatedString {
-        append(macan)
-        append(" · ")
-        pushStringAnnotation(tag = OVERLORD_TAG, annotation = OVERLORD_TEAM_URL)
-        withStyle(
-            SpanStyle(
-                color = linkColor,
-                textDecoration = TextDecoration.Underline,
-                fontWeight = FontWeight.Medium
-            )
-        ) {
-            append(overlord)
-        }
-        pop()
-    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,15 +168,21 @@ private fun DevelopersRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        ClickableText(
-            text = annotated,
-            style = MaterialTheme.typography.bodyMedium.copy(color = bodyColor),
-            onClick = { offset ->
-                annotated.getStringAnnotations(OVERLORD_TAG, offset, offset)
-                    .firstOrNull()
-                    ?.let { onOverlordClick() }
-            }
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "$macan · ",
+                style = MaterialTheme.typography.bodyMedium.copy(color = bodyColor)
+            )
+            Text(
+                overlord,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = linkColor,
+                    textDecoration = TextDecoration.Underline,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.clickable(onClick = onOverlordClick)
+            )
+        }
     }
 }
 
@@ -203,7 +191,6 @@ private fun Divider() {
     HorizontalDivider(color = MaterialTheme.colorScheme.outline, thickness = 1.dp, modifier = Modifier.padding(start = 52.dp))
 }
 
-private const val OVERLORD_TAG = "overlord"
 private const val OVERLORD_TEAM_URL = "https://overlord.team"
 
 private fun openUrl(context: android.content.Context, url: String) {

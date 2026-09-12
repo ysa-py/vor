@@ -41,6 +41,7 @@ import com.v2rayez.app.domain.model.ConnectionStatus
 import com.v2rayez.app.domain.model.DesyncMode
 import com.v2rayez.app.domain.model.LogEntry
 import com.v2rayez.app.domain.model.LogLevel
+import com.v2rayez.app.domain.model.CorePreference
 import com.v2rayez.app.domain.model.Protocol
 import com.v2rayez.app.domain.model.ProxyCoreType
 import com.v2rayez.app.domain.model.Server
@@ -224,6 +225,7 @@ class V2RayVpnService : VpnService() {
     @Inject lateinit var processCore: ProcessProxyCore
     @Inject lateinit var licenseRepository: com.v2rayez.app.data.license.LicenseRepository
     @Inject lateinit var binaryManager: CoreBinaryManager
+    @Inject lateinit var aiRouter: com.v2rayez.app.data.ai.VorAiRouter
     @Inject lateinit var hevTunBridge: HevTunBridge
     @Inject lateinit var byedpi: ByeDpiEngine
     @Inject lateinit var psiphonEngine: com.v2rayez.app.data.psiphon.PsiphonEngine
@@ -555,6 +557,25 @@ class V2RayVpnService : VpnService() {
                 return
             }
             var coreType = CoreResolver.resolve(server, settings)
+            // On-device AI routing hint (UCB1 bandit over this network's past
+            // connect outcomes). Preference-level only: never overrides a
+            // user-pinned core, protocol constraints (WG/SSH -> sing-box) or
+            // the Tor-forces-Xray rule, and never claims knowledge before it
+            // has real observation data (fresh install keeps its default).
+            if (server.preferredCore == CorePreference.SYSTEM &&
+                !server.protocol.requiresSingBox() &&
+                !settings.tor.enabled
+            ) {
+                val availableCores = mutableListOf(ProxyCoreType.XRAY)
+                if (hasRunnableSingBox(settings)) availableCores.add(ProxyCoreType.SING_BOX)
+                if (hasRunnableMihomo(settings)) availableCores.add(ProxyCoreType.CLASH)
+                runCatching { aiRouter.recommendCoreType(availableCores) }.getOrNull()
+                    ?.takeIf { it != coreType }
+                    ?.let { aiHint ->
+                        log(LogLevel.INFO, "AI routing hint: ${aiHint.label} (learned on this network)")
+                        coreType = aiHint
+                    }
+            }
             // WireGuard / SSH run on sing-box (WG endpoint / ssh outbound); Xray can only do WG.
             if (server.protocol.requiresSingBox()) {
                 // WireGuard: prefer sing-box, but fall through to the Xray wireguard outbound when
@@ -583,6 +604,7 @@ class V2RayVpnService : VpnService() {
                 }
             }
             activeCoreType = coreType
+            runCatching { aiRouter.noteEngineSelected(coreType) }
             // Built-in Xray uses in-process AAR + TUN. sing-box / Clash Meta use process + hev.
             val useXrayAar = coreType == ProxyCoreType.XRAY
             usingProcessCore = !useXrayAar
@@ -810,6 +832,7 @@ class V2RayVpnService : VpnService() {
         }
         activeCoreType = ProxyCoreType.XRAY
         usingProcessCore = false
+        runCatching { aiRouter.noteEngineSelected("mitm-fronting") }
 
         // Capture-all is XOR with Tor whole-device.
         if (settings.tor.enabled) {
@@ -916,6 +939,7 @@ class V2RayVpnService : VpnService() {
         }
         activeCoreType = ProxyCoreType.XRAY
         usingProcessCore = false
+        runCatching { aiRouter.noteEngineSelected("tor") }
 
         val server = torSyntheticServer()
         activeServer = server
@@ -1120,6 +1144,12 @@ class V2RayVpnService : VpnService() {
         return binaryManager.resolveBinary(ProxyCoreType.SING_BOX, v) != null
     }
 
+    /** True when a runnable mihomo/Clash binary exists on this device (AI hint availability). */
+    private fun hasRunnableMihomo(settings: AppSettings): Boolean {
+        val v = settings.selectedCoreVersions[ProxyCoreType.CLASH] ?: CORE_VERSION_BUNDLED
+        return binaryManager.resolveBinary(ProxyCoreType.CLASH, v) != null
+    }
+
     /**
      * DNS-tunnel / Psiphon: addon process opens a local SOCKS forwarder that [HevTunBridge]
      * bridges to TUN. No proxy core, domain fronting, byedpi, or Tor.
@@ -1133,6 +1163,15 @@ class V2RayVpnService : VpnService() {
         val port = settings.socksPort.coerceIn(1024, 65535)
         activeCoreType = ProxyCoreType.SING_BOX
         usingProcessCore = true
+        runCatching {
+            aiRouter.noteEngineSelected(
+                when (server.protocol) {
+                    Protocol.PSIPHON -> "psiphon"
+                    Protocol.DNSTUNNEL -> "dns-tunnel-dnstt"
+                    else -> "xray"
+                }
+            )
+        }
 
         val engineLabel: String
         val started: Boolean
@@ -1254,6 +1293,12 @@ class V2RayVpnService : VpnService() {
     ) {
         log(LogLevel.ERROR, message)
         runCatching { firebaseTelemetry.captureVpnFailure(category, message) }
+        // Feed the on-device AI router the real failure signal (category-aware,
+        // never guessed from message text). A watchdog death after a healthy
+        // session is not a connect-outcome and is not recorded as one.
+        if (category == FailureCategory.VPN_CONNECT || category == FailureCategory.TOR || category == FailureCategory.MITM) {
+            runCatching { aiRouter.recordConnectFailure(dpiKill = looksLikeGeoFailure(message)) }
+        }
         // A watchdog failure can happen after a long valid session. Persist its final counters
         // before setError() resets the state-holder totals.
         runCatching { runBlocking { recordSession() } }

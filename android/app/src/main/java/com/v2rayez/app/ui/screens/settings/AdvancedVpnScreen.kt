@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AllInclusive
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.CallMerge
 import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Lan
 import androidx.compose.material.icons.filled.Language
@@ -198,7 +198,7 @@ fun AdvancedVpnScreen(
             CardSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(18.dp)) {
                 Column {
                     SettingSwitchRow(
-                        Icons.Filled.CallMerge,
+                        Icons.AutoMirrored.Filled.CallMerge,
                         stringResource(R.string.vpn_mux),
                         state.enableMux,
                         viewModel::toggleMux,

@@ -17,11 +17,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.filled.DriveFileMove
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DriveFileMove
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -31,7 +32,6 @@ import androidx.compose.material.icons.filled.NetworkPing
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SelectAll
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -478,7 +478,7 @@ private fun SelectionTopBar(
         )
         TopIconButton(Icons.Filled.SelectAll, stringResource(R.string.servers_select_all), onClick = onSelectAll)
         TopIconButton(Icons.Filled.Star, stringResource(R.string.servers_selection_favorite), onClick = onFavorite)
-        TopIconButton(Icons.Filled.DriveFileMove, stringResource(R.string.servers_selection_move), onClick = onMove)
+        TopIconButton(Icons.AutoMirrored.Filled.DriveFileMove, stringResource(R.string.servers_selection_move), onClick = onMove)
         TopIconButton(Icons.Filled.Share, stringResource(R.string.servers_selection_share), onClick = onShare)
         TopIconButton(Icons.Filled.Delete, stringResource(R.string.servers_selection_delete), tint = ErrorRed, onClick = onDelete)
     }
@@ -493,7 +493,7 @@ private fun SortMenuButton(current: ServerSortMode, onSelect: (ServerSortMode) -
     Box {
         TextButton(onClick = { open = true }) {
             Icon(
-                Icons.Filled.Sort,
+                Icons.AutoMirrored.Filled.Sort,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )

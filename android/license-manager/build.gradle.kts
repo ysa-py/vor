@@ -28,8 +28,9 @@ android {
         // v1.1.0 (105): on-device offline ISSUER build variant added — the
         // public verifier build is unchanged in behavior, byte-for-byte the
         // same code paths as 1.0.4.
-        versionCode = 105
-        versionName = "1.1.0"
+        // v1.2.0 (106): release-train alignment with the main app.
+        versionCode = 106
+        versionName = "1.2.0"
 
         // Same dev-key default + CI override as the main app.
         val licenseKey = (project.findProperty("vor.licensePublicKey") as? String)

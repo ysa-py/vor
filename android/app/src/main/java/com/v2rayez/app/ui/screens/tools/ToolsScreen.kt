@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Article
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Dns
@@ -186,7 +186,7 @@ private fun listIcon(id: String): ImageVector = when (id) {
     "speed" -> Icons.Filled.Speed
     "diag" -> Icons.Filled.MonitorHeart
     "dnsscan" -> Icons.Filled.Dns
-    "logs" -> Icons.Filled.Article
+    "logs" -> Icons.AutoMirrored.Filled.Article
     else -> Icons.Filled.Tune
 }
 
