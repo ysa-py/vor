@@ -138,4 +138,13 @@
     <string name="issuer_passphrase_too_short">حداقل ۸ نویسه استفاده کنید.</string>
     <string name="issuer_passphrase_mismatch">رمزها یکسان نیستند.</string>
     <string name="issuer_passphrase_hint">این رمز فایل پشتیبان را محافظت می‌کند (Argon2id + AES-256-GCM). هرگز ذخیره نمی‌شود و قابل بازیابی نیست — گم‌کردنش یعنی گم‌شدن پشتیبان.</string>
+    <!-- اتصال اپ (v1.5.0) -->
+    <string name="issuer_pair_header">کد اتصال اپلیکیشن</string>
+    <string name="issuer_pair_hint">اپ‌های خریداری‌کننده‌ای که کلید دیگری درونشان تعبیه شده، پس از یک‌بار اتصال با این کد لایسنس‌های شما را می‌پذیرند: آن را همراه لایسنس برای خریدار بفرستید (از هر کانالی — این کد فقط شامل کلید عمومی است و هرگز امکان جعل ایجاد نمی‌کند). در اپ خریدار: صفحهٔ لایسنس ← «اتصال کلید فروشنده» ← چسباندن.</string>
+    <string name="issuer_pair_code_label">کد اتصال</string>
+    <string name="issuer_pair_show_qr">نمایش QR</string>
+    <string name="issuer_pair_copy">کپی کد</string>
+    <string name="issuer_pair_copied">کد اتصال کپی شد</string>
+    <string name="issuer_pair_none">اول یک کلید امضا بسازید یا درون‌ریزی کنید.</string>
+    <string name="issuer_pair_qr_title">در اپ خریدار اسکن کنید</string>
 </resources>

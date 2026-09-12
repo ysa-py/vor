@@ -23,7 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -67,7 +67,7 @@ fun DonateScreen(onBack: () -> Unit) {
             SectionHeader(title = stringResource(R.string.donate_section_community), modifier = Modifier.fillMaxWidth())
             CardSurface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
                 Column {
-                    SocialRow(Icons.Filled.Send, "Telegram", "@EzAccess1") { openUrl(context, PromoLinks.TELEGRAM_URL) }
+                    SocialRow(Icons.AutoMirrored.Filled.Send, "Telegram", "@EzAccess1") { openUrl(context, PromoLinks.TELEGRAM_URL) }
                     SocialRow(Icons.Filled.PlayCircle, "YouTube", "@MacanDev") { openUrl(context, PromoLinks.YOUTUBE_URL) }
                 }
             }

@@ -13,7 +13,7 @@ class GeoAssetAvailabilityTest {
 
     @Test
     fun fullPackHealthy_requiresMarkerAndMinSizes() {
-        val dir = createTempDir(prefix = "geo-pack-")
+        val dir = kotlin.io.path.createTempDirectory("geo-pack-").toFile()
         try {
             val geosite = File(dir, "geosite.dat")
             val geoip = File(dir, "geoip.dat")
@@ -39,7 +39,7 @@ class GeoAssetAvailabilityTest {
 
     @Test
     fun emptyGeositeFile_isUnhealthy() {
-        val dir = createTempDir(prefix = "geo-empty-")
+        val dir = kotlin.io.path.createTempDirectory("geo-empty-").toFile()
         try {
             File(dir, "geosite.dat").writeBytes(ByteArray(0))
             File(dir, "geoip.dat").writeBytes(ByteArray(2 * 1024 * 1024))

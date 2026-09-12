@@ -95,6 +95,39 @@ Statuses: `VALID`, `EXPIRED`, `INVALID` (malformed / bad signature / wrong produ
 - Rotating keys: generate a new pair, add the new public key to the trusted set
   (clients accept a list), re-issue licenses, drop the old key in a later release.
 
+## Publisher key pairing (v1.5.0 — issuance under a GitHub blackout)
+
+Since v1.5.0 the Android app accepts ONE additional trust root besides the
+build-embedded key: the **paired publisher key**, imported by the buyer
+once through the license gate.
+
+- Why: the embedded production seed lives only in the GitHub secret, and the
+  `issue-license.yml` workflow needs GitHub access. When GitHub is blocked
+  (Iran state-level filtering), the seller still holds their keys in the
+  License Manager `issuer` app (on-device, Keystore-wrapped) — pairing lets
+  those tokens verify in stock, unmodified buyer apps. No rebuild, no
+  network, no secret transfer.
+- Pairing code format: `VORP1.<base64url(32-byte Ed25519 public key)>.<first 8 hex of SHA-256(key)>`
+  (see `android/core-license/src/main/kotlin/com/vor/license/PublisherKeyCodec.kt`).
+- Where the code comes from: License Manager `issuer` variant → Keys tab →
+  “App pairing code” (copy or QR). It is published as a release asset
+  (`Vor-v*-license-manager-issuer-release.apk`) so the seller can obtain it
+  through the release channel.
+- Buyer flow: license gate → “Pair reseller key” → paste the `VORP1…` code →
+  the fingerprint (first 8 hex of SHA-256, same derivation on both sides) is
+  shown for out-of-band confirmation with the seller. Verification then
+  accepts a token that verifies against EITHER the embedded key or the
+  paired key (native vor-drm path included when present).
+- Security: the code carries ONLY the public key — importing it can never
+  enable forgery (Ed25519). One publisher key at a time; pairing again
+  replaces it; the gate always shows the active fingerprint and an explicit
+  remove button. An attacker who gets a buyer to pair an attacker key only
+  harms themselves (that one device accepts that attacker's tokens); they
+  cannot forge the seller's tokens or affect other buyers.
+- Both issuer tabs (Keys) and the app gate display the same fingerprint
+  derivation, pinned by `PublisherKeyCodecTest` + `IssuerPairCodeTest` +
+  `PublisherPairingFlowTest`.
+
 ## Issuance
 
 GitHub Actions workflow `.github/workflows/issue-license.yml`:

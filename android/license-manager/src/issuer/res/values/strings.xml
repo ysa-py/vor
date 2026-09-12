@@ -139,4 +139,13 @@
     <string name="issuer_passphrase_too_short">Use at least 8 characters.</string>
     <string name="issuer_passphrase_mismatch">Passphrases do not match.</string>
     <string name="issuer_passphrase_hint">The passphrase protects the backup file (Argon2id + AES-256-GCM). It is never stored and cannot be recovered — losing it means losing the backup.</string>
+    <!-- App pairing (v1.5.0) -->
+    <string name="issuer_pair_header">App pairing code</string>
+    <string name="issuer_pair_hint">Buyer apps that embed a different key still accept your licenses after they pair with this code once: send it together with the license (any channel — it only carries the PUBLIC key, so it can never enable forgery). In the buyer app: license screen → “Pair reseller key” → paste.</string>
+    <string name="issuer_pair_code_label">Pairing code</string>
+    <string name="issuer_pair_show_qr">Show QR</string>
+    <string name="issuer_pair_copy">Copy code</string>
+    <string name="issuer_pair_copied">Pairing code copied</string>
+    <string name="issuer_pair_none">Generate or import a signing key first.</string>
+    <string name="issuer_pair_qr_title">Scan in the buyer app</string>
 </resources>

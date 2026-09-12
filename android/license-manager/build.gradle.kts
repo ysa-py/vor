@@ -29,15 +29,19 @@ android {
         // public verifier build is unchanged in behavior, byte-for-byte the
         // same code paths as 1.0.4.
         // v1.2.0 (106): release-train alignment with the main app.
-        versionCode = 108
-        versionName = "1.4.0"
+        versionCode = 109
+        versionName = "1.5.0"
 
         // Same dev-key default + CI override as the main app.
         val licenseKey = (project.findProperty("vor.licensePublicKey") as? String)
             ?.takeIf { it.isNotBlank() }
             ?: "f54nNpWuth1MHZsbi6sdEODSDvWp7V6XSSDqWtmCyMA"
         buildConfigField("String", "VOR_LICENSE_PUBLIC_KEY", "\"$licenseKey\"")
-        resourceConfigurations += listOf("en", "fa")
+    }
+
+    androidResources {
+        // Ship English + Persian; strip every other locale (incl. library ones).
+        localeFilters += setOf("en", "fa")
     }
 
     // Two capabilities from ONE codebase (license/SPEC.md "On-device

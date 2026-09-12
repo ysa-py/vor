@@ -172,7 +172,16 @@ class IssuerVault(private val context: Context) {
                 // The whole point: without a recent unlock, the wrapped seed
                 // is unusable, no matter where the file goes.
                 .setUserAuthenticationRequired(true)
-                .setUserAuthenticationValidityDurationSeconds(AUTH_WINDOW_SECONDS)
+                // Deliberately staying on setUserAuthenticationValidityDurationSeconds
+                // (deprecated in SDK 35 in favor of setUserAuthenticationParameters):
+                // the replacement changes the accepted authenticator SET on
+                // API < 35 devices, and the issuer's real-device auth flow is
+                // business-critical — identical semantics everywhere wins
+                // over silencing a deprecation.
+                .apply {
+                    @Suppress("DEPRECATION")
+                    setUserAuthenticationValidityDurationSeconds(AUTH_WINDOW_SECONDS)
+                }
                 .build(),
         )
         return generator.generateKey()

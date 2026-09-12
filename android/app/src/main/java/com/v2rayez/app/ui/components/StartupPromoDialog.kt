@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -74,7 +74,7 @@ fun StartupPromoDialog(onDismiss: (dontShowAgain: Boolean) -> Unit) {
                     .background(Brush.linearGradient(accentGradient(MaterialTheme.colorScheme.primary))),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.Send, contentDescription = null, tint = Color.White, modifier = Modifier.size(30.dp))
+                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = null, tint = Color.White, modifier = Modifier.size(30.dp))
             }
             VSpacer(16)
             Text(
@@ -93,7 +93,7 @@ fun StartupPromoDialog(onDismiss: (dontShowAgain: Boolean) -> Unit) {
             VSpacer(20)
 
             PromoButton(
-                icon = Icons.Filled.Send,
+                icon = Icons.AutoMirrored.Filled.Send,
                 label = stringResource(R.string.promo_join_telegram),
                 onClick = { openTelegram(context) }
             )

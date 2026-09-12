@@ -43,7 +43,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -219,7 +219,7 @@ private data class IssuerTab(val labelRes: Int, val icon: ImageVector?, val icon
 
 private val TABS = listOf(
     IssuerTab(R.string.issuer_tab_issue, Icons.Filled.Create),
-    IssuerTab(R.string.issuer_tab_batch, Icons.Filled.List),
+    IssuerTab(R.string.issuer_tab_batch, Icons.AutoMirrored.Filled.List),
     IssuerTab(R.string.issuer_tab_history, null, R.drawable.ic_issuer_history),
     IssuerTab(R.string.issuer_tab_keys, Icons.Filled.Lock),
 )

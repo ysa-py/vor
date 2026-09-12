@@ -163,7 +163,7 @@ private fun AppRoot(
     // touches the license DataStore, which re-emits gateState with a verdict against
     // the CURRENT clock — the gate re-locks by itself the moment the signed expiry
     // claim passes, with no network call and no manual action.
-    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val licenseScope = androidx.compose.runtime.rememberCoroutineScope()
     androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->

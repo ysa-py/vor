@@ -17,7 +17,7 @@ import java.io.File
 class HelloFragmenterTest {
 
     private fun resource(name: String): String {
-        val url = Thread.currentThread().contextClassLoader.getResource(name)
+        val url = Thread.currentThread().contextClassLoader?.getResource(name)
             ?: throw AssertionError("missing test resource: $name")
         return File(url.toURI()).readText()
     }

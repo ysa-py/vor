@@ -1,6 +1,7 @@
 package com.v2rayez.app.data.license
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -10,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.vor.license.LicenseResult
 import com.vor.license.LicenseStatus
 import com.vor.license.LicenseVerifier
+import com.vor.license.PublisherKeyCodec
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -44,6 +46,12 @@ class LicenseRepository @Inject constructor(
     companion object {
         private val KEY_TOKEN = stringPreferencesKey("vor_license_token")
         private val KEY_LAST_CHECK = longPreferencesKey("vor_license_last_check_epoch")
+        private val KEY_PUBLISHER = stringPreferencesKey("vor_publisher_public_key")
+
+        /** Bounded blocking budget for the one-shot publisher-key hydration. */
+        const val PUBLISHER_HYDRATION_TIMEOUT_MS: Long = 50L
+
+        private const val TAG = "LicenseRepository"
 
         /** Re-verification cadence while the app runs (24h). */
         const val RECHECK_INTERVAL_S = 24 * 3600L
@@ -65,6 +73,26 @@ class LicenseRepository @Inject constructor(
     }
 
     /**
+     * Publisher key pairing (v1.5.0): the reseller's on-device issuer key,
+     * imported once via the gate UI as a `VORP1` pairing code and stored
+     * next to the token in this DataStore. Tokens signed by it verify
+     * exactly like build-embedded-key tokens — Ed25519, so importing a
+     * public key can never enable forgery. One publisher key at a time;
+     * pairing again replaces, `null` = not paired.
+     */
+    @Volatile
+    private var publisherKeyB64Url: String? = null
+
+    /**
+     * One-shot bounded hydration so non-flow callers (VPN-service
+     * watchdog's [isValidNow]) see the paired key even before the first
+     * [gateState] emission. Mirrors [LicenseClockCore]'s bounded-hydrate
+     * pattern: once per process, ~ms, failure degrades to "not paired".
+     */
+    @Volatile
+    private var publisherHydrationState = 0
+
+    /**
      * Hardware identity for the native DRM core (v1.3.0). Gathered lazily,
      * cached for the process — the components are factory-stable by design,
      * and the gather itself costs one MediaDrm construction.
@@ -79,6 +107,8 @@ class LicenseRepository @Inject constructor(
         val status: LicenseStatus = LicenseStatus.INVALID,
         val token: String? = null,
         val payload: com.vor.license.LicensePayload? = null,
+        /** Fingerprint of the paired publisher key (8 hex), null when unpaired. */
+        val publisherFingerprint: String? = null,
     )
 
     /**
@@ -90,12 +120,22 @@ class LicenseRepository @Inject constructor(
      * take the whole process down. The flow is now guarded with [catch] and falls
      * back to a locked-but-hydrated state, so the WORST possible failure mode is a
      * re-locked gate — never a crash.
+     *
+     * The map also refreshes the publisher-key cache from the same preferences
+     * it is already reading (single DataStore owner — a second DataStore on the
+     * same file would itself crash the app), so a paired key applies to every
+     * verification path with zero extra I/O.
      */
     val gateState: Flow<GateState> = context.licenseDataStore.data
         .map { preferences ->
+            publisherKeyB64Url = preferences[KEY_PUBLISHER]?.takeIf { it.isNotBlank() }
+            publisherHydrationState = 2
             val token = preferences[KEY_TOKEN]
             if (token.isNullOrBlank()) {
-                GateState(hydrated = true)
+                GateState(
+                    hydrated = true,
+                    publisherFingerprint = publisherFingerprint(),
+                )
             } else {
                 val result = verifyBlocking(token, licenseClock.nowSeconds())
                 GateState(
@@ -103,6 +143,7 @@ class LicenseRepository @Inject constructor(
                     status = result.status,
                     token = token,
                     payload = result.payload,
+                    publisherFingerprint = publisherFingerprint(),
                 )
             }
         }
@@ -128,18 +169,102 @@ class LicenseRepository @Inject constructor(
         // binding, anti-rollback, anti-analysis — and its verdict wins.
         // Stock builds without the .so never even reach the identity gather
         // (zero overhead, zero behavior change).
+        // v1.5.0: the paired publisher key (if any) is tried with the SAME
+        // precedence as the embedded key.
+        val keys = activePublicKeys()
         if (VorDrmClient.available) {
-            VorDrmClient.verify(
-                token = token,
-                publicKeyB64 = activePublicKey,
-                persistedRatchet = licenseClock.ratchetSecondsSnapshot(),
-                trusted = licenseClock.trustedSecondsSnapshot(),
-                deviceWall = nowEpochSeconds,
-                hwid = deviceHwid,
-            )?.let { native -> return native.asLicenseResult() }
+            for (key in keys) {
+                VorDrmClient.verify(
+                    token = token,
+                    publicKeyB64 = key,
+                    persistedRatchet = licenseClock.ratchetSecondsSnapshot(),
+                    trusted = licenseClock.trustedSecondsSnapshot(),
+                    deviceWall = nowEpochSeconds,
+                    hwid = deviceHwid,
+                )?.let { native -> return native.asLicenseResult() }
+            }
         }
-        return LicenseVerifier.verify(activePublicKey, token, nowEpochSeconds)
+        // First non-INVALID verdict wins so a paired-issuer token and an
+        // embedded-key token both reach the gate with their real status.
+        for (key in keys) {
+            val result = LicenseVerifier.verify(key, token, nowEpochSeconds)
+            if (result.status != LicenseStatus.INVALID) return result
+        }
+        return LicenseResult(LicenseStatus.INVALID, null)
     }
+
+    /** Embedded key first, then the paired publisher key (v1.5.0). */
+    private fun activePublicKeys(): List<String> {
+        hydratePublisherKeyOnce()
+        val publisher = publisherKeyB64Url?.takeIf { it.isNotBlank() }
+        return if (publisher == null) listOf(activePublicKey) else listOf(activePublicKey, publisher)
+    }
+
+    /** Bounded one-shot hydrate for non-flow callers ([isValidNow]). */
+    private fun hydratePublisherKeyOnce() {
+        if (publisherHydrationState != 0) return
+        synchronized(this) {
+            if (publisherHydrationState != 0) return
+            publisherHydrationState = 1
+            runCatching {
+                runBlocking {
+                    kotlinx.coroutines.withTimeoutOrNull(PUBLISHER_HYDRATION_TIMEOUT_MS) {
+                        context.licenseDataStore.data.first()[KEY_PUBLISHER]
+                    }
+                }
+            }.getOrNull()?.let { stored ->
+                publisherKeyB64Url = stored?.takeIf { it.isNotBlank() }
+            }
+            publisherHydrationState = 2
+        }
+    }
+
+    // ---- publisher key pairing (v1.5.0) ----------------------------------
+
+    /**
+     * Import a `VORP1` pairing code: validate, persist, and flip the gate to
+     * verify against the reseller's key from now on. Returns the parsed
+     * pairing (for UI confirmation of the fingerprint), or null when the
+     * code is malformed. Storage failures surface as null too — never a
+     * crash.
+     */
+    suspend fun pairPublisher(code: String): PublisherKeyCodec.ParsedPairing? {
+        val pairing = PublisherKeyCodec.parse(code) ?: return null
+        val ok = runCatching {
+            context.licenseDataStore.edit { preferences ->
+                preferences[KEY_PUBLISHER] = pairing.publicKeyB64Url
+            }
+        }.isSuccess
+        if (!ok) {
+            Log.w(TAG, "publisher key persist failed")
+            return null
+        }
+        publisherKeyB64Url = pairing.publicKeyB64Url
+        publisherHydrationState = 2
+        return pairing
+    }
+
+    /** Remove the paired publisher key (verification falls back to embedded key only). */
+    suspend fun unpairPublisher() {
+        publisherKeyB64Url = null
+        runCatching {
+            context.licenseDataStore.edit { preferences -> preferences.remove(KEY_PUBLISHER) }
+        }.onFailure { Log.w(TAG, "publisher key remove failed", it) }
+    }
+
+    /** Fingerprint of the currently paired publisher key, or null. */
+    fun publisherFingerprint(): String? {
+        hydratePublisherKeyOnce()
+        return publisherKeyB64Url?.let { PublisherKeyCodec.fingerprintOfBase64Url(it) }
+    }
+
+    /**
+     * Application context for the file-based crash-evidence helper
+     * (v1.5.0) — the gate's ViewModel uses it to offer "share crash report".
+     * Deliberately the SAME already-injected application context; no new
+     * context sources, no leaks.
+     */
+    fun applicationContextForDiagnostics(): Context = context.applicationContext
 
     /**
      * Activate a token: verifies first, persists only when valid (or

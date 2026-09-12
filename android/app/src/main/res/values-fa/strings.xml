@@ -1010,6 +1010,22 @@
     <string name="license_gate_error_invalid">توکن نامعتبر است. کل توکن را کپی کنید.</string>
     <string name="license_gate_expired_title">لایسنس منقضی شده</string>
     <string name="license_gate_expired_body">این لایسنس در %1$s منقضی شده است. برای باز کردن دوبارهٔ Vor توکن جدید بگیرید.</string>
+    <!-- Publisher key pairing (v1.5.0): offline reseller key import. -->
+    <string name="pair_title">اتصال کلید فروشنده</string>
+    <string name="pair_action">اتصال کلید فروشنده</string>
+    <string name="pair_hint">اگر فروشندهٔ شما لایسنس را با کلید خودش صادر کرده است، کد اتصالی را که به شما داده (با VORP1. شروع می‌شود) اینجا بچسبانید. این کار فقط یک بار لازم است.</string>
+    <string name="pair_field_label">کد اتصال (VORP1.…)</string>
+    <string name="pair_confirm">اتصال این کلید</string>
+    <string name="pair_success">متصل شد. لایسنس‌های این فروشنده از این پس تأیید می‌شوند.</string>
+    <string name="pair_error_invalid">کد اتصال نامعتبر است. کل کد (VORP1.…) را از فروشندهٔ خود کپی کنید.</string>
+    <string name="pair_active">کلید فروشنده %1$s متصل است</string>
+    <string name="pair_active_remove">حذف</string>
+    <string name="pair_removed">کلید فروشنده حذف شد. تأیید به کلید داخلی برمی‌گردد.</string>
+    <!-- Persistent crash evidence (v1.5.0). -->
+    <string name="crash_report_detected">خطای قبلی برنامه ثبت شده است</string>
+    <string name="crash_report_share">ارسال گزارش خطا</string>
+    <string name="crash_report_dismiss">بستن</string>
+    <string name="crash_report_hint">ارسال این گزارش به فروشنده باعث رفع دقیق مشکل می‌شود. این گزارش فقط شامل نسخهٔ برنامه، مدل دستگاه و متن خطا است — هیچ اطلاعات خصوصی ندارد.</string>
 
     <!-- DNS resolver scanner -->
     <string name="dnsscan_title">اسکنر DNS</string>

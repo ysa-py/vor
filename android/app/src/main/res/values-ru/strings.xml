@@ -1070,6 +1070,22 @@
     <string name="license_gate_error_invalid">Недействительный токен. Скопируйте токен полностью.</string>
     <string name="license_gate_expired_title">Лицензия истекла</string>
     <string name="license_gate_expired_body">Лицензия истекла %1$s. Получите новый токен, чтобы снова разблокировать Vor.</string>
+    <!-- Publisher key pairing (v1.5.0): offline reseller key import. -->
+    <string name="pair_title">Подключить ключ продавца</string>
+    <string name="pair_action">Подключить ключ продавца</string>
+    <string name="pair_hint">Если продавец выпустил лицензию своим ключом, вставьте код подключения, который он вам дал (начинается с VORP1.). Это нужно сделать только один раз.</string>
+    <string name="pair_field_label">Код подключения (VORP1.…)</string>
+    <string name="pair_confirm">Подключить этот ключ</string>
+    <string name="pair_success">Ключ подключён. Лицензии этого продавца теперь проходят проверку.</string>
+    <string name="pair_error_invalid">Неверный код подключения. Скопируйте весь код (VORP1.…) у продавца.</string>
+    <string name="pair_active">Ключ продавца %1$s подключён</string>
+    <string name="pair_active_remove">Удалить</string>
+    <string name="pair_removed">Ключ продавца удалён. Проверка возвращается к встроенному ключу.</string>
+    <!-- Persistent crash evidence (v1.5.0). -->
+    <string name="crash_report_detected">Зафиксировано предыдущее падение приложения</string>
+    <string name="crash_report_share">Отправить отчёт о падении</string>
+    <string name="crash_report_dismiss">Закрыть</string>
+    <string name="crash_report_hint">Отправка этого отчёта продавцу помогает устранить точную причину. Он содержит версию приложения, модель устройства и стек ошибки — ничего личного.</string>
 
     <!-- DNS resolver scanner -->
     <string name="dnsscan_title">Сканер DNS-резолверов</string>

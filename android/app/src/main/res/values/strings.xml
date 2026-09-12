@@ -1046,6 +1046,22 @@
     <string name="license_gate_error_invalid">Invalid token. Check that you copied the whole token.</string>
     <string name="license_gate_expired_title">License expired</string>
     <string name="license_gate_expired_body">This license expired on %1$s. Obtain a new token to unlock Vor again.</string>
+    <!-- Publisher key pairing (v1.5.0): offline reseller key import. -->
+    <string name="pair_title">Pair reseller key</string>
+    <string name="pair_action">Pair reseller key</string>
+    <string name="pair_hint">If your seller issued the license with their own key, paste the pairing code they gave you (it starts with VORP1.). This is needed only once.</string>
+    <string name="pair_field_label">Pairing code (VORP1.…)</string>
+    <string name="pair_confirm">Pair this key</string>
+    <string name="pair_success">Paired. Licenses from this seller now verify.</string>
+    <string name="pair_error_invalid">Invalid pairing code. Copy the full code (VORP1.…) from your seller.</string>
+    <string name="pair_active">Seller key %1$s is paired</string>
+    <string name="pair_active_remove">Remove</string>
+    <string name="pair_removed">Seller key removed. Verification falls back to the built-in key.</string>
+    <!-- Persistent crash evidence (v1.5.0). -->
+    <string name="crash_report_detected">A previous crash was recorded</string>
+    <string name="crash_report_share">Share crash report</string>
+    <string name="crash_report_dismiss">Dismiss</string>
+    <string name="crash_report_hint">Sending this report to your seller helps fix the exact cause. It contains the app version, device model and the error stack — nothing private.</string>
 
     <!-- DNS resolver scanner -->
     <string name="dnsscan_title">DNS Resolver Scanner</string>

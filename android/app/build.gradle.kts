@@ -43,8 +43,8 @@ android {
         // themed monochrome, all platforms), in-app logo on About/License
         // gate/Manager, responsive width caps, proper en/fa/ru plurals,
         // full lint zero-warning pass (176 -> 0).
-        versionCode = 108
-        versionName = "1.4.0"
+        versionCode = 109
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -74,12 +74,18 @@ android {
             "VOR_LICENSE_PUBLIC_KEY",
             "\"${linkProp("vor.licensePublicKey", "f54nNpWuth1MHZsbi6sdEODSDvWp7V6XSSDqWtmCyMA")}\""
         )
-        // Ship English + Persian + Russian; strip every other locale (incl. library ones).
-        resourceConfigurations += listOf("en", "fa", "ru")
+        // Ship English + Persian + Russian; strip every other locale (incl.
+        // library ones). localeFilters replaces the deprecated
+        // resourceConfigurations (AGP 8.13 deprecation warning).
 
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    androidResources {
+        // Ship English + Persian + Russian; strip every other locale (incl. library ones).
+        localeFilters += setOf("en", "fa", "ru")
     }
 
     // Per-ABI APKs keep packaging under the heap limit with huge core binaries.
@@ -255,6 +261,7 @@ dependencies {
     implementation(project(":core-license"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.androidx.activity.compose)

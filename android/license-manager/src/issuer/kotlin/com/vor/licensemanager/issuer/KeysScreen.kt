@@ -2,6 +2,7 @@ package com.vor.licensemanager.issuer
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,11 +31,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vor.license.PublisherKeyCodec
 import com.vor.licensemanager.BuildConfig
+import com.vor.licensemanager.QrCodec
 import com.vor.licensemanager.R
 
 /**
@@ -54,6 +61,15 @@ fun KeysScreen(
     val keyInfo = remember(keyVersion) { ops.vault.keyInfo() }
     val fingerprint = remember(keyVersion) { ops.vault.fingerprint() }
     val matchesEmbedded = remember(keyVersion) { keyInfo?.pubB64Url == BuildConfig.VOR_LICENSE_PUBLIC_KEY }
+    // v1.5.0: the app-pairing code for THIS key (what buyers paste into the
+    // Vor gate once, so this device's licenses verify even though the build
+    // embeds a different key).
+    val pairingCode = remember(keyVersion) {
+        keyInfo?.pubB64Url?.let { PublisherKeyCodec.encodeFromBase64Url(it) }
+    }
+    var showPairQr by remember { mutableStateOf(false) }
+    var pairCopied by remember { mutableStateOf(false) }
+    val clipboard = LocalClipboardManager.current
 
     var confirmGenerate by remember { mutableStateOf(false) }
     var showImport by remember { mutableStateOf(false) }
@@ -168,6 +184,62 @@ fun KeysScreen(
                 Text(stringResource(R.string.issuer_wipe), color = MaterialTheme.colorScheme.error)
             }
         }
+        Spacer(Modifier.height(16.dp))
+
+        // ---- App pairing code (v1.5.0) -----------------------------------
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            ),
+            modifier = Modifier.fillMaxWidth().widthIn(max = 560.dp),
+        ) {
+            Column(Modifier.padding(16.dp)) {
+                Text(stringResource(R.string.issuer_pair_header), fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.issuer_pair_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(8.dp))
+                if (pairingCode == null) {
+                    Text(
+                        stringResource(R.string.issuer_pair_none),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.issuer_pair_code_label),
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = pairingCode,
+                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(onClick = {
+                            clipboard.setText(AnnotatedString(pairingCode))
+                            pairCopied = true
+                        }) { Text(stringResource(R.string.issuer_pair_copy)) }
+                        OutlinedButton(onClick = { showPairQr = true }) {
+                            Text(stringResource(R.string.issuer_pair_show_qr))
+                        }
+                    }
+                    if (pairCopied) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            stringResource(R.string.issuer_pair_copied),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+            }
+        }
+
         Spacer(Modifier.height(24.dp))
     }
 
@@ -270,6 +342,32 @@ fun KeysScreen(
             dismissButton = {
                 TextButton(onClick = { showWipe = false }) {
                     Text(stringResource(R.string.issuer_cancel))
+                }
+            },
+        )
+    }
+
+    if (showPairQr && pairingCode != null) {
+        AlertDialog(
+            onDismissRequest = { showPairQr = false },
+            title = { Text(stringResource(R.string.issuer_pair_qr_title)) },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    QrCodec.encode(pairingCode)?.let { bitmap ->
+                        Image(
+                            bitmap = bitmap.asImageBitmap(),
+                            contentDescription = stringResource(R.string.issuer_pair_qr_title),
+                            modifier = Modifier.size(280.dp),
+                        )
+                    } ?: Text(
+                        stringResource(R.string.issuer_error_generic),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPairQr = false }) {
+                    Text(stringResource(R.string.issuer_close))
                 }
             },
         )

@@ -97,9 +97,16 @@ jobs:
           # job below stages the addon zips as assets of this same release, so
           # the in-app Core Manager resolves packs without depending on any
           # other repository.
-          # Verifier ONLY: the issuer build variant is the maintainer's
-          # private signing app — it is never built into public releases.
-          ./gradlew :app:assembleRelease :license-manager:assembleVerifierRelease \
+          # Since v1.5.0 the ISSUER variant ships as a release asset too: with
+          # GitHub unreliable/blocked for the maintainer, the release channel
+          # is the only way the seller can obtain their offline signing app.
+          # It contains NO key material (the key is generated on-device and
+          # wrapped by the Android Keystore) and stays biometric-gated, so
+          # publishing it is safe; buyer apps accept its licenses only after
+          # the explicit VORP1 pairing on the license gate.
+          ./gradlew :app:assembleRelease \
+            :license-manager:assembleVerifierRelease \
+            :license-manager:assembleIssuerRelease \
             -Pv2rayez.addons.githubRepo=ysa-py/Vor \
             -Pv2rayez.addons.releaseTag="${GITHUB_REF_NAME}" \
             -Pvor.licensePublicKey="${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" \
@@ -151,13 +158,16 @@ jobs:
             cp "$f" "release-assets/Vor-v${VER}-android-${abi}-release.apk"
             staged=$((staged+1))
           done
-          if ls license-manager/build/outputs/apk/issuer/release/*.apk >/dev/null 2>&1; then
-            echo "::error::issuer-variant APK found in release outputs — the issuer build must never be published"
-            exit 1
-          fi
           for f in license-manager/build/outputs/apk/verifier/release/*.apk; do
             [ -f "$f" ] || continue
             cp "$f" "release-assets/Vor-v${VER}-license-manager-release.apk"
+            staged=$((staged+1))
+          done
+          # v1.5.0: the issuer variant is published on purpose (see build
+          # step) — the seller's offline signing app.
+          for f in license-manager/build/outputs/apk/issuer/release/*.apk; do
+            [ -f "$f" ] || continue
+            cp "$f" "release-assets/Vor-v${VER}-license-manager-issuer-release.apk"
             staged=$((staged+1))
           done
           if [ "$staged" -eq 0 ]; then
@@ -167,9 +177,10 @@ jobs:
           # A leftover *-unsigned* file means the signing config silently
           # failed to apply — that must never reach the release.
           if ls app/build/outputs/apk/release/*-unsigned*.apk >/dev/null 2>&1 \
-             || ls license-manager/build/outputs/apk/verifier/release/*-unsigned*.apk >/dev/null 2>&1; then
+             || ls license-manager/build/outputs/apk/verifier/release/*-unsigned*.apk >/dev/null 2>&1 \
+             || ls license-manager/build/outputs/apk/issuer/release/*-unsigned*.apk >/dev/null 2>&1; then
             echo "::error::unsigned APK produced despite keystore being set — signingConfig is not wired (check keystore.properties)"
-            ls -la app/build/outputs/apk/release/ license-manager/build/outputs/apk/verifier/release/
+            ls -la app/build/outputs/apk/release/ license-manager/build/outputs/apk/verifier/release/ license-manager/build/outputs/apk/issuer/release/
             exit 1
           fi
           echo "staged $staged APKs"
@@ -677,6 +688,33 @@ jobs:
             | OpenWrt | `vor_${{ steps.rel.outputs.version }}-r1_<arch>.ipk` matrix | Universal package — one source, every target |
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
             | Addon packs | `tor/lyrebird/snowflake/webtunnel/byedpi/psiphon/dnstt-<abi>.zip` | On-demand engine binaries for the in-app Core Manager — resolved from **this** repo, **this** tag |
+
+            ## v1.5.0 — offline license issuance for sellers + crash evidence on the gate
+
+            - **Publisher key pairing (works with GitHub blocked).** The
+              License Manager `issuer` app now ships as a release asset
+              (`Vor-v*-license-manager-issuer-release.apk`, biometric-gated,
+              its signing seed generated on-device and wrapped by the Android
+              Keystore). Its new Keys-tab **"App pairing code"** is pasted
+              ONCE into any buyer app's license gate ("Pair reseller key") —
+              from then on licenses issued on that seller device verify in
+              stock, unmodified Vor apps. The code carries only the Ed25519
+              PUBLIC key (`VORP1.<base64url>.<sha256-8>`), so it can never
+              enable forgery; the gate shows the active key fingerprint
+              (same 8-hex derivation on both apps) with a remove button.
+              Issuance is now fully offline end-to-end: seller's phone →
+              buyer's phone, zero GitHub, zero network.
+            - **Persistent crash evidence.** Any uncaught fatal is now written
+              to a small rotating file set BEFORE the process dies; on the
+              next start the license gate offers "Share crash report"
+              (version, device, stack — nothing private) through any channel.
+              If a crash ever recurs on a real device, the exact stack trace
+              is one tap away instead of being unrecoverable.
+            - **Release-only crash class audited.** The shipped v1.4.0 APK was
+              DEX-audited end-to-end: every startup, license-gate, Hilt,
+              kotlinx-serialization and native-bridge class survived R8
+              shrinking; all bundled `.so` are 16 KB-page aligned. No
+              release-only crash vector found in the gate path.
 
             ## v1.4.0 — the real Vor brand icon, everywhere + a zero-warning codebase
 

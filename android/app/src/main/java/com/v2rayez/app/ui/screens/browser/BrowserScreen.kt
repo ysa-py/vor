@@ -135,7 +135,7 @@ internal fun BrowserContent(
     // MITM HTTP proxy is actually wired for this WebView process. Media-heavy sites (YouTube)
     // must not navigate before this flips or the first CONNECTs bypass the MITM http-in.
     var proxyApplied by remember { mutableStateOf(false) }
-    var proxyOverrideGeneration by remember { mutableStateOf(0) }
+    var proxyOverrideGeneration by remember { androidx.compose.runtime.mutableIntStateOf(0) }
 
     LaunchedEffect(mitmReady) {
         if (mitmReady) viewModel.ensureBrowserTunnel()

@@ -182,9 +182,12 @@ class V2RayApplication : Application(), Configuration.Provider {
     }
 
     /**
-     * Best-effort last-gasp logger: records the fatal exception to the in-app log stream before
-     * delegating to the platform default handler, so crashes are visible in the Logs screen and
-     * exported reports instead of vanishing.
+     * Best-effort last-gasp logger: PERSISTS the fatal exception to a small
+     * rotating file first (v1.5.0 — survives the crash; the license gate shows
+     * a "share crash report" button for it), records it to the in-app log
+     * stream, then delegates to the platform default handler, so crashes are
+     * visible in the Logs screen, exported reports AND transferable to the
+     * seller without any developer tooling.
      *
      * 2026-09 hardening (device crash report): the old handler evaluated
      * `sanitizedForCrashlytics(throwable)` OUTSIDE any runCatching when chaining to the
@@ -195,6 +198,11 @@ class V2RayApplication : Application(), Configuration.Provider {
     private fun installCrashLogger() {
         val previous = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            // File evidence FIRST — the in-app log write and everything below
+            // is best-effort on top of it.
+            runCatching {
+                com.v2rayez.app.data.diagnostics.VorCrashEvidence.write(this, thread, throwable)
+            }
             runCatching {
                 val ts = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date())
                 logRepository.append(
