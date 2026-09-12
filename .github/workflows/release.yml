@@ -104,6 +104,37 @@ jobs:
             -Pv2rayez.addons.releaseTag="${GITHUB_REF_NAME}" \
             -Pvor.licensePublicKey="${{ secrets.VOR_LICENSE_PUBLIC_KEY }}" \
             --stacktrace
+      - name: Failed-test reports (inline diagnosis)
+        if: failure()
+        working-directory: android
+        run: |
+          # Print every failed test's full JUnit failure message so the
+          # console log (which truncates to "AssertionError at File.kt:70")
+          # carries the actual assertion text + stack.
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          found = False
+          for f in glob.glob('*/build/test-results/**/TEST-*.xml', recursive=True):
+              t = ET.parse(f).getroot()
+              for tc in t.iter('testcase'):
+                  for fail in list(tc.iter('failure')) + list(tc.iter('error')):
+                      if tc.get('classname', '').startswith('com.v2rayez.app') and                          'LicenseGate' in tc.get('classname', ''):
+                          found = True
+                          print('=' * 78)
+                          print('FAILED:', tc.get('classname'), '::', tc.get('name'))
+                          print((fail.get('message') or '(no message)')[:4000])
+                          print((fail.text or '')[:4000])
+                          print('=' * 78)
+          if not found:
+              print('no LicenseGate failure XML found; all failed tests:')
+              for f in glob.glob('*/build/test-results/**/TEST-*.xml', recursive=True):
+                  t = ET.parse(f).getroot()
+                  for tc in t.iter('testcase'):
+                      for fail in list(tc.iter('failure')) + list(tc.iter('error')):
+                          print('FAILED:', tc.get('classname'), '::', tc.get('name'))
+                          print((fail.get('message') or '')[:1500])
+                          print((fail.text or '')[:1500])
+          PY
       - name: Stage artifacts
         working-directory: android
         run: |
