@@ -1,5 +1,7 @@
 package com.v2rayez.app.ui.screens.donate
 
+import androidx.core.net.toUri
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -161,7 +163,7 @@ private fun copyToClipboard(context: Context, text: String) {
 private fun openUrl(context: Context, url: String) {
     runCatching {
         context.startActivity(
-            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+            android.content.Intent(android.content.Intent.ACTION_VIEW, url.toUri())
                 .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }.onFailure {

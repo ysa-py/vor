@@ -2,6 +2,7 @@ package com.v2rayez.app.ui
 
 import android.content.Context
 import android.content.res.Configuration
+import androidx.core.content.edit
 import java.util.Locale
 
 /**
@@ -22,9 +23,10 @@ object LocaleHelper {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_TAG, "en") ?: "en"
 
     fun persistTag(context: Context, tag: String) {
-        // commit() (synchronous) — the caller recreates the activity right after,
-        // and attachBaseContext must observe the new tag.
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY_TAG, tag).commit()
+        // KTX edit {} = apply(): writes hit the in-memory cache synchronously, so
+        // the activity recreation right after (same process) always observes
+        // the new tag from attachBaseContext; disk flush continues in background.
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit { putString(KEY_TAG, tag) }
     }
 
     /** Wrap [context] with a configuration overriding the locale to [tag].

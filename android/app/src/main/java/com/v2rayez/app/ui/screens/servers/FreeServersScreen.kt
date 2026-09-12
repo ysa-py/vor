@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -102,14 +103,14 @@ fun FreeServersScreen(
                             if (state.servers.isEmpty() && state.testedCount == 0) {
                                 stringResource(R.string.free_none_loaded)
                             } else {
-                                stringResource(R.string.free_available, state.servers.size)
+                                pluralStringResource(R.plurals.free_available, state.servers.size, state.servers.size)
                             },
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         if (state.testedCount > 0) {
                             Text(
-                                stringResource(R.string.free_working_tested, state.workingCount, state.testedCount),
+                                pluralStringResource(R.plurals.free_working_tested, state.workingCount, state.workingCount, state.testedCount),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = Connected
                             )

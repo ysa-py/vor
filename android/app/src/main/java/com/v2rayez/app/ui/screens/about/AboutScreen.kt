@@ -1,15 +1,15 @@
 package com.v2rayez.app.ui.screens.about
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,21 +23,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.v2rayez.app.BuildConfig
@@ -49,7 +48,6 @@ import com.v2rayez.app.ui.components.SectionHeader
 import com.v2rayez.app.ui.components.VSpacer
 import com.v2rayez.app.ui.components.V2BackTopBar
 import com.v2rayez.app.ui.theme.V2RayEzTheme
-import com.v2rayez.app.ui.theme.accentGradient
 
 @Composable
 fun AboutScreen(onBack: () -> Unit, onDonate: () -> Unit) {
@@ -64,21 +62,22 @@ fun AboutScreen(onBack: () -> Unit, onDonate: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .widthIn(max = 640.dp) // tablets/foldables: readable column, not stretched rows
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             VSpacer(12)
-            Box(
+            // Real Vor brand emblem (same artwork as the launcher icon).
+            Image(
+                painter = painterResource(R.drawable.vor_logo),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .size(88.dp)
-                    .clip(RoundedCornerShape(26.dp))
-                    .background(Brush.linearGradient(accentGradient(MaterialTheme.colorScheme.primary))),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("V", color = Color.White, style = MaterialTheme.typography.displayLarge, fontWeight = FontWeight.Black)
-            }
+                    .size(112.dp)
+                    .clip(RoundedCornerShape(28.dp))
+            )
             VSpacer(14)
-            Text("V2RayEz", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Text("Vor", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
             Text(BuildConfig.VERSION_NAME, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             VSpacer(10)
             Text(
@@ -197,7 +196,7 @@ private fun openUrl(context: android.content.Context, url: String) {
     if (url.isBlank()) return
     runCatching {
         context.startActivity(
-            Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            Intent(Intent.ACTION_VIEW, url.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }.onFailure {
         Toast.makeText(context, context.getString(R.string.common_no_app_for_link), Toast.LENGTH_SHORT).show()

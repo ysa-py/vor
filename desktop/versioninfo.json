@@ -2,14 +2,14 @@
   "FixedFileInfo": {
     "FileVersion": {
       "Major": 1,
-      "Minor": 0,
-      "Patch": 4,
+      "Minor": 4,
+      "Patch": 0,
       "Build": 0
     },
     "ProductVersion": {
       "Major": 1,
-      "Minor": 0,
-      "Patch": 4,
+      "Minor": 4,
+      "Patch": 0,
       "Build": 0
     },
     "FileFlagsMask": "3f",
@@ -25,7 +25,7 @@
     "LegalCopyright": "\u00a9 Vor maintainers \u2014 github.com/ysa-py/Vor",
     "OriginalFilename": "Vor-desktop.exe",
     "ProductName": "Vor Desktop",
-    "ProductVersion": "1.0.4"
+    "ProductVersion": "1.4.0"
   },
   "VarFileInfo": {
     "Translation": {

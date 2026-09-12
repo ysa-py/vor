@@ -323,7 +323,7 @@ private fun requestBatteryExemption(context: android.content.Context) {
 private fun requestPinQuickConnectWidget(context: android.content.Context) {
     val mgr = AppWidgetManager.getInstance(context)
     val provider = ComponentName(context, QuickConnectWidgetProvider::class.java)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mgr.isRequestPinAppWidgetSupported) {
+    if (mgr.isRequestPinAppWidgetSupported) {
         val ok = mgr.requestPinAppWidget(provider, null, null)
         android.widget.Toast.makeText(
             context,

@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import androidx.core.net.toUri
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.CookieManager
@@ -146,13 +147,13 @@ internal fun BrowserContent(
     }
 
     fun rememberRecent(url: String) {
-        if (!isAllowedWebViewScheme(Uri.parse(url).scheme)) return
+        if (!isAllowedWebViewScheme(url.toUri().scheme)) return
         recentUrls = (listOf(url) + recentUrls.filterNot { it == url }).take(8)
     }
 
     fun navigate(target: String) {
         val normalized = normalizeBrowserInput(target)
-        if (!isAllowedWebViewScheme(Uri.parse(normalized).scheme) && !normalized.startsWith("about:")) {
+        if (!isAllowedWebViewScheme(normalized.toUri().scheme) && !normalized.startsWith("about:")) {
             loadError = context.getString(R.string.browser_error_scheme)
             return
         }
@@ -169,7 +170,7 @@ internal fun BrowserContent(
     fun openExternal() {
         val url = webViewHolder.value?.url ?: urlText
         runCatching {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
         }.onFailure {
             Toast.makeText(context, context.getString(R.string.browser_external_failed), Toast.LENGTH_SHORT).show()
         }
@@ -187,27 +188,34 @@ internal fun BrowserContent(
             android.os.Handler(android.os.Looper.getMainLooper()).post(r)
         }
         runCatching {
-            if (webViewProxyActive) {
-                proxyApplied = false
-                val config = ProxyConfig.Builder()
-                    .addProxyRule("127.0.0.1:$httpPort")
-                    .addDirect("<-loopback>")
-                    .build()
-                ProxyController.getInstance().setProxyOverride(config, mainExecutor) {
-                    if (gen != proxyOverrideGeneration) return@setProxyOverride
-                    proxyApplied = true
-                    webViewHolder.value?.let { wv ->
-                        if (wv.url.isNullOrBlank() || wv.url != pendingUrl) {
-                            wv.loadUrl(pendingUrl)
-                        } else {
-                            wv.reload()
+            // RequiresFeature guard: PROXY_OVERRIDE may be absent on devices
+            // without an updatable WebView — degrade to a direct load there.
+            if (androidx.webkit.WebViewFeature.isFeatureSupported(
+                    androidx.webkit.WebViewFeature.PROXY_OVERRIDE
+                )
+            ) {
+                if (webViewProxyActive) {
+                    proxyApplied = false
+                    val config = ProxyConfig.Builder()
+                        .addProxyRule("127.0.0.1:$httpPort")
+                        .addDirect("<-loopback>")
+                        .build()
+                    ProxyController.getInstance().setProxyOverride(config, mainExecutor) {
+                        if (gen != proxyOverrideGeneration) return@setProxyOverride
+                        proxyApplied = true
+                        webViewHolder.value?.let { wv ->
+                            if (wv.url.isNullOrBlank() || wv.url != pendingUrl) {
+                                wv.loadUrl(pendingUrl)
+                            } else {
+                                wv.reload()
+                            }
                         }
                     }
-                }
-            } else {
-                ProxyController.getInstance().clearProxyOverride(mainExecutor) {
-                    if (gen != proxyOverrideGeneration) return@clearProxyOverride
-                    proxyApplied = false
+                } else {
+                    ProxyController.getInstance().clearProxyOverride(mainExecutor) {
+                        if (gen != proxyOverrideGeneration) return@clearProxyOverride
+                        proxyApplied = false
+                    }
                 }
             }
         }.onFailure {
@@ -395,7 +403,7 @@ internal fun BrowserContent(
                             if (history.isNotEmpty()) {
                                 HorizontalDivider()
                                 history.forEach { recent ->
-                                    val host = Uri.parse(recent).host ?: recent.take(28)
+                                    val host = recent.toUri().host ?: recent.take(28)
                                     DropdownMenuItem(
                                         text = { Text(host, maxLines = 1) },
                                         onClick = {
@@ -482,6 +490,9 @@ internal fun BrowserContent(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT
                         )
+                        // Deliberate: this is the app's own WebView browser — JS is the
+                        // point of a browser; loading is restricted to http(s).
+                        @Suppress("SetJavaScriptEnabled")
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE

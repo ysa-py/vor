@@ -73,6 +73,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -644,7 +645,7 @@ private fun WantsPage(
                 .padding(horizontal = 14.dp, vertical = 6.dp)
         ) {
             Text(
-                text = stringResource(R.string.wizard_wants_selected_count, selectedCount, features.size),
+                text = pluralStringResource(R.plurals.wizard_wants_selected_count, selectedCount, selectedCount, features.size),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary

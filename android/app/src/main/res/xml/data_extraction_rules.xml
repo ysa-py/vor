@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ backup/transfer policy. allowBackup="false" already keeps app
+     data out of cloud backups; these rules make the exclusion explicit for
+     both cloud-backup and device-to-device transfer. License tokens and the
+     MITM CA key must NEVER leave the device. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+    </device-transfer>
+</data-extraction-rules>

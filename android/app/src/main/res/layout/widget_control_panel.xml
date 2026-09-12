@@ -55,7 +55,7 @@
         android:layout_marginTop="2dp"
         android:ellipsize="end"
         android:maxLines="2"
-        android:text="— · ↓0 · ↑0"
+        android:text="@string/widget_metrics_idle"
         android:textColor="#CBD5E1"
         android:textSize="11sp" />
 
@@ -70,13 +70,18 @@
         android:textSize="11sp"
         android:visibility="gone" />
 
+    <!-- Nested weights are the only RemoteViews-safe way to pin a 50/50
+         chip row to the panel bottom (RemoteViews forbids ConstraintLayout),
+         hence the targeted tools:ignore. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1"
         android:gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:ignore="NestedWeights">
 
         <TextView
             android:id="@+id/widget_panel_servers"

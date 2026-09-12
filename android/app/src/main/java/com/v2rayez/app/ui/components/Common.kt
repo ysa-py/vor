@@ -69,7 +69,7 @@ fun CardSurface(
  * tinted disc with the code for unknown / placeholder codes (e.g. "UN").
  */
 @Composable
-fun CountryFlag(countryCode: String, size: Int = 40, modifier: Modifier = Modifier) {
+fun CountryFlag(countryCode: String, modifier: Modifier = Modifier, size: Int = 40) {
     val tint = flagColor(countryCode)
     val flagEmoji = flagEmoji(countryCode)
     Box(

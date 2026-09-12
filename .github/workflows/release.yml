@@ -647,6 +647,36 @@ jobs:
             | iOS | `Vor-iOS-unsigned.ipa` | **TrollStore only, iOS 14.0–16.6.1 era — NOT a general iOS solution** (see the release notes below) |
             | Addon packs | `tor/lyrebird/snowflake/webtunnel/byedpi/psiphon/dnstt-<abi>.zip` | On-demand engine binaries for the in-app Core Manager — resolved from **this** repo, **this** tag |
 
+            ## v1.4.0 — the real Vor brand icon, everywhere + a zero-warning codebase
+
+            - **New launcher icon from the real Vor emblem.** The adaptive
+              launcher icon is now the actual Vor logo artwork (dark-navy
+              circular HUD, cyan/purple V shield) as a full-bleed bitmap
+              foreground, with a generated **themed/monochrome** layer for
+              Android 13+ tinted launchers and matched **desktop**
+              (NSIS installer + exe), **web dashboard favicon** and **iOS**
+              icons — all regenerated from one 1024px master by
+              `scripts/gen_vor_logo_icons.py`. Regenerate anytime.
+            - **In-app branding:** the About screen, the license gate (the
+              first screen a customer sees) and the License Manager header
+              now show the real emblem; the About title reads **Vor**.
+            - **Responsive/adaptive polish:** About, License Manager and the
+              gate screens cap content width on tablets/foldables; the two-pane
+              issuer layouts stay intact.
+            - **Zero lint warnings across every module and variant**
+              (176 → 0): 62 dead resources removed, 13 string families
+              converted to real `<plurals>` with correct **Russian** grammar
+              (домен/домена/доменов …) and Persian one/other rules, KTX
+              idioms (`toUri`, `edit {}`, `createBitmap`), WebView
+              `PROXY_OVERRIDE` feature guards, `dataExtractionRules` +
+              `fullBackupContent` privacy rules, package-visibility
+              `<queries>`, widget layout cleanups, and SDK-guard
+              modernization — every suppression is a documented, deliberate
+              decision (pinned offline builds, MITM CA trust, launcher-app
+              scoping instead of QUERY_ALL_PACKAGES).
+            - **Desktop i18n parity fix:** `100%` strings no longer trip
+              format-string parsing on any locale.
+
             ## v1.3.0 — native license DRM core (vor-drm) + hardened verification everywhere
 
             - **`core/vor-drm`: a native Rust DRM core for offline licensing.**

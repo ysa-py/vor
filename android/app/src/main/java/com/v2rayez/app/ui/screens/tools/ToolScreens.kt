@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -128,17 +129,18 @@ private fun ToolScaffold(title: String, onBack: () -> Unit, content: @Composable
 private fun Field(
     label: String,
     value: String,
+    modifier: Modifier = Modifier,
     keyboard: KeyboardType = KeyboardType.Text,
-    modifier: Modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
     onChange: (String) -> Unit
 ) {
+    val fieldModifier = modifier.fillMaxWidth().padding(vertical = 4.dp)
     OutlinedTextField(
         value = value,
         onValueChange = onChange,
         label = { Text(label) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
-        modifier = modifier
+        modifier = fieldModifier
     )
 }
 
@@ -309,8 +311,8 @@ private fun RuleRow(
                 Column(Modifier.weight(1f)) {
                     Text(rule.remark.ifBlank { stringResource(R.string.routing_rule_default) }, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
                     val summary = buildList {
-                        if (rule.domains.isNotEmpty()) add(stringResource(R.string.routing_summary_domains, rule.domains.size))
-                        if (rule.ips.isNotEmpty()) add(stringResource(R.string.routing_summary_ips, rule.ips.size))
+                        if (rule.domains.isNotEmpty()) add(pluralStringResource(R.plurals.routing_summary_domains, rule.domains.size, rule.domains.size))
+                        if (rule.ips.isNotEmpty()) add(pluralStringResource(R.plurals.routing_summary_ips, rule.ips.size, rule.ips.size))
                         if (rule.port.isNotBlank()) add(stringResource(R.string.routing_summary_port, rule.port))
                         if (rule.protocol.isNotEmpty()) add(rule.protocol.joinToString())
                     }.joinToString(" · ").ifBlank { stringResource(R.string.routing_summary_empty) }
@@ -339,7 +341,7 @@ private fun ProviderRow(
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(provider.name, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
-                Text(stringResource(R.string.routing_provider_entries, outboundLabel(provider.outbound), provider.entryCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(pluralStringResource(R.plurals.routing_provider_entries, provider.entryCount, outboundLabel(provider.outbound), provider.entryCount), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             V2Switch(checked = provider.enabled, onCheckedChange = onToggle)
             IconButton(onClick = onRefresh) { Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.common_refresh), tint = MaterialTheme.colorScheme.primary) }
@@ -575,7 +577,7 @@ fun AppProxyScreen(
             )
             VSpacer(8)
             Text(
-                stringResource(R.string.appproxy_selected, s.appProxy.packages.size),
+                pluralStringResource(R.plurals.appproxy_selected, s.appProxy.packages.size, s.appProxy.packages.size),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -702,7 +704,7 @@ fun SniTunnelScreen(onBack: () -> Unit, viewModel: com.v2rayez.app.ui.viewmodel.
         // SNI Lab (UAC-style): Scan / Stop / Saved + live result cards.
         SectionHeader(title = stringResource(R.string.sni_lab_title), trailing = {
             Text(
-                stringResource(R.string.sni_domains_count, candidates.size),
+                pluralStringResource(R.plurals.sni_domains_count, candidates.size, candidates.size),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -821,12 +823,12 @@ fun SniTunnelScreen(onBack: () -> Unit, viewModel: com.v2rayez.app.ui.viewmodel.
                 }
             }
             if (desync.mode != DesyncMode.NONE) {
-                Field(stringResource(R.string.sni_split_pos), desync.splitPos.toString(), KeyboardType.Number) {
+                Field(stringResource(R.string.sni_split_pos), desync.splitPos.toString(), keyboard = KeyboardType.Number) {
                     it.toIntOrNull()?.let(viewModel::setSplitPos)
                 }
             }
             if (desync.mode == DesyncMode.FAKE) {
-                Field(stringResource(R.string.sni_fake_ttl), desync.fakeTtl.toString(), KeyboardType.Number) {
+                Field(stringResource(R.string.sni_fake_ttl), desync.fakeTtl.toString(), keyboard = KeyboardType.Number) {
                     it.toIntOrNull()?.let(viewModel::setFakeTtl)
                 }
             }
@@ -850,8 +852,8 @@ fun SniTunnelScreen(onBack: () -> Unit, viewModel: com.v2rayez.app.ui.viewmodel.
             }
             SectionHeader(title = stringResource(R.string.sni_candidate_domains))
             Text(
-                if (sni.candidateDomains.isEmpty()) stringResource(R.string.sni_using_bundled, candidates.size)
-                else stringResource(R.string.sni_custom_domains, sni.candidateDomains.size),
+                if (sni.candidateDomains.isEmpty()) pluralStringResource(R.plurals.sni_using_bundled, candidates.size, candidates.size)
+                else pluralStringResource(R.plurals.sni_custom_domains, sni.candidateDomains.size, sni.candidateDomains.size),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -1030,7 +1032,7 @@ fun TorScreen(onBack: () -> Unit, viewModel: com.v2rayez.app.ui.viewmodel.TorVie
         onSetBridges = viewModel::setBridges,
         onGetNewBridges = {
             viewModel.getNewBridges { count ->
-                android.widget.Toast.makeText(context, context.getString(R.string.tor_fetched_bridges, count), android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, context.resources.getQuantityString(R.plurals.tor_fetched_bridges, count, count), android.widget.Toast.LENGTH_SHORT).show()
             }
         },
         onAutoSetup = {
@@ -1204,7 +1206,7 @@ private fun TorContent(
                 Field(
                     stringResource(R.string.tor_socks_port),
                     tor.socksPort.toString(),
-                    KeyboardType.Number,
+                    keyboard = KeyboardType.Number,
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 4.dp)
                 ) { it.toIntOrNull()?.let(onSetSocksPort) }
                 VSpacer(8)

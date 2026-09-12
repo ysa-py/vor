@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -85,7 +86,7 @@ fun BpbPanelScreen(onBack: () -> Unit, viewModel: ToolsViewModel = hiltViewModel
                                 Text(sub.name, color = MaterialTheme.colorScheme.onSurface)
                                 val lastUpdated = if (sub.lastUpdated <= 0) stringResource(R.string.bpb_never) else formatTime(sub.lastUpdated)
                                 Text(
-                                    stringResource(R.string.bpb_sub_summary, sub.serverCount, lastUpdated),
+                                    pluralStringResource(R.plurals.bpb_sub_summary, sub.serverCount, sub.serverCount, lastUpdated),
                                     style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -147,6 +148,9 @@ fun BpbPanelScreen(onBack: () -> Unit, viewModel: ToolsViewModel = hiltViewModel
                                     scope.launch { snackbar.showSnackbar(loadFailedMessage) }
                                 }
                             }
+                            // Deliberate: BPBPanel is a static single-origin control
+                            // panel; it requires JS to render its management UI.
+                            @Suppress("SetJavaScriptEnabled")
                             settings.javaScriptEnabled = true
                             settings.domStorageEnabled = true
                             settings.allowFileAccess = false

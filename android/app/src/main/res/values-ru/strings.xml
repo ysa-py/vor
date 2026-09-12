@@ -13,12 +13,9 @@
     <string name="nav_home">Главная</string>
     <string name="nav_servers">Серверы</string>
     <string name="nav_tools">Инструменты</string>
-    <string name="nav_statistics">Статистика</string>
     <string name="nav_settings">Настройки</string>
 
     <!-- Common actions -->
-    <string name="action_connect">Подключить</string>
-    <string name="action_disconnect">Отключить</string>
     <string name="action_cancel">Отмена</string>
     <string name="action_save">Сохранить</string>
     <string name="action_delete">Удалить</string>
@@ -26,7 +23,6 @@
     <string name="action_import">Импорт</string>
     <string name="action_share">Поделиться</string>
     <string name="action_search">Поиск</string>
-    <string name="action_filter">Фильтр</string>
     <string name="action_back">Назад</string>
     <string name="action_add">Добавить</string>
     <string name="action_more">Ещё</string>
@@ -52,7 +48,6 @@
     <string name="servers_import_hint">Вставьте ссылку, URI или URL подписки</string>
     <string name="servers_import_action">Импорт</string>
     <string name="servers_scan_qr_prompt">Наведите камеру на QR-код сервера</string>
-    <string name="servers_import_link">Импорт по ссылке</string>
     <string name="free_servers_browse">Бесплатные серверы</string>
     <string name="server_editor_new">Новый сервер</string>
     <string name="server_editor_edit">Изменить сервер</string>
@@ -88,14 +83,15 @@
     <string name="widget_quick_desc">VPN одной кнопкой</string>
     <string name="widget_panel_name">Панель VPN</string>
     <string name="widget_panel_desc">Статус, скорость и ярлыки Servers / приложение</string>
-    <string name="widget_connect">CONNECT</string>
+        <!-- Panel metrics placeholder, replaced on first RemoteViews update. -->
+    <string name="widget_metrics_idle">— · ↓0 · ↑0</string>
+<string name="widget_connect">CONNECT</string>
     <string name="widget_disconnect">DISCONNECT</string>
     <string name="widget_connecting">Подключение…</string>
     <string name="widget_vpn_on">VPN включён</string>
     <string name="widget_vpn_off">VPN выключен</string>
     <string name="widget_no_server">Нет сервера</string>
     <string name="widget_servers">Серверы</string>
-    <string name="widget_sni">SNI</string>
     <string name="widget_open">Открыть</string>
     <string name="widget_toggle_cd">Переключить VPN</string>
     <string name="widget_vpn_consent_needed">Разрешите VPN в приложении, чтобы использовать виджет</string>
@@ -107,19 +103,11 @@
     <string name="home_connecting">Подключение…</string>
     <string name="home_disconnected">Отключено</string>
     <string name="home_connection_failed">Ошибка подключения</string>
-    <string name="home_vpn_on">VPN включён</string>
-    <string name="home_vpn_off">VPN выключен</string>
     <string name="home_iran_geo_cta_title">Включить гео-маршрутизацию для Ирана</string>
     <string name="home_iran_geo_cta_sub">Загрузите гео-пакет, чтобы иранские сайты шли напрямую и снижалась задержка.</string>
-    <string name="home_connect">CONNECT</string>
-    <string name="home_disconnect">DISCONNECT</string>
-    <string name="home_cancel">Отмена</string>
     <string name="home_auto_mode">Автоподключение</string>
-    <string name="home_advanced_tuning">Дополнительно / Тюнинг</string>
     <string name="home_advanced_vpn">Расширенный VPN</string>
     <string name="home_advanced_vpn_sub">Ядро, маршрутизация и производительность</string>
-    <string name="home_version_chip">V2RayEz v%1$s</string>
-    <string name="home_session_short">Трафик</string>
     <string name="home_vpn">VPN</string>
     <string name="home_not_connected">Не подключено</string>
     <string name="home_select_server">Выберите сервер для подключения</string>
@@ -137,7 +125,6 @@
     <string name="home_upload">Отдача</string>
     <string name="home_ping">Пинг</string>
     <string name="home_speed">Скорость</string>
-    <string name="home_session_traffic">Сессия: %1$s ↓ · %2$s ↑</string>
     <string name="home_session_strip">Сессия %1$s ↓ / %2$s ↑</string>
     <string name="home_action_servers">Серверы</string>
     <string name="home_action_free">Бесплатно</string>
@@ -164,7 +151,6 @@
 
     <!-- Tools -->
     <string name="tools_title">Инструменты</string>
-    <string name="tools_network">Сетевые инструменты</string>
     <string name="tools_advanced">Расширенные</string>
     <string name="tools_group_unblock">Обход блокировок</string>
     <string name="tools_group_routing">Маршрутизация и DNS</string>
@@ -198,17 +184,30 @@
     <string name="routing_name">Имя</string>
     <string name="routing_domains_hint">Домены (через запятую)</string>
     <string name="routing_ips_hint">IP-адреса (через запятую)</string>
-    <string name="routing_port_hint">Порт (напр. 443 или 1000-2000)</string>
+    <string name="routing_port_hint">Порт (напр. 443 или 1000–2000)</string>
     <string name="routing_ruleset_url">URL набора правил (raw)</string>
     <string name="routing_apply_as">Применить как</string>
     <string name="routing_update_interval">Интервал автообновления (часы)</string>
-    <string name="routing_move_up">Вверх</string>
-    <string name="routing_move_down">Вниз</string>
-    <string name="routing_summary_domains">%1$d доменов</string>
-    <string name="routing_summary_ips">%1$d IP</string>
+    <plurals name="routing_summary_domains">
+        <item quantity="one">%1$d домен</item>
+        <item quantity="few">%1$d домена</item>
+        <item quantity="many">%1$d доменов</item>
+        <item quantity="other">%1$d доменов</item>
+    </plurals>
+    <plurals name="routing_summary_ips">
+        <item quantity="one">%1$d IP</item>
+        <item quantity="few">%1$d IP</item>
+        <item quantity="many">%1$d IP</item>
+        <item quantity="other">%1$d IP</item>
+    </plurals>
     <string name="routing_summary_port">порт %1$s</string>
     <string name="routing_summary_empty">пусто</string>
-    <string name="routing_provider_entries">%1$s · %2$d записей</string>
+    <plurals name="routing_provider_entries">
+        <item quantity="one">%1$s · %2$d запись</item>
+        <item quantity="few">%1$s · %2$d записи</item>
+        <item quantity="many">%1$s · %2$d записей</item>
+        <item quantity="other">%1$s · %2$d записей</item>
+    </plurals>
 
     <!-- DNS -->
     <string name="dns_title">Менеджер DNS</string>
@@ -229,7 +228,12 @@
     <string name="appproxy_enable">Включить прокси по приложениям</string>
     <string name="appproxy_mode_bypass">Режим: обходить выбранные приложения</string>
     <string name="appproxy_mode_only">Режим: проксировать только выбранные</string>
-    <string name="appproxy_selected">Выбрано: %1$d</string>
+    <plurals name="appproxy_selected">
+        <item quantity="one">Выбрано: %1$d</item>
+        <item quantity="few">Выбрано: %1$d</item>
+        <item quantity="many">Выбрано: %1$d</item>
+        <item quantity="other">Выбрано: %1$d</item>
+    </plurals>
     <string name="appproxy_search_hint">Поиск приложений</string>
     <string name="appproxy_no_apps">Нет приложений по вашему запросу.</string>
     <string name="appproxy_conflict_full_tunnel">Включён туннель на всё устройство — список приложений не действует, пока вы его не выключите.</string>
@@ -242,16 +246,16 @@
     <string name="sni_desync_engine">Движок десинхронизации (byedpi)</string>
     <string name="sni_native_available">Нативный · доступен</string>
     <string name="sni_native_unavailable">Нативный · установите ByeDPI в Менеджере ядер</string>
-    <string name="sni_byedpi_available_desc">libbyedpi.so включён в сборку. При включении прокси подключается через локальный SOCKS5, который разбивает/подделывает/переупорядочивает ClientHello для обхода DPI.</string>
-    <string name="sni_byedpi_unavailable_desc">libbyedpi.so отсутствует на этом устройстве, поэтому десинхронизация не запустится. Настройка сохранена и активируется при наличии нативного файла.</string>
     <string name="sni_enable_desync">Включить движок десинхронизации</string>
     <string name="sni_enable_desync_sub">Направить ClientHello через byedpi</string>
-    <string name="sni_method">Метод</string>
     <string name="sni_split_pos">Позиция разбиения (байты от начала ClientHello)</string>
     <string name="sni_fake_ttl">TTL поддельного пакета</string>
-    <string name="sni_scanner">Сканер SNI</string>
-    <string name="sni_domains_count">%1$d доменов</string>
-    <string name="sni_scanning">Сканирование…</string>
+    <plurals name="sni_domains_count">
+        <item quantity="one">%1$d домен</item>
+        <item quantity="few">%1$d домена</item>
+        <item quantity="many">%1$d доменов</item>
+        <item quantity="other">%1$d доменов</item>
+    </plurals>
     <string name="sni_scan_best">Скан</string>
     <string name="sni_stop">Стоп</string>
     <string name="sni_lab_title">SNI Lab</string>
@@ -262,8 +266,6 @@
     <string name="sni_save">SAVE</string>
     <string name="sni_lab_ip_line">IP=%1$s  TRACE=%2$s</string>
     <string name="sni_lab_meta_line">%1$d ms · stable %2$d%% · %3$s</string>
-    <string name="sni_tested">Проверено %1$d / %2$d</string>
-    <string name="sni_preparing">Подготовка…</string>
     <string name="sni_manipulation">Манипуляция SNI</string>
     <string name="sni_split">Разбить (фрагментировать ClientHello)</string>
     <string name="sni_omit">Убрать SNI</string>
@@ -272,31 +274,30 @@
     <string name="sni_fragmentation">Фрагментация</string>
     <string name="sni_length_range">Диапазон длины (байты)</string>
     <string name="sni_interval_range">Диапазон интервала (мс)</string>
-    <string name="sni_domain_fronting">Доменный фронтинг</string>
-    <string name="sni_enable_front">Включить доменный фронтинг</string>
-    <string name="sni_front_sub">Фронт-домен как SNI; реальный хост в зашифрованном заголовке Host</string>
-    <string name="sni_front_domain">Фронт-домен</string>
     <string name="sni_candidate_domains">Домены-кандидаты</string>
-    <string name="sni_using_bundled">Используется встроенный список из %1$d доменов. Измените ниже, чтобы переопределить.</string>
-    <string name="sni_custom_domains">Своих доменов: %1$d.</string>
+    <plurals name="sni_using_bundled">
+        <item quantity="one">Используется встроенный список из %1$d домена. Измените ниже, чтобы переопределить.</item>
+        <item quantity="few">Используется встроенный список из %1$d доменов. Измените ниже, чтобы переопределить.</item>
+        <item quantity="many">Используется встроенный список из %1$d доменов. Измените ниже, чтобы переопределить.</item>
+        <item quantity="other">Используется встроенный список из %1$d доменов. Измените ниже, чтобы переопределить.</item>
+    </plurals>
+    <plurals name="sni_custom_domains">
+        <item quantity="one">Своих доменов: %1$d.</item>
+        <item quantity="few">Своих доменов: %1$d.</item>
+        <item quantity="many">Своих доменов: %1$d.</item>
+        <item quantity="other">Своих доменов: %1$d.</item>
+    </plurals>
     <string name="sni_one_per_line">По одному домену в строке (пусто — по умолчанию)</string>
     <string name="sni_best">Лучший</string>
     <string name="sni_ms">%1$d мс</string>
     <string name="sni_stable">%1$d%% стабильности</string>
-    <string name="sni_applied">%1$s применён как ваш SNI</string>
     <string name="sni_tap_hint">Нажмите результат, чтобы использовать его как SNI</string>
     <string name="sni_active">Активен</string>
-    <string name="sni_test_current">Проверить текущий SNI</string>
-    <string name="sni_testing_current">Проверка текущего SNI…</string>
-    <string name="sni_current_ok">Текущий SNI %1$s работает (%2$d мс)</string>
-    <string name="sni_current_failed">Текущий SNI %1$s не работает — найдите новый</string>
     <string name="sni_reconnect_hint">Изменения SNI применятся после переподключения</string>
     <string name="sni_reconnect_now">Переподключить</string>
     <string name="sni_advanced">Дополнительно</string>
 
     <!-- Domain Fronting -->
-    <string name="fronting_title">Доменный фронтинг</string>
-    <string name="fronting_tool_sub">Dialer с фейковым SNI</string>
     <string name="fronting_intro">Направляет Xray через локальный dialer с фейковыми SNI-пробами и фрагментацией ClientHello. Dialer TCP-подключается к IP хоста/SNI сервера (resolve при подключении), чтобы TLS мог завершиться; фейковый SNI только для проб. Реальный TLS SNI остаётся в URI сервера.</string>
     <string name="fronting_enable">Включить доменный фронтинг</string>
     <string name="fronting_enable_sub">Локальный dialer принимает Xray и фронтит через Cloudflare</string>
@@ -304,7 +305,6 @@
     <string name="fronting_mode_fast">Быстрый</string>
     <string name="fronting_mode_balanced">Сбалансированный</string>
     <string name="fronting_mode_stealth">Скрытный</string>
-    <string name="fronting_mode_custom">Свой</string>
     <string name="fronting_endpoints">Конечные точки</string>
     <string name="fronting_front_address">Фронт-адрес (необязательный override)</string>
     <string name="fronting_fallback_address">Резервный адрес</string>
@@ -338,7 +338,12 @@
     <string name="tor_msg_on">Tor передаёт весь трафик устройства или подключение выбранного сервера. Domain fronting несовместим.</string>
     <string name="tor_msg_off">Используйте Tor для всего устройства или перед выбранным сервером VLESS/VMESS/Trojan/Shadowsocks</string>
     <string name="tor_toggle">Переключить Tor</string>
-    <string name="tor_fetched_bridges">Получено мостов: %1$d</string>
+    <plurals name="tor_fetched_bridges">
+        <item quantity="one">Получено мостов: %1$d</item>
+        <item quantity="few">Получено мостов: %1$d</item>
+        <item quantity="many">Получено мостов: %1$d</item>
+        <item quantity="other">Получено мостов: %1$d</item>
+    </plurals>
     <string name="tor_autosetup">Автоподбор мостов и подключение</string>
     <string name="tor_autosetup_running">Проверка мостов…</string>
     <string name="tor_probe_log">Журнал пробы</string>
@@ -356,9 +361,7 @@
     <string name="appproxy_reconnect_hint">Изменения прокси по приложениям применятся после переподключения VPN</string>
     <string name="core_download">Скачать</string>
     <string name="core_delete">Удалить</string>
-    <string name="core_busy">Работаю…</string>
     <string name="core_device_abi">Это устройство: %1$s — загрузки только под этот CPU</string>
-    <string name="core_release_asset">%1$s · %2$s</string>
     <!-- Add-on packs (Tor / pluggable transports / ByeDPI) -->
     <string name="core_addons_title">Дополнительные пакеты</string>
     <string name="core_addons_sub">Tor и obfs4 (lyrebird) входят в APK. Остальные pluggable transports и ByeDPI скачиваются по запросу.</string>
@@ -377,7 +380,6 @@
     <string name="core_addon_delete">Удалить</string>
     <string name="core_hint_check_connection">Проверьте подключение и попробуйте снова.</string>
     <string name="core_hint_connect_first">Если ваша сеть блокирует GitHub, сначала подключитесь к серверу — загрузки пойдут через туннель.</string>
-    <string name="core_status_downloading">Загрузка %1$s %2$s (%3$s)…</string>
     <string name="core_status_installed">Установлено %1$s для %2$s</string>
     <string name="core_status_download_failed">Загрузка не удалась (нужна сборка %1$s). %2$s</string>
     <string name="core_status_fetching">Получение релизов %1$s для %2$s…</string>
@@ -503,8 +505,6 @@
 
     <!-- Speed test -->
     <string name="speed_title">Тест скорости</string>
-    <string name="speed_download">загрузка</string>
-    <string name="speed_testing">Проверка…</string>
     <string name="speed_start">Начать тест</string>
     <string name="speed_stop">Стоп</string>
     <string name="speed_direct">Напрямую</string>
@@ -538,11 +538,8 @@
     <string name="chart_summary_live">Текущая скорость: %1$s загрузка, %2$s отдача</string>
 
     <!-- Servers (additional) -->
-    <string name="servers_all">Все</string>
     <string name="servers_ping_all">Пинг всех</string>
     <string name="servers_auto_fastest">Авто-быстрейший</string>
-    <string name="servers_sort_ping">Сортировка по пингу</string>
-    <string name="servers_groups">Группы</string>
     <string name="servers_subscriptions">Подписки</string>
     <string name="servers_share_chooser">Поделиться сервером</string>
     <string name="servers_testing">Проверка…</string>
@@ -565,7 +562,12 @@
     <string name="servers_sort_ping_short">Пинг</string>
     <string name="servers_sort_name">Имя</string>
     <string name="servers_sort_protocol">Протокол</string>
-    <string name="servers_selected_count">Выбрано: %1$d</string>
+    <plurals name="servers_selected_count">
+        <item quantity="one">Выбрано: %1$d</item>
+        <item quantity="few">Выбрано: %1$d</item>
+        <item quantity="many">Выбрано: %1$d</item>
+        <item quantity="other">Выбрано: %1$d</item>
+    </plurals>
     <string name="servers_select_all">Выбрать все</string>
     <string name="servers_clear_selection">Снять выделение</string>
     <string name="servers_selection_favorite">В избранное</string>
@@ -598,8 +600,18 @@
     <string name="free_title">Бесплатные серверы</string>
     <string name="free_intro">Просматривайте открытый пул бесплатных серверов. Добавляйте любой сразу или запустите быстрое сканирование, чтобы найти самые быстрые. Ничего не добавляется автоматически.</string>
     <string name="free_none_loaded">Серверы не загружены</string>
-    <string name="free_available">Доступно: %1$d</string>
-    <string name="free_working_tested">%1$d рабочих · %2$d проверено</string>
+    <plurals name="free_available">
+        <item quantity="one">Доступно: %1$d</item>
+        <item quantity="few">Доступно: %1$d</item>
+        <item quantity="many">Доступно: %1$d</item>
+        <item quantity="other">Доступно: %1$d</item>
+    </plurals>
+    <plurals name="free_working_tested">
+        <item quantity="one">%1$d рабочий · %2$d проверено</item>
+        <item quantity="few">%1$d рабочих · %2$d проверено</item>
+        <item quantity="many">%1$d рабочих · %2$d проверено</item>
+        <item quantity="other">%1$d рабочих · %2$d проверено</item>
+    </plurals>
     <string name="free_add_all">Добавить все</string>
     <string name="free_add_fastest">Добавить 10 быстрейших</string>
     <string name="free_test_all">Проверить все</string>
@@ -607,14 +619,12 @@
     <string name="free_scanning_progress">Сканирование %1$d / %2$d</string>
     <string name="free_stop_scan">Остановить тест</string>
     <string name="free_in_subscription">Уже в списке · из подписки</string>
-    <string name="free_testing_progress">Проверка %1$d / %2$d</string>
     <string name="free_sort_ping">Сортировать по пингу</string>
     <string name="free_working_only">Только рабочие</string>
     <string name="free_pull_to_load">Потяните вниз, чтобы загрузить бесплатные серверы.</string>
     <string name="free_added">Добавлен</string>
     <string name="free_add_server">Добавить сервер</string>
     <string name="free_test">Тест</string>
-    <string name="free_timed_out">Таймаут</string>
 
     <!-- Server editor (advanced) -->
     <string name="editor_group">Группа (необязательно)</string>
@@ -715,9 +725,7 @@
     <string name="settings_boot_auto_connect_sub">Переподключать последний сервер после перезагрузки устройства</string>
     <string name="battery_exemption_hint">Разрешите приложению игнорировать оптимизацию батареи, чтобы туннель оставался подключённым в фоне.</string>
     <string name="vpn_full_tunnel">Полный туннель устройства</string>
-    <string name="vpn_full_tunnel_sub">Направлять 100% трафика; игнорировать правила по приложениям</string>
-    <string name="vpn_kill_switch">Системный kill switch</string>
-    <string name="vpn_kill_switch_sub">Включить постоянный VPN + блокировку соединений</string>
+    <string name="vpn_full_tunnel_sub" formatted="false">Направлять 100% трафика; игнорировать правила по приложениям</string>
     <string name="vpn_section_network">Сеть</string>
     <string name="vpn_allow_lan">Разрешить LAN</string>
     <string name="vpn_reduce_data">Экономия трафика</string>
@@ -802,12 +810,17 @@
 
     <!-- BPB panel / subscriptions -->
     <string name="bpb_no_subscriptions">Нет подписок. Добавьте одну ниже.</string>
-    <string name="bpb_sub_summary">Серверов: %1$d · %2$s</string>
+    <plurals name="bpb_sub_summary">
+        <item quantity="one">Серверов: %1$d · %2$s</item>
+        <item quantity="few">Серверов: %1$d · %2$s</item>
+        <item quantity="many">Серверов: %1$d · %2$s</item>
+        <item quantity="other">Серверов: %1$d · %2$s</item>
+    </plurals>
     <string name="bpb_never">никогда</string>
     <string name="bpb_subscription_url">URL подписки</string>
     <string name="bpb_import_subscription">Импортировать подписку</string>
     <string name="bpb_section_panel">Панель</string>
-    <string name="bpb_panel_url">URL панели (https://...)</string>
+    <string name="bpb_panel_url">URL панели (https://…)</string>
     <string name="bpb_open_panel">Открыть панель</string>
     <string name="bpb_invalid_url">Введите корректный http(s) URL</string>
     <string name="bpb_load_failed">Не удалось загрузить панель</string>
@@ -827,20 +840,22 @@
     <string name="wizard_wants_body">Каждый пункт включает реальные настройки или ставит пакет в очередь скачивания. Можно изменить в Настройках / Менеджере ядер.</string>
     <string name="wizard_want_tor">Инструменты Tor</string>
     <string name="wizard_want_mitm">Domain Fronting (MITM)</string>
-    <string name="wizard_want_browser">Вкладка браузера</string>
     <string name="wizard_want_dpi">ByeDPI (обход DPI)</string>
     <string name="wizard_want_hotspot">Хотспот / LAN</string>
     <string name="wizard_want_cores">sing-box / Clash Meta</string>
     <string name="wizard_want_analytics">Анонимная диагностика</string>
     <string name="wizard_want_tor_desc">Ставит пакет Tor в очередь, если он не встроен. Включите Tor позже в Инструментах — автоматически не запускается.</string>
     <string name="wizard_want_mitm_desc">Отмечает инструменты Domain Fronting. Скачивания нет; установите локальный CA, когда будете пользоваться MITM.</string>
-    <string name="wizard_want_browser_desc">Приватный просмотр через встроенную вкладку браузера.</string>
     <string name="wizard_want_dpi_desc">Ставит пакет ByeDPI для обхода DPI в расширенных инструментах.</string>
     <string name="wizard_want_hotspot_desc">Включает LAN-sharing: SOCKS/HTTP слушают 0.0.0.0 для клиентов хотспота.</string>
     <string name="wizard_want_cores_desc">Скачивает sing-box и Mihomo (Clash Meta), чтобы сменить движок в Менеджере ядер.</string>
     <string name="wizard_want_analytics_desc">Crashlytics, Performance и Analytics всегда включены для стабильности. Никогда хосты, мосты или URL подписок.</string>
-    <string name="wizard_wants_selected_count">%1$d из %2$d выбрано</string>
-    <string name="wizard_wants_optional_label">Опционально</string>
+    <plurals name="wizard_wants_selected_count">
+        <item quantity="one">%1$d из %2$d выбрано</item>
+        <item quantity="few">%1$d из %2$d выбрано</item>
+        <item quantity="many">%1$d из %2$d выбрано</item>
+        <item quantity="other">%1$d из %2$d выбрано</item>
+    </plurals>
     <string name="wizard_welcome_subtitle">Современный клиент VLESS, VMess, Trojan и Shadowsocks для Android.</string>
     <string name="wizard_features_title">Что вы получаете</string>
     <string name="wizard_features_subtitle">Xray уже в приложении. Доп. ядра и пакеты скачиваются только по запросу.</string>
@@ -881,7 +896,6 @@
         <string name="vpn_error_license_expired">Лицензия истекла — активируйте новую лицензию, чтобы продолжить</string>
 <string name="vpn_error_no_server">Сервер не выбран</string>
     <string name="vpn_error_tun">Не удалось создать TUN-интерфейс</string>
-    <string name="vpn_error_tor">Не удалось запустить Tor</string>
     <string name="vpn_error_fronting">Domain fronting не удался: %1$s</string>
     <string name="vpn_error_core">Не удалось запустить ядро</string>
     <string name="vpn_error_no_internet">Туннель поднялся, но интернета нет — проверьте сервер или DPI</string>
@@ -908,7 +922,6 @@
     <string name="sheet_edit_server">Изменить сервер</string>
     <string name="sheet_duplicate_server">Дублировать сервер</string>
     <string name="sheet_share_server">Поделиться сервером</string>
-    <string name="sheet_test_latency">Проверить пинг</string>
     <string name="sheet_test_connectivity">Пинг и сайт</string>
     <string name="sheet_delete_server">Удалить сервер</string>
     <string name="sheet_qr_unable">Не удалось показать QR</string>
@@ -922,9 +935,7 @@
     <string name="servers_action_qr">Показать QR-код</string>
     <string name="fronting_front_address_hint">Оставьте по умолчанию — хост/SNI сервера resolve при подключении. Чужой Cloudflare IP обычно даёт TLS handshake alert.</string>
     <string name="nav_browser">Браузер</string>
-    <string name="browser_title">Браузер</string>
     <string name="browser_url_placeholder">Поиск или адрес</string>
-    <string name="browser_go">Перейти</string>
     <string name="browser_preset_google">Google</string>
     <string name="browser_preset_youtube">YouTube</string>
     <string name="browser_preset_x">X</string>
@@ -950,7 +961,6 @@
     <string name="browser_external_failed">Нет браузера для этой ссылки</string>
     <string name="report_bug">Сообщить об ошибке</string>
     <string name="report_bug_sub">Отправить недавние журналы и снимок диагностики (очищенный)</string>
-    <string name="report_bug_ok">Отчёт об ошибке отправлен</string>
     <string name="report_bug_fail">Не удалось отправить отчёт об ошибке</string>
     <string name="report_bug_firebase_ok">Отчёт об ошибке отправлен в Firebase</string>
     <string name="report_bug_firebase_failed">Firebase не удалось отправить отчёт об ошибке</string>
@@ -993,7 +1003,6 @@
     <string name="mitm_pc_import_warn">Импортируйте только CA, созданный вами — это заменит текущий сертификат на устройстве.</string>
     <string name="mitm_enable">Включить MITM-фронтинг доменов</string>
     <string name="mitm_enable_sub">Требуется установленный и подтверждённый сертификат</string>
-    <string name="mitm_start">Старт</string>
     <string name="mitm_stop">Стоп</string>
     <string name="mitm_rules_title">Правила фронтинга</string>
     <string name="mitm_rules_hint">По одному правилу на строку: домен = фронт-домен. Не указанные хосты идут напрямую (без MITM).</string>

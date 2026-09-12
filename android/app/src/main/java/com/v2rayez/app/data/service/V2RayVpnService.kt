@@ -1717,8 +1717,7 @@ class V2RayVpnService : VpnService() {
     }
 
     private fun stopForegroundCompat() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) stopForeground(STOP_FOREGROUND_REMOVE)
-        else @Suppress("DEPRECATION") stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private suspend fun recordSession() {
@@ -1865,7 +1864,6 @@ class V2RayVpnService : VpnService() {
     }
 
     private fun createChannel(quiet: Boolean) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val nm = getSystemService(NotificationManager::class.java)
         if (quiet) {
             if (nm.getNotificationChannel(CHANNEL_ID_QUIET) == null) {

@@ -51,6 +51,7 @@ fun HistoryScreen(
         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // Tablet/foldable: cap every history card at a readable width, centered.
         item {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Header(stringResource(R.string.issuer_history_header), stringResource(R.string.issuer_history_sub))

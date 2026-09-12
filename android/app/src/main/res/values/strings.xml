@@ -13,12 +13,9 @@
     <string name="nav_home">Home</string>
     <string name="nav_servers">Servers</string>
     <string name="nav_tools">Tools</string>
-    <string name="nav_statistics">Statistics</string>
     <string name="nav_settings">Settings</string>
 
     <!-- Common actions -->
-    <string name="action_connect">Connect</string>
-    <string name="action_disconnect">Disconnect</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
@@ -26,7 +23,6 @@
     <string name="action_import">Import</string>
     <string name="action_share">Share</string>
     <string name="action_search">Search</string>
-    <string name="action_filter">Filter</string>
     <string name="action_back">Back</string>
     <string name="action_add">Add</string>
     <string name="action_more">More</string>
@@ -52,7 +48,6 @@
     <string name="servers_import_hint">Paste a share link, URI, or subscription URL</string>
     <string name="servers_import_action">Import</string>
     <string name="servers_scan_qr_prompt">Point the camera at a server QR code</string>
-    <string name="servers_import_link">Import from link</string>
     <string name="free_servers_browse">Browse free servers</string>
     <string name="server_editor_new">New Server</string>
     <string name="server_editor_edit">Edit Server</string>
@@ -88,14 +83,15 @@
     <string name="widget_quick_desc">One-tap VPN connect / disconnect</string>
     <string name="widget_panel_name">VPN Control Panel</string>
     <string name="widget_panel_desc">Status, live speed, and shortcuts to Servers and the app</string>
-    <string name="widget_connect">CONNECT</string>
+        <!-- Panel metrics placeholder, replaced on first RemoteViews update. -->
+    <string name="widget_metrics_idle">— · ↓0 · ↑0</string>
+<string name="widget_connect">CONNECT</string>
     <string name="widget_disconnect">DISCONNECT</string>
     <string name="widget_connecting">Connecting…</string>
     <string name="widget_vpn_on">VPN is ON</string>
     <string name="widget_vpn_off">VPN is OFF</string>
     <string name="widget_no_server">No server</string>
     <string name="widget_servers">Servers</string>
-    <string name="widget_sni">SNI</string>
     <string name="widget_open">Open</string>
     <string name="widget_toggle_cd">Toggle VPN</string>
     <string name="widget_vpn_consent_needed">Grant VPN permission in the app to use the widget</string>
@@ -107,19 +103,11 @@
     <string name="home_connecting">Connecting…</string>
     <string name="home_disconnected">Disconnected</string>
     <string name="home_connection_failed">Connection failed</string>
-    <string name="home_vpn_on">VPN is ON</string>
-    <string name="home_vpn_off">VPN is OFF</string>
     <string name="home_iran_geo_cta_title">Enable Iran geo-routing</string>
     <string name="home_iran_geo_cta_sub">Download the geo pack to route Iranian sites directly and cut latency.</string>
-    <string name="home_connect">CONNECT</string>
-    <string name="home_disconnect">DISCONNECT</string>
-    <string name="home_cancel">Cancel</string>
     <string name="home_auto_mode">Auto connect</string>
-    <string name="home_advanced_tuning">Advanced / Tuning</string>
     <string name="home_advanced_vpn">Advanced VPN</string>
     <string name="home_advanced_vpn_sub">Core, routing &amp; performance</string>
-    <string name="home_version_chip">V2RayEz v%1$s</string>
-    <string name="home_session_short">Traffic</string>
     <string name="home_vpn">VPN</string>
     <string name="home_not_connected">Not connected</string>
     <string name="home_select_server">Select a server to connect</string>
@@ -137,7 +125,6 @@
     <string name="home_upload">Upload</string>
     <string name="home_ping">Ping</string>
     <string name="home_speed">Speed</string>
-    <string name="home_session_traffic">Session: %1$s ↓ · %2$s ↑</string>
     <string name="home_session_strip">Session %1$s ↓ / %2$s ↑</string>
     <string name="home_action_servers">Servers</string>
     <string name="home_action_free">Free</string>
@@ -164,7 +151,6 @@
 
     <!-- Tools -->
     <string name="tools_title">Tools</string>
-    <string name="tools_network">Network Tools</string>
     <string name="tools_advanced">Advanced</string>
     <string name="tools_group_unblock">Unblock &amp; Anti-censorship</string>
     <string name="tools_group_routing">Routing &amp; DNS</string>
@@ -198,17 +184,24 @@
     <string name="routing_name">Name</string>
     <string name="routing_domains_hint">Domains (comma sep)</string>
     <string name="routing_ips_hint">IPs (comma sep)</string>
-    <string name="routing_port_hint">Port (e.g. 443 or 1000-2000)</string>
+    <string name="routing_port_hint">Port (e.g. 443 or 1000–2000)</string>
     <string name="routing_ruleset_url">Ruleset URL (raw)</string>
     <string name="routing_apply_as">Apply as</string>
     <string name="routing_update_interval">Auto-update interval (hours)</string>
-    <string name="routing_move_up">Move up</string>
-    <string name="routing_move_down">Move down</string>
-    <string name="routing_summary_domains">%1$d domains</string>
-    <string name="routing_summary_ips">%1$d ips</string>
+    <plurals name="routing_summary_domains">
+        <item quantity="one">%1$d domain</item>
+        <item quantity="other">%1$d domains</item>
+    </plurals>
+    <plurals name="routing_summary_ips">
+        <item quantity="one">%1$d IP</item>
+        <item quantity="other">%1$d IPs</item>
+    </plurals>
     <string name="routing_summary_port">port %1$s</string>
     <string name="routing_summary_empty">empty</string>
-    <string name="routing_provider_entries">%1$s · %2$d entries</string>
+    <plurals name="routing_provider_entries">
+        <item quantity="one">%1$s · %2$d entry</item>
+        <item quantity="other">%1$s · %2$d entries</item>
+    </plurals>
 
     <!-- DNS -->
     <string name="dns_title">DNS Manager</string>
@@ -229,7 +222,10 @@
     <string name="appproxy_enable">Enable per-app proxy</string>
     <string name="appproxy_mode_bypass">Mode: bypass selected apps</string>
     <string name="appproxy_mode_only">Mode: only proxy selected apps</string>
-    <string name="appproxy_selected">%1$d selected</string>
+    <plurals name="appproxy_selected">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
     <string name="appproxy_search_hint">Search apps</string>
     <string name="appproxy_no_apps">No apps match your search.</string>
     <string name="appproxy_conflict_full_tunnel">Full device tunnel is on — App Proxy selections are ignored until you turn it off.</string>
@@ -242,16 +238,14 @@
     <string name="sni_desync_engine">Desync engine (byedpi)</string>
     <string name="sni_native_available">Native · available</string>
     <string name="sni_native_unavailable">Native · install ByeDPI in Core manager</string>
-    <string name="sni_byedpi_available_desc">libbyedpi.so is bundled. When enabled, the proxy dials through a local SOCKS5 that splits/fakes/reorders the ClientHello to defeat DPI.</string>
-    <string name="sni_byedpi_unavailable_desc">libbyedpi.so is not bundled on this device, so desync can\'t run. The setting is saved and will activate once the native binary is present.</string>
     <string name="sni_enable_desync">Enable desync engine</string>
     <string name="sni_enable_desync_sub">Route the ClientHello through byedpi</string>
-    <string name="sni_method">Method</string>
     <string name="sni_split_pos">Split position (bytes from ClientHello start)</string>
     <string name="sni_fake_ttl">Fake packet TTL</string>
-    <string name="sni_scanner">SNI scanner</string>
-    <string name="sni_domains_count">%1$d domains</string>
-    <string name="sni_scanning">Scanning…</string>
+    <plurals name="sni_domains_count">
+        <item quantity="one">%1$d domain</item>
+        <item quantity="other">%1$d domains</item>
+    </plurals>
     <string name="sni_scan_best">Scan</string>
     <string name="sni_stop">Stop</string>
     <string name="sni_lab_title">SNI Lab</string>
@@ -262,8 +256,6 @@
     <string name="sni_save">SAVE</string>
     <string name="sni_lab_ip_line">IP=%1$s  TRACE=%2$s</string>
     <string name="sni_lab_meta_line">%1$d ms · stable %2$d%% · %3$s</string>
-    <string name="sni_tested">Tested %1$d / %2$d</string>
-    <string name="sni_preparing">Preparing…</string>
     <string name="sni_manipulation">SNI manipulation</string>
     <string name="sni_split">Split (fragment ClientHello)</string>
     <string name="sni_omit">Omit SNI</string>
@@ -272,31 +264,26 @@
     <string name="sni_fragmentation">Fragmentation</string>
     <string name="sni_length_range">Length range (bytes)</string>
     <string name="sni_interval_range">Interval range (ms)</string>
-    <string name="sni_domain_fronting">Domain fronting</string>
-    <string name="sni_enable_front">Enable domain fronting</string>
-    <string name="sni_front_sub">Front domain as SNI; real host in encrypted Host header</string>
-    <string name="sni_front_domain">Front domain</string>
     <string name="sni_candidate_domains">Candidate domains</string>
-    <string name="sni_using_bundled">Using the bundled list of %1$d domains. Edit below to override.</string>
-    <string name="sni_custom_domains">%1$d custom domains.</string>
+    <plurals name="sni_using_bundled">
+        <item quantity="one">Using the bundled list of %1$d domain. Edit below to override.</item>
+        <item quantity="other">Using the bundled list of %1$d domains. Edit below to override.</item>
+    </plurals>
+    <plurals name="sni_custom_domains">
+        <item quantity="one">%1$d custom domain.</item>
+        <item quantity="other">%1$d custom domains.</item>
+    </plurals>
     <string name="sni_one_per_line">One domain per line (leave empty for defaults)</string>
     <string name="sni_best">Best</string>
     <string name="sni_ms">%1$d ms</string>
     <string name="sni_stable">%1$d%% stable</string>
-    <string name="sni_applied">Applied %1$s as your SNI</string>
     <string name="sni_tap_hint">Tap a result to use it as your SNI</string>
     <string name="sni_active">Active</string>
-    <string name="sni_test_current">Test current SNI</string>
-    <string name="sni_testing_current">Testing current SNI…</string>
-    <string name="sni_current_ok">Current SNI %1$s works (%2$d ms)</string>
-    <string name="sni_current_failed">Current SNI %1$s is not working — scan for a new one</string>
     <string name="sni_reconnect_hint">SNI changes apply after reconnecting</string>
     <string name="sni_reconnect_now">Reconnect now</string>
     <string name="sni_advanced">Advanced</string>
 
     <!-- Domain Fronting -->
-    <string name="fronting_title">Domain Fronting</string>
-    <string name="fronting_tool_sub">Fake SNI dialer</string>
     <string name="fronting_intro">Route Xray through a local dialer with fake-SNI probes and ClientHello fragmentation. The dialer TCP-connects to the server host/SNI IP (resolved on connect) so TLS can complete; fake SNI is only used for probes. Real TLS SNI stays on the server URI.</string>
     <string name="fronting_enable">Enable domain fronting</string>
     <string name="fronting_enable_sub">Local dialer accepts Xray and fronts via Cloudflare</string>
@@ -304,7 +291,6 @@
     <string name="fronting_mode_fast">Fast</string>
     <string name="fronting_mode_balanced">Balanced</string>
     <string name="fronting_mode_stealth">Stealth</string>
-    <string name="fronting_mode_custom">Custom</string>
     <string name="fronting_endpoints">Endpoints</string>
     <string name="fronting_front_address">Front address (optional override)</string>
     <string name="fronting_fallback_address">Fallback address</string>
@@ -338,7 +324,10 @@
     <string name="tor_msg_on">Tor carries the full device or the selected server connection. Domain fronting is incompatible.</string>
     <string name="tor_msg_off">Use Tor for the full device or before a selected VLESS/VMESS/Trojan/Shadowsocks server</string>
     <string name="tor_toggle">Toggle Tor</string>
-    <string name="tor_fetched_bridges">Fetched %1$d bridge(s)</string>
+    <plurals name="tor_fetched_bridges">
+        <item quantity="one">Fetched %1$d bridge</item>
+        <item quantity="other">Fetched %1$d bridges</item>
+    </plurals>
     <string name="tor_autosetup">Auto-probe bridges &amp; connect</string>
     <string name="tor_autosetup_running">Probing bridges…</string>
     <string name="tor_probe_log">Probe log</string>
@@ -358,9 +347,7 @@
     <string name="appproxy_reconnect_hint">Per-app proxy changes apply after reconnecting the VPN</string>
     <string name="core_download">Download</string>
     <string name="core_delete">Delete</string>
-    <string name="core_busy">Working…</string>
     <string name="core_device_abi">This device: %1$s — downloads match this CPU only</string>
-    <string name="core_release_asset">%1$s · %2$s</string>
     <!-- Add-on packs (Tor / pluggable transports / ByeDPI) -->
     <string name="core_addons_title">Add-on packs</string>
     <string name="core_addons_sub">Tor + obfs4 (lyrebird) ship in the APK. Other pluggable transports &amp; ByeDPI download on demand.</string>
@@ -379,7 +366,6 @@
     <string name="core_addon_delete">Delete</string>
     <string name="core_hint_check_connection">Check your connection and try again.</string>
     <string name="core_hint_connect_first">If your network blocks GitHub, connect to a server first — downloads route through the tunnel.</string>
-    <string name="core_status_downloading">Downloading %1$s %2$s (%3$s)…</string>
     <string name="core_status_installed">Installed %1$s for %2$s</string>
     <string name="core_status_download_failed">Download failed (need %1$s build). %2$s</string>
     <string name="core_status_fetching">Fetching %1$s releases for %2$s…</string>
@@ -505,8 +491,6 @@
 
     <!-- Speed test -->
     <string name="speed_title">Speed Test</string>
-    <string name="speed_download">download</string>
-    <string name="speed_testing">Testing…</string>
     <string name="speed_start">Start test</string>
     <string name="speed_stop">Stop</string>
     <string name="speed_direct">Direct</string>
@@ -540,11 +524,8 @@
     <string name="chart_summary_live">Live throughput: %1$s down, %2$s up</string>
 
     <!-- Servers (additional) -->
-    <string name="servers_all">All</string>
     <string name="servers_ping_all">Ping all</string>
     <string name="servers_auto_fastest">Auto-fastest</string>
-    <string name="servers_sort_ping">Sort by ping</string>
-    <string name="servers_groups">Groups</string>
     <string name="servers_subscriptions">Subscriptions</string>
     <string name="servers_share_chooser">Share server</string>
     <string name="servers_testing">Testing…</string>
@@ -567,7 +548,10 @@
     <string name="servers_sort_ping_short">Ping</string>
     <string name="servers_sort_name">Name</string>
     <string name="servers_sort_protocol">Protocol</string>
-    <string name="servers_selected_count">%1$d selected</string>
+    <plurals name="servers_selected_count">
+        <item quantity="one">%1$d selected</item>
+        <item quantity="other">%1$d selected</item>
+    </plurals>
     <string name="servers_select_all">Select all</string>
     <string name="servers_clear_selection">Clear selection</string>
     <string name="servers_selection_favorite">Favorite</string>
@@ -600,8 +584,14 @@
     <string name="free_title">Free servers</string>
     <string name="free_intro">Browse a public, open-source pool of free servers. Add any of them right away, or run a quick scan to find the fastest ones. Nothing is added automatically.</string>
     <string name="free_none_loaded">No servers loaded</string>
-    <string name="free_available">%1$d available</string>
-    <string name="free_working_tested">%1$d working · %2$d tested</string>
+    <plurals name="free_available">
+        <item quantity="one">%1$d available</item>
+        <item quantity="other">%1$d available</item>
+    </plurals>
+    <plurals name="free_working_tested">
+        <item quantity="one">%1$d working · %2$d tested</item>
+        <item quantity="other">%1$d working · %2$d tested</item>
+    </plurals>
     <string name="free_add_all">Add all</string>
     <string name="free_add_fastest">Add 10 fastest</string>
     <string name="free_test_all">Test all</string>
@@ -609,14 +599,12 @@
     <string name="free_scanning_progress">Scanning %1$d / %2$d</string>
     <string name="free_stop_scan">Stop test</string>
     <string name="free_in_subscription">In your list · from a subscription</string>
-    <string name="free_testing_progress">Testing %1$d / %2$d</string>
     <string name="free_sort_ping">Sort by ping</string>
     <string name="free_working_only">Working only</string>
     <string name="free_pull_to_load">Pull down to load free servers.</string>
     <string name="free_added">Added</string>
     <string name="free_add_server">Add server</string>
     <string name="free_test">Test</string>
-    <string name="free_timed_out">Timed out</string>
 
     <!-- Server editor (advanced) -->
     <string name="editor_group">Group (optional)</string>
@@ -717,9 +705,7 @@
     <string name="settings_boot_auto_connect_sub">Reconnect the last server after the device restarts</string>
     <string name="battery_exemption_hint">Allow the app to ignore battery optimization so the tunnel stays connected in the background.</string>
     <string name="vpn_full_tunnel">Full device tunnel</string>
-    <string name="vpn_full_tunnel_sub">Route 100% of traffic; ignore per-app rules</string>
-    <string name="vpn_kill_switch">System kill switch</string>
-    <string name="vpn_kill_switch_sub">Enable Always-on VPN + Block connections</string>
+    <string name="vpn_full_tunnel_sub" formatted="false">Route 100% of traffic; ignore per-app rules</string>
     <string name="vpn_section_network">Network</string>
     <string name="vpn_allow_lan">Allow LAN</string>
     <string name="vpn_reduce_data">Reduce Data Usage</string>
@@ -804,12 +790,15 @@
 
     <!-- BPB panel / subscriptions -->
     <string name="bpb_no_subscriptions">No subscriptions. Add one below.</string>
-    <string name="bpb_sub_summary">%1$d servers · %2$s</string>
+    <plurals name="bpb_sub_summary">
+        <item quantity="one">%1$d server · %2$s</item>
+        <item quantity="other">%1$d servers · %2$s</item>
+    </plurals>
     <string name="bpb_never">never</string>
     <string name="bpb_subscription_url">Subscription URL</string>
     <string name="bpb_import_subscription">Import subscription</string>
     <string name="bpb_section_panel">Panel</string>
-    <string name="bpb_panel_url">Panel URL (https://...)</string>
+    <string name="bpb_panel_url">Panel URL (https://…)</string>
     <string name="bpb_open_panel">Open panel</string>
     <string name="bpb_invalid_url">Enter a valid http(s) URL</string>
     <string name="bpb_load_failed">Failed to load panel</string>
@@ -829,20 +818,20 @@
     <string name="wizard_wants_body">Each option turns on real settings or queues a downloadable pack. Change anytime in Settings / Core Manager.</string>
     <string name="wizard_want_tor">Tor tools</string>
     <string name="wizard_want_mitm">Domain Fronting (MITM)</string>
-    <string name="wizard_want_browser">In-app Browser tab</string>
     <string name="wizard_want_dpi">ByeDPI (DPI bypass)</string>
     <string name="wizard_want_hotspot">Hotspot / LAN sharing</string>
     <string name="wizard_want_cores">sing-box / Clash Meta</string>
     <string name="wizard_want_analytics">Anonymous diagnostics</string>
     <string name="wizard_want_tor_desc">Queues the Tor pack if not bundled. Enable Tor later in Tools — not started automatically.</string>
     <string name="wizard_want_mitm_desc">Marks Domain Fronting tools for you. No download; install the local CA when you use MITM.</string>
-    <string name="wizard_want_browser_desc">Browse privately from a built-in proxied browser tab.</string>
     <string name="wizard_want_dpi_desc">Queues the ByeDPI pack used by SNI / desync bypass in Advanced Tools.</string>
     <string name="wizard_want_hotspot_desc">Turns on LAN sharing so SOCKS/HTTP bind on 0.0.0.0 for hotspot clients.</string>
     <string name="wizard_want_cores_desc">Downloads sing-box and Mihomo (Clash Meta) so you can switch engines in Core Manager.</string>
     <string name="wizard_want_analytics_desc">Crashlytics, Performance, and Analytics stay on for stability. Never hosts, bridges, or subscription URLs.</string>
-    <string name="wizard_wants_selected_count">%1$d of %2$d selected</string>
-    <string name="wizard_wants_optional_label">Optional</string>
+    <plurals name="wizard_wants_selected_count">
+        <item quantity="one">%1$d of %2$d selected</item>
+        <item quantity="other">%1$d of %2$d selected</item>
+    </plurals>
     <string name="wizard_welcome_subtitle">A modern VLESS, VMess, Trojan and Shadowsocks client for Android.</string>
     <string name="wizard_features_title">What you get</string>
     <string name="wizard_features_subtitle">Xray is included. Extra cores and packs download only if you ask for them.</string>
@@ -883,7 +872,6 @@
         <string name="vpn_error_license_expired">License expired — connect your new license to continue</string>
 <string name="vpn_error_no_server">No server selected</string>
     <string name="vpn_error_tun">Failed to create TUN interface</string>
-    <string name="vpn_error_tor">Tor failed to start</string>
     <string name="vpn_error_fronting">Domain fronting failed: %1$s</string>
     <string name="vpn_error_core">Core failed to start</string>
     <string name="vpn_error_no_internet">Tunnel started but has no internet — check server or DPI settings</string>
@@ -910,7 +898,6 @@
     <string name="sheet_edit_server">Edit Server</string>
     <string name="sheet_duplicate_server">Duplicate Server</string>
     <string name="sheet_share_server">Share Server</string>
-    <string name="sheet_test_latency">Test Latency</string>
     <string name="sheet_test_connectivity">Test ping &amp; site</string>
     <string name="sheet_delete_server">Delete Server</string>
     <string name="sheet_qr_unable">Unable to render QR</string>
@@ -924,9 +911,7 @@
     <string name="servers_action_qr">Show QR code</string>
     <string name="fronting_front_address_hint">Leave default to auto-resolve the server host/SNI on connect. Overriding with an unrelated Cloudflare IP usually causes TLS handshake alerts.</string>
     <string name="nav_browser">Browser</string>
-    <string name="browser_title">Browser</string>
     <string name="browser_url_placeholder">Search or enter address</string>
-    <string name="browser_go">Go</string>
     <string name="browser_preset_google">Google</string>
     <string name="browser_preset_youtube">YouTube</string>
     <string name="browser_preset_x">X</string>
@@ -952,7 +937,6 @@
     <string name="browser_external_failed">No browser available for this link</string>
     <string name="report_bug">Report bug</string>
     <string name="report_bug_sub">Send recent logs and a diagnostics snapshot (scrubbed)</string>
-    <string name="report_bug_ok">Bug report sent</string>
     <string name="report_bug_fail">Could not send bug report</string>
     <string name="report_bug_firebase_ok">Bug report sent to Firebase</string>
     <string name="report_bug_firebase_failed">Firebase could not send the bug report</string>
@@ -1014,7 +998,6 @@
     <string name="mitm_pc_import_warn">Only import a CA you generated yourself — this replaces the current on-device certificate.</string>
     <string name="mitm_enable">Enable MITM domain fronting</string>
     <string name="mitm_enable_sub">Requires the certificate to be installed and confirmed</string>
-    <string name="mitm_start">Start</string>
     <string name="mitm_stop">Stop</string>
     <string name="mitm_rules_title">Fronting rules</string>
     <string name="mitm_rules_hint">One rule per line: domain = front-domain. Hosts not listed go direct (no MITM).</string>

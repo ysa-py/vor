@@ -132,7 +132,6 @@ class V2RayApplication : Application(), Configuration.Provider {
      * Android ~5s FGS deadline even on cold start.
      */
     private fun ensureVpnNotificationChannels() {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) return
         val nm = getSystemService(android.app.NotificationManager::class.java) ?: return
         val channelId = "vpn_status"
         val quietId = "vpn_status_quiet"

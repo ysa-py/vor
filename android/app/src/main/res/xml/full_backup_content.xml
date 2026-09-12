@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API 23-30 backup rules. allowBackup="false" already forbids backups; these
+     rules make the exclusion explicit for the legacy backup agent as well.
+     License tokens and the MITM CA key must NEVER leave the device. -->
+<full-backup-content>
+    <exclude domain="root" />
+</full-backup-content>
